@@ -1,5 +1,7 @@
 package com.car_backend.dto;
 
+import java.math.BigDecimal;
+
 import com.car_backend.entities.Role;
 
 import jakarta.validation.constraints.Email;
@@ -36,7 +38,7 @@ public class CreateUserDto {
 	
 	
 	@Min(value=1, message="salary must be greater than 1")
-	private Double salary;
+	private BigDecimal salary;
 	
 	private boolean isActive = true;
 	

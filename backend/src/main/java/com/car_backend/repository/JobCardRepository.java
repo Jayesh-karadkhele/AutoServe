@@ -1,5 +1,6 @@
 package com.car_backend.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,7 +37,7 @@ public interface JobCardRepository extends JpaRepository<JobCard, Long> {
 	Long countByMechanicId(Long mechanicId);
 
 	@org.springframework.data.jpa.repository.Query("SELECT SUM(i.snapshotPrice * i.quantity) FROM JobCard j JOIN j.items i WHERE j.manager.id = :managerId AND j.jobCardStatus = 'COMPLETED'")
-	Double calculateRevenueByManagerId(Long managerId);
+	BigDecimal calculateRevenueByManagerId(Long managerId);
 
 	@org.springframework.data.jpa.repository.Query("SELECT j FROM JobCard j JOIN j.appointment a JOIN a.vehicleDetails v JOIN v.customer c "
 			+
@@ -44,7 +45,7 @@ public interface JobCardRepository extends JpaRepository<JobCard, Long> {
 	List<JobCard> searchHistory(String keyword, Long managerId);
 
 	@org.springframework.data.jpa.repository.Query("SELECT SUM(i.snapshotPrice * i.quantity) FROM JobCard j JOIN j.items i WHERE j.jobCardStatus = 'COMPLETED'")
-	Double calculateTotalRevenue();
+	BigDecimal calculateTotalRevenue();
 
 	@org.springframework.data.jpa.repository.Query("SELECT j FROM JobCard j WHERE j.appointment.vehicleDetails.customer.id = :customerId")
 	List<JobCard> findByCustomerId(Long customerId);

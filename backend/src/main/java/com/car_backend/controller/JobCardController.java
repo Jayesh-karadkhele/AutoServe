@@ -1,5 +1,6 @@
 package com.car_backend.controller;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -246,7 +247,7 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/revenue/manager/{managerId}")
-    public ResponseEntity<Map<String, Double>> getManagerRevenue(@PathVariable Long managerId) {
+    public ResponseEntity<Map<String, BigDecimal>> getManagerRevenue(@PathVariable Long managerId) {
         return ResponseEntity.ok(Collections.singletonMap("revenue", jobCardService.getManagerRevenue(managerId)));
     }
 
@@ -264,7 +265,7 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/revenue/total")
-    public ResponseEntity<Map<String, Double>> getTotalRevenue() {
+    public ResponseEntity<Map<String, BigDecimal>> getTotalRevenue() {
         return ResponseEntity.ok(Collections.singletonMap("totalRevenue", jobCardService.getTotalRevenue()));
     }
 

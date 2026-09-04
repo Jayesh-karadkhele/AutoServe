@@ -1,5 +1,7 @@
 package com.car_backend.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +37,8 @@ public class User extends BaseEntity{
 	
 	private String mobile;
 	
-	private Double salary;
+	@Column(name = "salary", precision = 10, scale = 2)
+	private BigDecimal salary;
 	
 	@Column(name="is_active")
 	private boolean isActive = true;

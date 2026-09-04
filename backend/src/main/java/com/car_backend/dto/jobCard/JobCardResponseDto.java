@@ -1,5 +1,6 @@
 package com.car_backend.dto.jobCard;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,8 +43,8 @@ public class JobCardResponseDto {
 	private List<JobCardItemDto> items;
 	private List<JobCardEvidenceDto> evidence;
 
-	private Double laborCost;
-	private Double totalAmount;
+	private BigDecimal laborCost;
+	private BigDecimal totalAmount;
 
 	private Integer customerRating;
 	private String customerFeedback;

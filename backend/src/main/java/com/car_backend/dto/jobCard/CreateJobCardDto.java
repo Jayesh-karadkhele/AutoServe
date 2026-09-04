@@ -1,5 +1,6 @@
 package com.car_backend.dto.jobCard;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CreateJobCardDto {
 	private Long mechanicId;
 
 	@NotNull(message = "labor cost cannot be null.")
-	private Double laborCost;
+	private BigDecimal laborCost;
 
 	private List<PartItem> parts;
 

@@ -1,5 +1,7 @@
 package com.car_backend.dto.inventory;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
@@ -13,7 +15,7 @@ public class UpdateInventoryDto {
 	
 
 	@DecimalMin(value="0.01", message = "price cannot be negative.")
-	private Double currentPrice;
+	private BigDecimal currentPrice;
 	
 	@Min(value=0, message = "quantity must be positive.")
 	private Integer stockQuantity;

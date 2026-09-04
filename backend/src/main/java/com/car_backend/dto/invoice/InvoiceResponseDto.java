@@ -1,5 +1,6 @@
 package com.car_backend.dto.invoice;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,11 +27,11 @@ public class InvoiceResponseDto {
 	private String vehicleBrand;
 	private String vehicleModel;
 
-	private Double baseAmount;
-	private Double laborCost;
-	private Double taxPercentage;
-	private Double taxAmount;
-	private Double totalAmount;
+	private BigDecimal baseAmount;
+	private BigDecimal laborCost;
+	private BigDecimal taxPercentage;
+	private BigDecimal taxAmount;
+	private BigDecimal totalAmount;
 
 	private PaymentStatus paymentStatus;
 	private String razorpayOrderId;

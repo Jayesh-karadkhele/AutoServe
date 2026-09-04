@@ -1,5 +1,6 @@
 package com.car_backend.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class JobCard extends BaseEntity {
 	@Column(name = "job_card_status", nullable = false)
 	private JobCardStatus jobCardStatus;
 
-	@Column(name = "labor_cost")
-	private Double laborCost;
+	@Column(name = "labor_cost", precision = 10, scale = 2)
+	private BigDecimal laborCost;
 
 	@Column(name = "customer_rating")
 	private Integer customerRating;

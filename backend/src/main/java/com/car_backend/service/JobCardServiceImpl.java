@@ -1,7 +1,9 @@
 package com.car_backend.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -112,7 +114,7 @@ public class JobCardServiceImpl implements JobCardService {
 				jobCardItem.setQuantity(partDto.getQuantity());
 				jobCardItem.setSnapshotItemName(inventoryItem.getItemName());
 				jobCardItem.setSnapshotPrice(inventoryItem.getCurrentPrice());
-				jobCardItem.setTotalPrice(inventoryItem.getCurrentPrice() * partDto.getQuantity());
+				jobCardItem.setTotalPrice(inventoryItem.getCurrentPrice().multiply(BigDecimal.valueOf(partDto.getQuantity())));
 
 				jobCard.getItems().add(jobCardItem);
 
@@ -288,7 +290,7 @@ public class JobCardServiceImpl implements JobCardService {
 		jobCardItem.setQuantity(dto.getQuantity());
 		jobCardItem.setSnapshotItemName(inventoryItem.getItemName());
 		jobCardItem.setSnapshotPrice(inventoryItem.getCurrentPrice());
-		jobCardItem.setTotalPrice(inventoryItem.getCurrentPrice() * dto.getQuantity());
+		jobCardItem.setTotalPrice(inventoryItem.getCurrentPrice().multiply(BigDecimal.valueOf(dto.getQuantity())));
 
 		jobCard.getItems().add(jobCardItem);
 
@@ -498,12 +500,12 @@ public class JobCardServiceImpl implements JobCardService {
 	}
 
 	@Override
-	public Double getManagerRevenue(Long managerId) {
+	public BigDecimal getManagerRevenue(Long managerId) {
 		return invoiceService.getRevenueByManager(managerId);
 	}
 
 	@Override
-	public Double getTotalRevenue() {
+	public BigDecimal getTotalRevenue() {
 		return invoiceService.getTotalRevenue();
 	}
 
@@ -568,8 +570,11 @@ public class JobCardServiceImpl implements JobCardService {
 		List<JobCardEvidenceDto> evidences = jobCard.getEvidences().stream().map(this::mapEvidenceToDto)
 				.collect(Collectors.toList());
 
-		Double totalPartsAmount = itemDtos.stream().mapToDouble(JobCardItemDto::getTotalPrice).sum();
-		Double totalAmount = totalPartsAmount + (jobCard.getLaborCost() != null ? jobCard.getLaborCost() : 0.0);
+		BigDecimal totalPartsAmount = itemDtos.stream()
+				.map(JobCardItemDto::getTotalPrice)
+				.filter(Objects::nonNull)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		BigDecimal totalAmount = totalPartsAmount.add(jobCard.getLaborCost() != null ? jobCard.getLaborCost() : BigDecimal.ZERO);
 
 		return JobCardResponseDto.builder().id(jobCard.getId())
 
@@ -603,9 +608,11 @@ public class JobCardServiceImpl implements JobCardService {
 	}
 
 	private JobCardItemDto mapItemToDto(JobCardItem jobCardItem) {
+		BigDecimal price = jobCardItem.getSnapshotPrice() != null ? jobCardItem.getSnapshotPrice() : BigDecimal.ZERO;
+		BigDecimal total = jobCardItem.getTotalPrice() != null ? jobCardItem.getTotalPrice() : price.multiply(BigDecimal.valueOf(jobCardItem.getQuantity()));
 		return JobCardItemDto.builder().id(jobCardItem.getId()).itemName(jobCardItem.getSnapshotItemName())
-				.itemPrice(jobCardItem.getSnapshotPrice()).quantity(jobCardItem.getQuantity())
-				.totalPrice(jobCardItem.getSnapshotPrice() * jobCardItem.getQuantity()).build();
+				.itemPrice(price).quantity(jobCardItem.getQuantity())
+				.totalPrice(total).build();
 	}
 
 	private JobCardEvidenceDto mapEvidenceToDto(JobCardEvidence evidence) {

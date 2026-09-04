@@ -1,5 +1,6 @@
 package com.car_backend.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.car_backend.dto.jobCard.AddItemToJobCardDto;
@@ -64,9 +65,9 @@ public interface JobCardService {
 
 	Long countManagerJobCardByStatus(Long managerId, JobCardStatus status);
 
-	Double getManagerRevenue(Long managerId);
+	BigDecimal getManagerRevenue(Long managerId);
 
-	Double getTotalRevenue();
+	BigDecimal getTotalRevenue();
 
 	List<JobCardResponseDto> getCustomerJobCards(Long customerId);
 

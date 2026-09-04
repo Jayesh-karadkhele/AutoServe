@@ -1,5 +1,6 @@
 package com.car_backend.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.car_backend.dto.invoice.CreatePaymentOrderResponseDto;
@@ -34,11 +35,11 @@ public interface InvoiceService {
 
 	long getPaidInvoicesCount();
 
-	Double getTotalRevenue();
+	BigDecimal getTotalRevenue();
 
-	Double getRevenueByManager(Long managerId);
+	BigDecimal getRevenueByManager(Long managerId);
 
-	Double getPendingRevenue();
+	BigDecimal getPendingRevenue();
 
 	PaymentVerificationResponseDto simulatePayment(Long invoiceId);
 

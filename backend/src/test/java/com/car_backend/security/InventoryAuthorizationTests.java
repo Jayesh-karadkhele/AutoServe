@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ public class InventoryAuthorizationTests {
         item1.setItemName("Brake Pad");
         item1.setSkuCode("BP-001");
         item1.setStockQuantity(20);
-        item1.setCurrentPrice(1500.0);
+        item1.setCurrentPrice(BigDecimal.valueOf(1500.0));
         item1.setDeleted(false);
         item1 = inventoryRepository.save(item1);
     }

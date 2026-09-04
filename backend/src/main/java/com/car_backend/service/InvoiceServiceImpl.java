@@ -1,9 +1,12 @@
 package com.car_backend.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,7 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-
 public class InvoiceServiceImpl implements InvoiceService {
 
 	private final InvoiceRepository invoiceRepo;
@@ -54,14 +56,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 	private final RazorpayClient razorpayClient;
 	private final PdfService pdfService;
 
-	@Value("${razorpay.key.id}")
+	@Value("${razorpay.key.id:}")
 	private String razorpayKeyId;
 
-	@Value("${razorpay.key.secret}")
+	@Value("${razorpay.key.secret:}")
 	private String razorpayKeySecret;
 
-	@Value("${invoice.tax.percentage}")
-	private Double taxPercentage;
+	@Value("${invoice.tax.percentage:18.0}")
+	private Double taxPercentageValue;
 
 	@Override
 	public InvoiceResponseDto generateInvoice(Long jobCardId) {
@@ -76,18 +78,23 @@ public class InvoiceServiceImpl implements InvoiceService {
 			return mapToResponseDto(invoiceRepo.findByJobCardId(jobCardId).get());
 		}
 
-		Double partsAmount = jobCard.getItems().stream().mapToDouble(JobCardItem::getTotalPrice).sum();
-		Double laborCost = jobCard.getLaborCost() != null ? jobCard.getLaborCost() : 0.0;
-		Double baseAmount = partsAmount + laborCost;
+		BigDecimal taxPercentage = BigDecimal.valueOf(taxPercentageValue != null ? taxPercentageValue : 18.0);
 
-		Double taxAmount = (baseAmount * taxPercentage) / 100.0;
-		Double totalAmount = baseAmount + taxAmount;
+		BigDecimal partsAmount = jobCard.getItems().stream()
+				.map(JobCardItem::getTotalPrice)
+				.filter(Objects::nonNull)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		BigDecimal laborCost = jobCard.getLaborCost() != null ? jobCard.getLaborCost() : BigDecimal.ZERO;
+		BigDecimal baseAmount = partsAmount.add(laborCost);
+
+		BigDecimal taxAmount = baseAmount.multiply(taxPercentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+		BigDecimal totalAmount = baseAmount.add(taxAmount);
 
 		String invoiceNumber = generateInvoiceNumber();
 
 		Invoice invoice = new Invoice();
 		invoice.setInvoiceNumber(invoiceNumber);
-		invoice.setBaseAmount(partsAmount);
+		invoice.setBaseAmount(baseAmount);
 		invoice.setLaborCost(laborCost);
 		invoice.setTaxPercentage(taxPercentage);
 		invoice.setTaxAmount(taxAmount);
@@ -174,7 +181,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 		// create razorpay order
 		try {
 			JSONObject orderRequest = new JSONObject();
-			orderRequest.put("amount", (int) (invoice.getTotalAmount() * 100));
+			orderRequest.put("amount", invoice.getTotalAmount().multiply(new BigDecimal("100")).longValue());
 			orderRequest.put("currency", "INR");
 			orderRequest.put("receipt", invoice.getInvoiceNumber());
 
@@ -308,21 +315,27 @@ public class InvoiceServiceImpl implements InvoiceService {
 	}
 
 	@Override
-	public Double getTotalRevenue() {
+	public BigDecimal getTotalRevenue() {
 		List<Invoice> invoices = invoiceRepo.findByPaymentStatus(PaymentStatus.PAID);
-		return invoices.stream().mapToDouble(Invoice::getTotalAmount).sum();
+		return invoices.stream()
+				.map(Invoice::getTotalAmount)
+				.filter(Objects::nonNull)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	@Override
-	public Double getRevenueByManager(Long managerId) {
-		Double revenue = invoiceRepo.calculateRevenueByManagerId(managerId);
-		return revenue != null ? revenue : 0.0;
+	public BigDecimal getRevenueByManager(Long managerId) {
+		BigDecimal revenue = invoiceRepo.calculateRevenueByManagerId(managerId);
+		return revenue != null ? revenue : BigDecimal.ZERO;
 	}
 
 	@Override
-	public Double getPendingRevenue() {
+	public BigDecimal getPendingRevenue() {
 		List<Invoice> invoices = invoiceRepo.findByPaymentStatus(PaymentStatus.PENDING);
-		return invoices.stream().mapToDouble(Invoice::getTotalAmount).sum();
+		return invoices.stream()
+				.map(Invoice::getTotalAmount)
+				.filter(Objects::nonNull)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	@Override

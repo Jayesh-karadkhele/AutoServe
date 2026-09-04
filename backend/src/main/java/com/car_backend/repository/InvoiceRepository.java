@@ -1,5 +1,6 @@
 package com.car_backend.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 	long countByPaymentStatus(PaymentStatus paymentStatus);
 
 	@Query("SELECT SUM(i.totalAmount) FROM Invoice i WHERE i.jobCard.manager.id = :managerId AND i.paymentStatus = com.car_backend.entities.PaymentStatus.PAID")
-	Double calculateRevenueByManagerId(@Param("managerId") Long managerId);
+	BigDecimal calculateRevenueByManagerId(@Param("managerId") Long managerId);
 
 	boolean existsByIdAndJobCard_Appointment_VehicleDetails_Customer_Id(Long id, Long customerId);
 

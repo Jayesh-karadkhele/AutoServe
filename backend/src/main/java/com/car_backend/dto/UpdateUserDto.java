@@ -1,5 +1,7 @@
 package com.car_backend.dto;
 
+import java.math.BigDecimal;
+
 import com.car_backend.entities.Role;
 
 import jakarta.validation.constraints.Min;
@@ -24,7 +26,7 @@ public class UpdateUserDto {
 	private String mobile;
 	
 	@Min(value=1, message="salary must be greater than 1")
-	private Double salary;
+	private BigDecimal salary;
 	
 	private Long managerId;
 	

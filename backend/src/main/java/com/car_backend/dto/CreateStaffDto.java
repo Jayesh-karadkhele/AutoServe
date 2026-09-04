@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -43,7 +44,7 @@ public class CreateStaffDto {
     private String mobile;
 
     @Min(value = 0, message = "Salary must be non-negative")
-    private Double salary;
+    private BigDecimal salary;
 
     private Long managerId;
 }

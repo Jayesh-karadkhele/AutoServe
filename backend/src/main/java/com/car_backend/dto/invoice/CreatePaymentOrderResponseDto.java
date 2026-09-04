@@ -1,5 +1,7 @@
 package com.car_backend.dto.invoice;
 
+import java.math.BigDecimal;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,7 +12,7 @@ public class CreatePaymentOrderResponseDto {
 	private String orderId; //razorpay order id
 	private Long invoiceId;
 	private String invoiceNumber;
-	private Double amount;
+	private BigDecimal amount;
 	private String currency;
 	private String customerName;
 	private String customerEmail;

@@ -1,5 +1,7 @@
 package com.car_backend.dto.invoice;
 
+import java.math.BigDecimal;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +10,7 @@ import lombok.Data;
 
 public class InvoiceItemDto {
 	private String itemName;
-	private Double itemPrice;
+	private BigDecimal itemPrice;
 	private Integer quantity;
-	private Double totalPrice;
+	private BigDecimal totalPrice;
 }

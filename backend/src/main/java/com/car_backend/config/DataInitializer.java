@@ -1,5 +1,7 @@
 package com.car_backend.config;
 
+import java.math.BigDecimal;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,7 +67,7 @@ public class DataInitializer implements CommandLineRunner {
             manager.setPassword(passwordEncoder.encode(managerPassword));
             manager.setUserRole(Role.MANAGER);
             manager.setMobile("9876543211");
-            manager.setSalary(75000.0);
+            manager.setSalary(BigDecimal.valueOf(75000.0));
             manager.setActive(true);
             manager = userRepository.save(manager);
 
@@ -76,7 +78,7 @@ public class DataInitializer implements CommandLineRunner {
             mechanic.setPassword(passwordEncoder.encode(mechanicPassword));
             mechanic.setUserRole(Role.MECHANIC);
             mechanic.setMobile("9876543212");
-            mechanic.setSalary(45000.0);
+            mechanic.setSalary(BigDecimal.valueOf(45000.0));
             mechanic.setActive(true);
             mechanic.setManager(manager);
             userRepository.save(mechanic);
@@ -136,7 +138,7 @@ public class DataInitializer implements CommandLineRunner {
             Inventory item1 = new Inventory();
             item1.setItemName("Motul 8100 X-cess Fully Synthetic Oil 5W-40 (5L)");
             item1.setSkuCode("MOTUL-5W40-synth");
-            item1.setCurrentPrice(3850.0);
+            item1.setCurrentPrice(BigDecimal.valueOf(3850.0));
             item1.setStockQuantity(35);
             item1.setDeleted(false);
             inventoryRepository.save(item1);
@@ -144,7 +146,7 @@ public class DataInitializer implements CommandLineRunner {
             Inventory item2 = new Inventory();
             item2.setItemName("Brembo Front Ceramic Brake Pads Set");
             item2.setSkuCode("BREMBO-P83067");
-            item2.setCurrentPrice(4200.0);
+            item2.setCurrentPrice(BigDecimal.valueOf(4200.0));
             item2.setStockQuantity(12);
             item2.setDeleted(false);
             inventoryRepository.save(item2);
@@ -152,7 +154,7 @@ public class DataInitializer implements CommandLineRunner {
             Inventory item3 = new Inventory();
             item3.setItemName("Bosch Double Iridium Spark Plugs (4-Pack)");
             item3.setSkuCode("BOSCH-SP-IRID");
-            item3.setCurrentPrice(2100.0);
+            item3.setCurrentPrice(BigDecimal.valueOf(2100.0));
             item3.setStockQuantity(50);
             item3.setDeleted(false);
             inventoryRepository.save(item3);
@@ -160,7 +162,7 @@ public class DataInitializer implements CommandLineRunner {
             Inventory item4 = new Inventory();
             item4.setItemName("Denso Anti-Bacterial Cabin AC Filter");
             item4.setSkuCode("DENSO-AC-FILT");
-            item4.setCurrentPrice(850.0);
+            item4.setCurrentPrice(BigDecimal.valueOf(850.0));
             item4.setStockQuantity(60);
             item4.setDeleted(false);
             inventoryRepository.save(item4);

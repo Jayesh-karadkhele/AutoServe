@@ -138,7 +138,7 @@ public class PdfServiceImpl implements PdfService {
 
             addSummaryRow(summaryTable, "Base Amount:", "₹" + invoice.getBaseAmount(), normalFont);
             addSummaryRow(summaryTable, "Labor Cost:",
-                    "₹" + (invoice.getLaborCost() != null ? invoice.getLaborCost() : 0.0), normalFont);
+                    "₹" + (invoice.getLaborCost() != null ? invoice.getLaborCost() : "0.00"), normalFont);
             addSummaryRow(summaryTable, "Tax (" + invoice.getTaxPercentage() + "%):", "₹" + invoice.getTaxAmount(),
                     normalFont);
             addSummaryRow(summaryTable, "Grand Total:", "₹" + invoice.getTotalAmount(), boldFont);

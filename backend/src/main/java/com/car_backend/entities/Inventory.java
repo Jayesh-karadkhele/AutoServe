@@ -1,5 +1,7 @@
 package com.car_backend.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,8 +24,8 @@ public class Inventory extends BaseEntity{
 	@Column(name="sku_code", unique = true)
 	private String skuCode;
 	
-	@Column(name="current_price", nullable=false)
-	private Double currentPrice;
+	@Column(name="current_price", nullable=false, precision=10, scale=2)
+	private BigDecimal currentPrice;
 	
 	@Column(name="stock_quantity")
 	private Integer stockQuantity;

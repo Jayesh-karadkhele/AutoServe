@@ -1,5 +1,6 @@
 package com.car_backend.dto.inventory;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import lombok.Builder;
@@ -11,7 +12,7 @@ public class InventoryResponseDto {
 	private Long id;
 	private String itemName;
 	private String skuCode;
-	private Double currentPrice;
+	private BigDecimal currentPrice;
 	private Integer stockQuantity;
 	private boolean deleted;
 	private Integer version;

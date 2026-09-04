@@ -1,5 +1,6 @@
 package com.car_backend.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpHeaders;
@@ -136,13 +137,13 @@ public class InvoiceController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stats/total_revenue")
-    public ResponseEntity<Double> getTotalRevenue() {
+    public ResponseEntity<BigDecimal> getTotalRevenue() {
         return ResponseEntity.ok(invoiceService.getTotalRevenue());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stats/pending_revenue")
-    public ResponseEntity<Double> getPendingRevenue() {
+    public ResponseEntity<BigDecimal> getPendingRevenue() {
         return ResponseEntity.ok(invoiceService.getPendingRevenue());
     }
 }

@@ -1,5 +1,6 @@
 package com.car_backend.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.AttributeOverride;
@@ -24,20 +25,20 @@ public class Invoice extends BaseEntity {
 	@Column(name = "invoice_number", nullable = false, unique = true)
 	private String invoiceNumber;
 
-	@Column(name = "base_amount", nullable = false)
-	private Double baseAmount;
+	@Column(name = "base_amount", nullable = false, precision = 10, scale = 2)
+	private BigDecimal baseAmount;
 
-	@Column(name = "labor_cost")
-	private Double laborCost;
+	@Column(name = "labor_cost", precision = 10, scale = 2)
+	private BigDecimal laborCost;
 
-	@Column(name = "tax_percentage", nullable = false)
-	private Double taxPercentage;
+	@Column(name = "tax_percentage", nullable = false, precision = 5, scale = 2)
+	private BigDecimal taxPercentage;
 
-	@Column(name = "tax_amount", nullable = false)
-	private Double taxAmount;
+	@Column(name = "tax_amount", nullable = false, precision = 10, scale = 2)
+	private BigDecimal taxAmount;
 
-	@Column(name = "total_amount", nullable = false)
-	private Double totalAmount;
+	@Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+	private BigDecimal totalAmount;
 
 	@Column(name = "payment_status", nullable = false, length = 50)
 	@Enumerated(EnumType.STRING)

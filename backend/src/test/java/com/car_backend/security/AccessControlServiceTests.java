@@ -3,6 +3,7 @@ package com.car_backend.security;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -115,11 +116,11 @@ public class AccessControlServiceTests {
         invoice1 = new Invoice();
         invoice1.setJobCard(jobCard1);
         invoice1.setInvoiceNumber("INV-1001");
-        invoice1.setBaseAmount(1000.0);
-        invoice1.setLaborCost(500.0);
-        invoice1.setTaxPercentage(18.0);
-        invoice1.setTaxAmount(270.0);
-        invoice1.setTotalAmount(1770.0);
+        invoice1.setBaseAmount(BigDecimal.valueOf(1000.0));
+        invoice1.setLaborCost(BigDecimal.valueOf(500.0));
+        invoice1.setTaxPercentage(BigDecimal.valueOf(18.0));
+        invoice1.setTaxAmount(BigDecimal.valueOf(270.0));
+        invoice1.setTotalAmount(BigDecimal.valueOf(1770.0));
         invoice1.setPaymentStatus(PaymentStatus.PENDING);
         invoice1 = invoiceRepository.save(invoice1);
     }

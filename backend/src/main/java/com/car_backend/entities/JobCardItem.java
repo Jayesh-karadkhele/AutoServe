@@ -1,5 +1,7 @@
 package com.car_backend.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,14 +23,14 @@ public class JobCardItem extends BaseEntity{
 	@Column(name="quantity", nullable=false)
 	private int quantity;
 	
-	@Column(name="snapshot_price", nullable=false)
-	private Double snapshotPrice;
+	@Column(name="snapshot_price", nullable=false, precision=10, scale=2)
+	private BigDecimal snapshotPrice;
 	
 	@Column(name= "snapshot_item_name", nullable=false)
 	private String snapshotItemName;
 	
-	@Column(name="total_price", nullable=false)
-	private Double totalPrice;
+	@Column(name="total_price", nullable=false, precision=10, scale=2)
+	private BigDecimal totalPrice;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="job_card_id", nullable=false)

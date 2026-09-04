@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -125,11 +126,11 @@ public class InvoiceAuthorizationTests {
         invoice1 = new Invoice();
         invoice1.setJobCard(jc1);
         invoice1.setInvoiceNumber("INV-0001");
-        invoice1.setLaborCost(500.0);
-        invoice1.setBaseAmount(1000.0);
-        invoice1.setTaxPercentage(18.0);
-        invoice1.setTaxAmount(270.0);
-        invoice1.setTotalAmount(1770.0);
+        invoice1.setLaborCost(BigDecimal.valueOf(500.0));
+        invoice1.setBaseAmount(BigDecimal.valueOf(1000.0));
+        invoice1.setTaxPercentage(BigDecimal.valueOf(18.0));
+        invoice1.setTaxAmount(BigDecimal.valueOf(270.0));
+        invoice1.setTotalAmount(BigDecimal.valueOf(1770.0));
         invoice1.setPaymentStatus(PaymentStatus.PENDING);
         invoice1 = invoiceRepository.save(invoice1);
     }
