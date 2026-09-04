@@ -71,8 +71,12 @@ cd backend
 ## 📚 Technical Documentation
 
 For complete technical specifications, design tokens, and audit reports, explore the `/docs` directory:
+- [`PART7B_FRONTEND_AUTH_ARCHITECTURE.md`](docs/PART7B_FRONTEND_AUTH_ARCHITECTURE.md) — Frontend React authentication architecture & in-memory token management
+- [`PART7B_SESSION_LIFECYCLE.md`](docs/PART7B_SESSION_LIFECYCLE.md) — Single-flight refresh token flow, session restoration & role redirection
+- [`PART7B_AUTH_VISUAL_QA.md`](docs/PART7B_AUTH_VISUAL_QA.md) — Genuine browser screenshots & accessibility audit
+- [`PART7B_INTEGRATION_TEST.md`](docs/PART7B_INTEGRATION_TEST.md) — Customer integration flow & end-to-end test verification
+- [`PART7A_AUTH_ARCHITECTURE.md`](docs/PART7A_AUTH_ARCHITECTURE.md) — Backend Spring Security authentication lifecycle architecture
 - [`FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) — Frontend layout, structure & module components
 - [`DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — Light automotive color palette, typography & tokens
 - [`MOTION_SYSTEM.md`](docs/MOTION_SYSTEM.md) — Motion sequences, Lenis scroll engine & reduced motion
-- [`PART6A_VISUAL_QA.md`](docs/PART6A_VISUAL_QA.md) — Viewport audit, responsive testing & QA metrics
-- [`PART5A_PREFLIGHT.md`](docs/PART5A_PREFLIGHT.md) — Flyway migration audit & database metrics
+

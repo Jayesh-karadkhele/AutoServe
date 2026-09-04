@@ -241,13 +241,13 @@ describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () =
     expect(linksInDialog.length).toBeGreaterThan(0);
   });
 
-  it('20. placeholder routes /login and /register render without 404', () => {
+  it('20. authentication routes /login and /register render without 404', () => {
     const { unmount } = renderWithRouter(['/login']);
-    expect(screen.getByText(/AutoServe Sign In/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Welcome back/i })).toBeInTheDocument();
     unmount();
 
     renderWithRouter(['/register']);
-    expect(screen.getByText(/Book a Service \/ Register/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Create your account/i })).toBeInTheDocument();
   });
 
   // Dedicated Part 6D New Tests (21 through 32)
