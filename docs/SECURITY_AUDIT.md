@@ -13,12 +13,12 @@ A comprehensive security audit of the AutoServe backend codebase was performed. 
 
 ## Vulnerability Classification Summary
 
-| Severity | Count | Summary | Remediation Status (Part 4) |
+| Severity | Count | Summary | Remediation Status |
 | :--- | :---: | :--- | :---: |
-| **CRITICAL** | 3 | Public Admin role escalation, Inactive user authentication bypass, Payment simulation bypass | **FIXED** |
-| **HIGH** | 6 | Completely unannotated controllers, Massive IDOR / ownership flaws, CORS wildcard credentials, Unrestricted file uploads | **FIXED** |
-| **MEDIUM** | 4 | Hardcoded secrets in config, Missing refresh token & logout, Sensitive logging in JWT filter, Mass assignment risk | **FIXED** / **DEFERRED** (Refresh tokens deferred to Part 5) |
-| **LOW** | 2 | Exposed Swagger UI without auth, Weak password validation rules | **FIXED** |
+| **CRITICAL** | 3 | Public Admin role escalation, Inactive user authentication bypass, Payment simulation bypass | **FIXED** (Part 4) |
+| **HIGH** | 6 | Completely unannotated controllers, Massive IDOR / ownership flaws, CORS wildcard credentials, Unrestricted file uploads | **FIXED** (Part 4) |
+| **MEDIUM** | 4 | Hardcoded secrets in config, Missing refresh token & logout, Sensitive logging in JWT filter, Mass assignment risk | **FIXED** (Part 7A - DB sessions, opaque refresh tokens, theft detection, header validation, profile-safe config) |
+| **LOW** | 2 | Exposed Swagger UI without auth, Weak password validation rules | **FIXED** (Part 4) |
 
 ---
 

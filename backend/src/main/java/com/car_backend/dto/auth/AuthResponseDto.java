@@ -23,4 +23,9 @@ public class AuthResponseDto {
     private String email;
     private String phone;
     private Role role;
+    private String sessionId;
+
+    public String getAccessToken() {
+        return token;
+    }
 }

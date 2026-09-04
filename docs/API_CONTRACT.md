@@ -11,15 +11,16 @@ This document lists every REST API endpoint existing in the codebase, alongside 
 
 ---
 
-## 1. Authentication (`/api/auth`)
+## 1. Authentication (`/api/auth` & `/api/users/me`)
 
-| Endpoint | Method | Permitted Role (Configured) | Request DTO | Response DTO | Implementation Status | Security / Audit Notes |
+| Endpoint | Method | Permitted Role | Request DTO | Response DTO | Implementation Status | Security / Audit Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `/api/auth/register` | `POST` | Public (`permitAll`) | `RegisterRequestDto` | `AuthResponseDto` | IMPLEMENTED | **CRITICAL SECURITY ISSUE:** Public users can set `"role": "ADMIN"` or `"MANAGER"` in payload to register as Admin/Manager. |
-| `/api/auth/login` | `POST` | Public (`permitAll`) | `LoginRequestDto` | `AuthResponseDto` | IMPLEMENTED | **HIGH ISSUE:** Does not verify `user.isActive`. Inactive users can log in successfully. |
-| `/api/auth/me` | `GET` | Authenticated | None | Map (Principal/Authorities) | IMPLEMENTED | Returns authentication details of current token. |
-| `/api/auth/refresh-token` | `POST` | Public | *PROPOSED* | `AuthResponseDto` | PROPOSED | **MISSING FEATURE:** No JWT refresh token implementation exists. |
-| `/api/auth/logout` | `POST` | Authenticated | *PROPOSED* | `ApiResponse` | PROPOSED | **MISSING FEATURE:** No token blacklisting or server-side logout exists. |
+| `/api/auth/register` | `POST` | Public (`permitAll`) | `RegisterRequestDto` | `UserResponseDto` | IMPLEMENTED | Strictly registers `CUSTOMER` accounts. Returns `UserResponseDto` without token. Requires `X-AutoServe-Client: web`. |
+| `/api/auth/login` | `POST` | Public (`permitAll`) | `LoginRequestDto` | `AuthResponseDto` | IMPLEMENTED | Validates active user, creates `AuthSession`, sets HttpOnly `AUTOSERVE_REFRESH` cookie, returns short-lived JWT. Requires `X-AutoServe-Client: web`. |
+| `/api/auth/refresh` | `POST` | Public (`permitAll`) | None (Cookie) | `AuthResponseDto` | IMPLEMENTED | Rotates single-use refresh token, updates HttpOnly cookie, returns new access token. Theft detection revokes session on reuse. Requires `X-AutoServe-Client: web`. |
+| `/api/auth/logout` | `POST` | Public (`permitAll`) | None (Cookie/Bearer) | `204 No Content` | IMPLEMENTED | Idempotent single-session revocation, clears `AUTOSERVE_REFRESH` cookie (`Max-Age=0`). Requires `X-AutoServe-Client: web`. |
+| `/api/auth/logout-all` | `POST` | Authenticated | None (Bearer) | `204 No Content` | IMPLEMENTED | Revokes ALL active sessions in DB belonging to current user. Requires `X-AutoServe-Client: web`. |
+| `/api/users/me` | `GET` | Authenticated | None (Bearer) | `UserResponseDto` | IMPLEMENTED | Validates JWT signature, expiration, user active status, AND active DB session state. Returns authenticated user profile. |
 
 ---
 

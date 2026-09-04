@@ -40,7 +40,12 @@ Without these variables, the application will fail during application startup.
 | `SPRING_PROFILES_ACTIVE` | Active Spring Profile | `dev` |
 | `DB_URL` | JDBC Connection String | `jdbc:mysql://localhost:3306/autoserve_dev?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true` |
 | `DB_USERNAME` | MySQL Username | `autoserve_app` |
-| `JWT_EXPIRATION` | Token Expiry (ms) | `86400000` (24 Hours) |
+| `JWT_ACCESS_EXPIRATION` | Access Token Lifetime (ms) | `900000` (15 Minutes) |
+| `REFRESH_TOKEN_EXPIRATION` | Refresh Token Lifetime (ms) | `604800000` (7 Days) |
+| `AUTH_SESSION_EXPIRATION` | Absolute Session Expiration (ms) | `604800000` (7 Days) |
+| `APP_BOOTSTRAP_ADMIN_ENABLED` | Enable First-Admin Bootstrap | `false` (dev) / `true` (prod) |
+| `BOOTSTRAP_ADMIN_EMAIL` | First Admin Email Address | `admin@autoserve.com` |
+| `BOOTSTRAP_ADMIN_PASSWORD` | First Admin Initial Password | *Required if bootstrap enabled* |
 | `RAZORPAY_KEY_ID` | Razorpay Key ID | *Empty string (Disabled)* |
 | `RAZORPAY_KEY_SECRET` | Razorpay Key Secret | *Empty string (Disabled)* |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary Account Name | *Empty string (Disabled)* |

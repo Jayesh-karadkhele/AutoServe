@@ -72,11 +72,12 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.token", notNullValue()))
-                .andExpect(jsonPath("$.role", is("CUSTOMER")))
+                .andExpect(jsonPath("$.userId", notNullValue()))
+                .andExpect(jsonPath("$.userRole", is("CUSTOMER")))
                 .andExpect(jsonPath("$.email", is("jane@autoserve.com")));
 
         assertEquals(initialCount + 1, userRepository.count());
@@ -97,6 +98,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest());
@@ -119,6 +121,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest());
@@ -141,6 +144,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest());
@@ -161,6 +165,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isCreated())
@@ -181,6 +186,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest());
@@ -203,6 +209,7 @@ public class AuthenticationSecurityTests {
             """, longPass);
 
         mockMvc.perform(post("/api/auth/register")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest());
@@ -221,6 +228,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/login")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isUnauthorized())
@@ -239,6 +247,7 @@ public class AuthenticationSecurityTests {
             """;
 
         mockMvc.perform(post("/api/auth/login")
+                .header("X-AutoServe-Client", "web")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isUnauthorized())

@@ -26,6 +26,19 @@ jwt:
   expiration: 3600000
 
 app:
+  auth:
+    jwt-access-expiration-ms: 900000
+    refresh-token-expiration-ms: 604800000
+    session-expiration-ms: 604800000
+    cookie-name: AUTOSERVE_REFRESH
+    cookie-secure: false
+    cookie-same-site: Strict
+    cookie-path: /api/auth
+    client-header-name: X-AutoServe-Client
+    client-header-value: web
+  bootstrap:
+    admin:
+      enabled: false
   demo:
     seed-enabled: false
     admin-password: "TestAdminPassword123!"

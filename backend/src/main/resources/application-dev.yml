@@ -25,6 +25,10 @@ logging:
     com.car_backend: DEBUG
     org.springframework.security: INFO
 
+app:
+  auth:
+    cookie-secure: false
+
 springdoc:
   swagger-ui:
     enabled: true

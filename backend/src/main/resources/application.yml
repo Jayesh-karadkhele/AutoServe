@@ -57,6 +57,20 @@ cloudinary:
   api_secret: ${CLOUDINARY_API_SECRET:}
 
 app:
+  auth:
+    jwt-access-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}
+    refresh-token-expiration-ms: ${REFRESH_TOKEN_EXPIRATION:604800000}
+    session-expiration-ms: ${AUTH_SESSION_EXPIRATION:604800000}
+    cookie-name: ${REFRESH_COOKIE_NAME:AUTOSERVE_REFRESH}
+    cookie-secure: ${REFRESH_COOKIE_SECURE:true}
+    cookie-same-site: ${REFRESH_COOKIE_SAME_SITE:Strict}
+    cookie-path: /api/auth
+    cookie-domain: ${REFRESH_COOKIE_DOMAIN:}
+    client-header-name: X-AutoServe-Client
+    client-header-value: web
+  bootstrap:
+    admin:
+      enabled: ${APP_BOOTSTRAP_ADMIN_ENABLED:false}
   mail:
     from: ${MAIL_FROM:noreply@autoserve.com}
   frontend:

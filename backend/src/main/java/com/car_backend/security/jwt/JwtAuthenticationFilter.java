@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.car_backend.security.service.CustomUserDetailsService;
+import com.car_backend.service.auth.AuthSessionService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final AuthSessionService authSessionService;
 
     @Override
     protected void doFilterInternal(
@@ -41,20 +43,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     && jwtUtil.validateToken(jwt)
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                Long userId = jwtUtil.getUserIdFromToken(jwt);
-                UserDetails userDetails = userDetailsService.loadUserById(userId);
+                String sessionId = jwtUtil.getSessionIdFromToken(jwt);
 
-                if (userDetails != null && userDetails.isEnabled()) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.debug("Authenticated user ID: {}", userId);
+                // If token carries sid, verify database session active status!
+                if (sessionId != null && !authSessionService.isSessionActive(sessionId)) {
+                    log.warn("JWT rejected: Session ID: {} is revoked or expired in database", sessionId);
                 } else {
-                    log.warn("User account ID: {} is disabled or invalid", userId);
+                    Long userId = jwtUtil.getUserIdFromToken(jwt);
+                    UserDetails userDetails = userDetailsService.loadUserById(userId);
+
+                    if (userDetails != null && userDetails.isEnabled()) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        log.debug("Authenticated user ID: {} with session ID: {}", userId, sessionId);
+                    } else {
+                        log.warn("User account ID: {} is disabled or invalid", userId);
+                    }
                 }
             }
 
