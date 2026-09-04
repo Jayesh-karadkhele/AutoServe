@@ -19,6 +19,7 @@ export const Navigation: React.FC = () => {
     { label: 'Experience', href: '#experience' },
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'For Every Role', href: '#roles' },
+    { label: 'FAQ', href: '#faq' },
   ];
 
   return (

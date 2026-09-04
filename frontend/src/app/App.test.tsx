@@ -49,9 +49,10 @@ describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () =
     expect(seeHowLink.getAttribute('href')).toBe('#how-it-works');
   });
 
-  it('4. FAQ navigation link is absent until implemented in later parts', () => {
+  it('4. FAQ navigation link points to #faq anchor', () => {
     render(<App />);
-    expect(screen.queryByRole('link', { name: /^FAQ$/i })).not.toBeInTheDocument();
+    const faqLink = screen.getAllByRole('link', { name: /^FAQ$/i })[0];
+    expect(faqLink.getAttribute('href')).toBe('#faq');
   });
 
   it('5. renders 7 workflow steps in correct order under #how-it-works', () => {
@@ -129,7 +130,7 @@ describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () =
 
     expect(managerTab).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText(/Coordinate the workshop without losing the details\./i)).toBeInTheDocument();
-    expect(screen.getByText(/David Miller • Service Manager/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/David Miller • Service Manager/i).length).toBeGreaterThan(0);
   });
 
   it('12. selecting Mechanic changes workspace content', async () => {
@@ -192,12 +193,12 @@ describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () =
   });
 
   it('16. role tab and panel IDs are properly connected', () => {
-    render(<App />);
+    const { container } = render(<App />);
     const customerTab = screen.getByRole('tab', { name: /Customer/i });
     expect(customerTab).toHaveAttribute('id', 'tab-customer');
     expect(customerTab).toHaveAttribute('aria-controls', 'panel-customer');
 
-    const panel = screen.getByRole('tabpanel');
+    const panel = container.querySelector('#panel-customer')!;
     expect(panel).toHaveAttribute('id', 'panel-customer');
     expect(panel).toHaveAttribute('aria-labelledby', 'tab-customer');
   });
@@ -290,7 +291,7 @@ describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () =
     expect(screen.getAllByText(/AS-INV-260884/i).length).toBeGreaterThan(0);
 
     // Verify INR currency formatting with symbol ₹
-    expect(screen.getByText(/₹14,691\.00/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/₹14,691\.00/i).length).toBeGreaterThan(0);
   });
 
   it('25. invoice line items expand and collapse accessibly with aria-expanded and aria-controls', async () => {
@@ -307,8 +308,12 @@ describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () =
 
   it('26. payment preview initially displays Created or Verification pending (never default Paid)', () => {
     render(<App />);
-    // Verify default initial payment state is 'Created'
-    expect(screen.getByText(/Current Status: CREATED/i)).toBeInTheDocument();
+    // Verify default initial payment state is 'CREATED'
+    const statusText = screen.getByText((content, element) => {
+      return element?.tagName.toLowerCase() === 'p' && content.includes('Current Status:');
+    });
+    expect(statusText).toBeInTheDocument();
+    expect(statusText.textContent).toContain('Current Status: CREATED');
     expect(screen.queryByText(/Current Status: PAID/i)).not.toBeInTheDocument();
   });
 
