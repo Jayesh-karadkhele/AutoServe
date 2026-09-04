@@ -9,6 +9,10 @@ import { CapabilityRail } from '@/components/marketing/rail/CapabilityRail';
 import { HowItWorksSection } from '@/features/landing/how-it-works/HowItWorksSection';
 import { WorkOrderHandoff } from '@/features/landing/handoff/WorkOrderHandoff';
 import { RoleExperienceSection } from '@/features/landing/roles/RoleExperienceSection';
+import { RepairEvidenceSection } from '@/features/landing/evidence/RepairEvidenceSection';
+import { TransparentPaymentSection } from '@/features/landing/payment/TransparentPaymentSection';
+import { RoadsideAssistanceSection } from '@/features/landing/roadside/RoadsideAssistanceSection';
+import { TrustSection } from '@/features/landing/trust/TrustSection';
 import { Container } from '@/components/ui/Container';
 import { BrandMark } from '@/components/ui/BrandMark';
 import { Wordmark } from '@/components/ui/Wordmark';
@@ -38,6 +42,10 @@ export const LandingPage: React.FC = () => {
         <HowItWorksSection />
         <WorkOrderHandoff />
         <RoleExperienceSection />
+        <RepairEvidenceSection />
+        <TransparentPaymentSection />
+        <RoadsideAssistanceSection />
+        <TrustSection />
       </main>
 
       {/* Footer Baseline */}

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
@@ -26,7 +26,8 @@ const renderWithRouter = (initialEntries = ['/']) => {
   );
 };
 
-describe('AutoServe Part 6C — Journey & Role Experience Tests', () => {
+describe('AutoServe Part 6D — Trust, Evidence, Payment & Roadside Tests', () => {
+  // Existing Part 6A/6B/6C Tests (Preserved)
   it('1. landing page renders headline and main layout with exactly one H1 tag', () => {
     render(<App />);
     expect(screen.getByText(/Every service\./i)).toBeInTheDocument();
@@ -76,7 +77,6 @@ describe('AutoServe Part 6C — Journey & Role Experience Tests', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    // Click step 2 button ("Book the service")
     const step2Btn = screen.getByRole('button', { name: /Step 02: Book the service/i });
     await user.click(step2Btn);
 
@@ -247,5 +247,141 @@ describe('AutoServe Part 6C — Journey & Role Experience Tests', () => {
 
     renderWithRouter(['/register']);
     expect(screen.getByText(/Book a Service \/ Register/i)).toBeInTheDocument();
+  });
+
+  // Dedicated Part 6D New Tests (21 through 32)
+  it('21. #repair-evidence section renders headline and job card AS-JC-260884 reference', () => {
+    const { container } = render(<App />);
+    expect(container.querySelector('#repair-evidence')).not.toBeNull();
+    expect(screen.getByText(/PROOF AT EVERY IMPORTANT STAGE/i)).toBeInTheDocument();
+    expect(screen.getByText(/See the work—not just the final bill\./i)).toBeInTheDocument();
+    expect(screen.getAllByText(/AS-JC-260884/i).length).toBeGreaterThan(0);
+  });
+
+  it('22. four repair evidence story stages render and stage switching updates notes', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const stagesTablist = screen.getByRole('tablist', { name: /Repair Evidence Story Stages/i });
+    expect(stagesTablist).toBeInTheDocument();
+
+    const verifiedTab = screen.getByRole('tab', { name: /Verified/i });
+    await user.click(verifiedTab);
+
+    expect(verifiedTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText(/Dynamic road test completed \(12 km\)/i)).toBeInTheDocument();
+  });
+
+  it('23. before and after evidence comparison slider has readable labels and accessible controls', () => {
+    render(<App />);
+    const sliderInput = screen.getByLabelText(/Before and after repair evidence slider/i);
+    expect(sliderInput).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /View before/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Compare \(50\/50\)/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /View after/i })).toBeInTheDocument();
+  });
+
+  it('24. #transparent-payment section renders invoice AS-INV-260884 and formatted INR amounts', () => {
+    const { container } = render(<App />);
+    expect(container.querySelector('#transparent-payment')).not.toBeNull();
+    expect(screen.getByText(/CLEAR BEFORE YOU PAY/i)).toBeInTheDocument();
+    expect(screen.getByText(/Every rupee has a reason\./i)).toBeInTheDocument();
+    expect(screen.getAllByText(/AS-INV-260884/i).length).toBeGreaterThan(0);
+
+    // Verify INR currency formatting with symbol ₹
+    expect(screen.getByText(/₹14,691\.00/i)).toBeInTheDocument();
+  });
+
+  it('25. invoice line items expand and collapse accessibly with aria-expanded and aria-controls', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const lineBtn = screen.getByRole('button', { name: /Front Ceramic Brake Pad Set \(OEM\)/i });
+    expect(lineBtn).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(lineBtn);
+    expect(lineBtn).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText(/Original OEM front axle ceramic pad set/i)).toBeInTheDocument();
+  });
+
+  it('26. payment preview initially displays Created or Verification pending (never default Paid)', () => {
+    render(<App />);
+    // Verify default initial payment state is 'Created'
+    expect(screen.getByText(/Current Status: CREATED/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Current Status: PAID/i)).not.toBeInTheDocument();
+  });
+
+  it('27. payment preview contains mandatory disclaimer and triggers zero network requests', async () => {
+    const user = userEvent.setup();
+    const fetchSpy = vi.spyOn(window, 'fetch');
+
+    render(<App />);
+
+    expect(screen.getByText(/Payment interaction preview — no transaction will be created\./i)).toBeInTheDocument();
+
+    // Click interactive status transition buttons
+    const providerBtn = screen.getByRole('button', { name: /2\. Provider Opened/i });
+    await user.click(providerBtn);
+
+    // Assert ZERO network fetch calls were made
+    expect(fetchSpy).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
+  it('28. #roadside-assistance section permanently displays Planned capability preview badge', () => {
+    const { container } = render(<App />);
+    expect(container.querySelector('#roadside-assistance')).not.toBeNull();
+    expect(screen.getByText(/HELP SHOULD FEEL VISIBLE/i)).toBeInTheDocument();
+
+    // Verify permanent planned capability preview badge is present
+    expect(screen.getAllByText(/Planned capability preview/i).length).toBeGreaterThan(0);
+  });
+
+  it('29. renders all 5 roadside assistance stages and stage switching updates preview', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const rsaTablist = screen.getByRole('tablist', { name: /Planned Roadside Assistance Stages/i });
+    expect(rsaTablist).toBeInTheDocument();
+
+    const stage5Tab = screen.getByRole('tab', { name: /Confirm Resolution/i });
+    await user.click(stage5Tab);
+
+    expect(screen.getByText(/Assistance Resolved/i)).toBeInTheDocument();
+    // Verify planned capability preview badge remains visible after stage switch
+    expect(screen.getAllByText(/Planned capability preview/i).length).toBeGreaterThan(0);
+  });
+
+  it('30. code-native SVG roadside map has accessible name and illustrative estimate labels', () => {
+    render(<App />);
+    const mapSvg = screen.getByLabelText(/Planned Roadside Assistance SVG Route Map/i);
+    expect(mapSvg).toBeInTheDocument();
+
+    expect(screen.getAllByText(/Illustrative estimate/i).length).toBeGreaterThan(0);
+  });
+
+  it('31. #trust section renders four credibility principles and connected record trace', () => {
+    const { container } = render(<App />);
+    expect(container.querySelector('#trust')).not.toBeNull();
+    expect(screen.getByText(/BUILT AROUND ACCOUNTABILITY/i)).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: /^Controlled Access$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Documented Work$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Precise Billing$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Connected History$/i })).toBeInTheDocument();
+
+    const traceTablist = screen.getByRole('tablist', { name: /Service Record Traceability Pipeline/i });
+    expect(traceTablist).toBeInTheDocument();
+  });
+
+  it('32. prohibited marketing copy terms are strictly absent from page', () => {
+    render(<App />);
+    expect(screen.queryByText(/Bank-grade security/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Military-grade encryption/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/100% secure/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tamper-proof/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/PCI compliant/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/ISO certified/i)).not.toBeInTheDocument();
   });
 });
