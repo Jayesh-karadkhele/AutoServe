@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --canvas: #F7F5EF;
+    --surface: #FFFFFF;
+    --surface-soft: #F2F7F8;
+    --ice-blue: #EAF7FA;
+    --silver: #E5EBEE;
+    --text-primary: #17212B;
+    --text-secondary: #66737E;
+    --accent-orange: #F4512C;
+    --accent-orange-hover: #DC3F1E;
+    --signal-cyan: #00A7B5;
+    --success: #178A68;
+    --warning: #E89B24;
+    --danger: #D84D4D;
+    --border: rgba(23, 33, 43, 0.12);
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  .font-mono-tech {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+}
+
+/* Fluid Typography Utilities */
+.text-hero-heading {
+  font-size: clamp(3.2rem, 6.8vw, 7.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.text-section-heading {
+  font-size: clamp(2.2rem, 4.5vw, 4.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.text-editorial-body {
+  font-size: clamp(1rem, 1.2vw, 1.18rem);
+  line-height: 1.6;
+}
+
+/* Fine Grid & Technical Pattern Utilities */
+.bg-tech-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(23, 33, 43, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 33, 43, 0.04) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(23, 33, 43, 0.08) 1px, transparent 1px);
+}
+
+/* Precision Cut Corner Utilities for Automotive Aesthetics */
+.clip-corner-tr {
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+
+.clip-corner-bl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+/* Custom Scrollbar for Light Theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F5EF;
+}
+::-webkit-scrollbar-thumb {
+  background: #C4D0D9;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9BB0C1;
+}

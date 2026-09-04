@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="#17212B" />
+  <!-- Precision geometric A/S mark with cyan status dot and orange apex line -->
+  <path d="M7 23L16 6L25 23" stroke="#F7F5EF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M10.5 17C10.5 17 13.5 14 16 14C18.5 14 21.5 17 21.5 17C21.5 17 18.5 20 16 20C13.5 20 10.5 17 10.5 17Z" fill="#00A7B5" opacity="0.9" />
+  <circle cx="16" cy="17" r="1.5" fill="#F7F5EF" />
+  <path d="M11 19.5H21" stroke="#F4512C" stroke-width="2" stroke-linecap="round" />
+</svg>

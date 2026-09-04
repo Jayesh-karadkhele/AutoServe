@@ -2,78 +2,77 @@
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green)](https://spring.io/projects/spring-boot)
-[![Status](https://img.shields.io/badge/Development-Active%20Restructuring-blue)]()
+[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-cyan)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-8.2-purple)](https://vite.dev/)
 
-**AutoServe** is an enterprise multi-role vehicle service and maintenance platform. It manages the complete automobile service lifecycle—from customer appointment booking and Roadside Assistance (RSA) to job card execution, inventory control, and digital invoicing.
+**AutoServe** is an enterprise multi-role vehicle service and maintenance platform. It manages the complete automobile service lifecycle—from customer appointment booking and Roadside Assistance (RSA) to job card execution, inventory control, repair evidence, and digital invoicing.
 
 ---
 
-## 🏗 Repository Structure
+## 🏗 Monorepo Repository Structure
 
-```
+```text
 AutoServe-main/
-├── backend/               # Active Spring Boot 3.5.7 application (Java 21)
-├── frontend/              # Reserved for React 18 frontend implementation
-├── database/              # Database migration scripts (Flyway)
-├── docs/                  # Architecture & Comprehensive Audit Reports
-├── archive/
-│   ├── legacy-backend/    # Obsolete nested backend (Retained temporarily for reference)
-│   └── old-artifacts/     # Legacy logs, scripts, and debugging artifacts
-├── .env.example           # Environment variables template
-├── .gitignore             # Root Git ignore configuration
-└── README.md              # Project documentation
+├── backend/               # Active Spring Boot 3.5.7 backend (Java 21, Port 8081)
+├── frontend/              # Official React 19 + TypeScript Vite frontend (Port 5173)
+├── database/              # Database migration scripts & Flyway foundation
+├── docs/                  # Architecture, Design System & Audit Documentation
+└── archive/               # Legacy baseline code reference
 ```
 
 ---
 
-## 🌟 Backend Feature Status
+## 💻 Frontend Development (Part 6A Scope)
 
-### Implemented Features
-* **Role-Based Access Control (RBAC):** Multi-role authentication (Admin, Manager, Mechanic, Customer) powered by Spring Security & JWT.
-* **Service Appointments & RSA:** Support for standard booking and Roadside Assistance (RSA).
-* **Job Card Management:** Lifecycle tracking (CREATED, IN_PROGRESS, COMPLETED, CANCELLED) linking vehicles, mechanics, and parts used.
-* **Evidence Vault:** Cloudinary integration for uploading damage/repair photos.
-* **Digital Invoicing & Tax:** Automated invoice calculation with price snapshot pattern and OpenPDF generation.
-* **Payment Gateway Verification:** Razorpay order creation and HMAC SHA256 signature verification.
-* **Transactional Email Notifications:** JavaMailSender HTML emails for user registration, booking confirmation, and cancellation.
-
-### Currently Pending / Under Development
-* **React Frontend:** Modern single-page web interface (Placeholder reserved in `/frontend`).
-* **Real-Time Live Chat:** WebSocket/STOMP chat connecting customers and managers.
-* **Database Migrations:** Versioned Flyway DDL scripts (Placeholder reserved in `/database/migrations`).
-
----
-
-## 🛠 Prerequisites & Quick Start
+The AutoServe frontend is built with React 19, TypeScript, Tailwind CSS v4, Motion for React, and Lenis smooth scrolling under a light automotive design system.
 
 ### Prerequisites
-* **Java Development Kit (JDK):** Version 21
-* **Database:** MySQL Server 8.0+
+- **Node.js**: v20.19+ or v22.12+ (v24.11+ recommended)
+- **npm**: v11+
 
-### Building the Active Backend
-
-#### Windows (PowerShell / Command Prompt)
-```cmd
-cd backend
-.\mvnw.cmd clean compile
-```
-
-#### Linux / macOS
+### Local Frontend Commands
 ```bash
-cd backend
-./mvnw clean compile
+# Navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start Vite local dev server (Port 5173)
+npm run dev
+
+# Run Vitest unit test suite (10 tests)
+npm run test
+
+# Run Oxlint linter (0 errors, 0 warnings)
+npm run lint
+
+# Build production bundle
+npm run build
 ```
 
 ---
 
-## 📚 Audit & Architecture Documentation
+## 🛠 Backend Development
 
-For complete technical specifications, security audit findings, and database schemas, see the `/docs` directory:
-- [`BACKEND_AUDIT.md`](docs/BACKEND_AUDIT.md) — Comprehensive structure and inventory audit
-- [`DUPLICATE_COMPARISON.md`](docs/DUPLICATE_COMPARISON.md) — Detailed comparison between active and legacy backends
-- [`API_CONTRACT.md`](docs/API_CONTRACT.md) — Endpoints, DTOs, and contract specifications
-- [`RBAC_MATRIX.md`](docs/RBAC_MATRIX.md) — Role permission matrix
-- [`DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) — JPA entity schemas and database design audit
-- [`SECURITY_AUDIT.md`](docs/SECURITY_AUDIT.md) — Security vulnerabilities (Critical, High, Medium, Low)
-- [`MISSING_FEATURES.md`](docs/MISSING_FEATURES.md) — Feature reality check
-- [`IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) — Post-audit remediation plan
+### Local Backend Commands
+```bash
+cd backend
+.\mvnw.cmd clean verify
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.jvmArguments=-DJWT_SECRET=your-64-byte-jwt-secret"
+```
+- **Backend Port**: 8081
+- **Database**: MySQL 8.0 (`autoserve_flyway_dev`)
+
+---
+
+## 📚 Technical Documentation
+
+For complete technical specifications, design tokens, and audit reports, explore the `/docs` directory:
+- [`FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) — Frontend layout, structure & module components
+- [`DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — Light automotive color palette, typography & tokens
+- [`MOTION_SYSTEM.md`](docs/MOTION_SYSTEM.md) — Motion sequences, Lenis scroll engine & reduced motion
+- [`PART6A_VISUAL_QA.md`](docs/PART6A_VISUAL_QA.md) — Viewport audit, responsive testing & QA metrics
+- [`PART5A_PREFLIGHT.md`](docs/PART5A_PREFLIGHT.md) — Flyway migration audit & database metrics
