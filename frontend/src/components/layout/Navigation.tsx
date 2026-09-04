@@ -18,7 +18,6 @@ export const Navigation: React.FC = () => {
     { label: 'Why AutoServe', href: '#why-autoserve' },
     { label: 'Experience', href: '#experience' },
     { label: 'How It Works', href: '#how-it-works' },
-    { label: 'FAQ', href: '#faq' },
   ];
 
   return (

@@ -2,7 +2,11 @@ import React from 'react';
 import { Navigation } from '@/components/layout/Navigation';
 import { Hero } from '@/components/marketing/Hero';
 import { ServiceMarquee } from '@/components/marketing/ServiceMarquee';
-import { ProblemTeaser } from '@/components/marketing/ProblemTeaser';
+import { ProblemStorySection } from '@/components/marketing/problem/ProblemStorySection';
+import { TransformationBridge } from '@/components/marketing/TransformationBridge';
+import { SolutionStorySection } from '@/components/marketing/solution/SolutionStorySection';
+import { CapabilityRail } from '@/components/marketing/rail/CapabilityRail';
+import { WorkflowPreview } from '@/components/marketing/workflow/WorkflowPreview';
 import { Container } from '@/components/ui/Container';
 import { BrandMark } from '@/components/ui/BrandMark';
 import { Wordmark } from '@/components/ui/Wordmark';
@@ -10,7 +14,7 @@ import { Wordmark } from '@/components/ui/Wordmark';
 export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F7F5EF] text-[#17212B] flex flex-col font-body">
-      {/* Skip to Main Content Link for Accessibility */}
+      {/* Accessibility Skip Link */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-[#F4512C] text-white rounded-lg font-mono-tech text-xs"
@@ -18,14 +22,18 @@ export const LandingPage: React.FC = () => {
         Skip to main content
       </a>
 
-      {/* Main Navigation Header */}
+      {/* Main Floating Header */}
       <Navigation />
 
-      {/* Main Page Content */}
+      {/* Main Content Area */}
       <main id="main-content" className="flex-1">
         <Hero />
         <ServiceMarquee />
-        <ProblemTeaser />
+        <ProblemStorySection />
+        <TransformationBridge />
+        <SolutionStorySection />
+        <CapabilityRail />
+        <WorkflowPreview />
       </main>
 
       {/* Footer Baseline */}

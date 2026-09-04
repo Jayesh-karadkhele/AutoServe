@@ -78,7 +78,7 @@ export const Hero: React.FC = () => {
               <Button href="/register" variant="primary" size="lg" withArrow>
                 Book your service
               </Button>
-              <Button href="#why-autoserve" variant="secondary" size="lg">
+              <Button href="#how-it-works" variant="secondary" size="lg">
                 See how it works
               </Button>
             </motion.div>
