@@ -21,6 +21,7 @@ import com.car_backend.dto.ApproveRejectDto;
 import com.car_backend.dto.CreateAppointmentDto;
 import com.car_backend.dto.UpdateAppointmentDto;
 import com.car_backend.entities.Status;
+import com.car_backend.security.service.CurrentUserService;
 import com.car_backend.service.AppointmentService;
 
 import jakarta.validation.Valid;
@@ -34,8 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
+    private final CurrentUserService currentUserService;
 
     // -----CUSTOMER MAPPING-------
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/me")
+    public ResponseEntity<List<AppointmentResponseDto>> getMyAppointments() {
+        Long currentUserId = currentUserService.getUserId();
+        return ResponseEntity.ok(appointmentService.getAppointmentsByCustomerId(currentUserId));
+    }
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @accessControlService.ownsVehicle(#dto.vehicleId))")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AppointmentResponseDto> createAppointment(

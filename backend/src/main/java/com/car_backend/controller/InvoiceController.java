@@ -20,6 +20,7 @@ import com.car_backend.dto.invoice.InvoiceResponseDto;
 import com.car_backend.dto.invoice.PaymentVerificationResponseDto;
 import com.car_backend.dto.invoice.VerifyPaymentRequestDto;
 import com.car_backend.entities.PaymentStatus;
+import com.car_backend.security.service.CurrentUserService;
 import com.car_backend.service.InvoiceService;
 
 import jakarta.validation.Valid;
@@ -33,6 +34,14 @@ import lombok.extern.slf4j.Slf4j;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final CurrentUserService currentUserService;
+
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/me")
+    public ResponseEntity<List<InvoiceResponseDto>> getMyInvoices() {
+        Long currentUserId = currentUserService.getUserId();
+        return ResponseEntity.ok(invoiceService.getInvoicesByCustomerId(currentUserId));
+    }
 
     // ------------------Invoice Generation-------------------
 

@@ -217,4 +217,14 @@ public class JobCardAuthorizationTests {
                 .content(json))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @DisplayName("Customer can view their own job cards via /me endpoint")
+    void testCustomerCanViewOwnJobCardsViaMe() throws Exception {
+        mockMvc.perform(get("/api/job_cards/me")
+                .header("Authorization", "Bearer " + customer1Token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)))
+                .andExpect(jsonPath("$[0].id", is(jobCard1.getId().intValue())));
+    }
 }

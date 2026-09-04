@@ -183,4 +183,14 @@ public class InvoiceAuthorizationTests {
                 .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("Customer can view their own invoices via /me endpoint")
+    void testCustomerCanViewOwnInvoicesViaMe() throws Exception {
+        mockMvc.perform(get("/api/invoices/me")
+                .header("Authorization", "Bearer " + customer1Token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)))
+                .andExpect(jsonPath("$[0].id", is(invoice1.getId().intValue())));
+    }
 }

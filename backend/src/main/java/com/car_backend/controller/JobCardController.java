@@ -27,6 +27,7 @@ import com.car_backend.dto.jobCard.JobCardResponseDto;
 import com.car_backend.dto.jobCard.ManagerDashboardDto;
 import com.car_backend.dto.jobCard.MechanicDashboardDto;
 import com.car_backend.entities.JobCardStatus;
+import com.car_backend.security.service.CurrentUserService;
 import com.car_backend.service.JobCardService;
 
 import jakarta.validation.Valid;
@@ -40,6 +41,14 @@ import lombok.extern.slf4j.Slf4j;
 public class JobCardController {
 
     private final JobCardService jobCardService;
+    private final CurrentUserService currentUserService;
+
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/me")
+    public ResponseEntity<List<JobCardResponseDto>> getMyJobCards() {
+        Long currentUserId = currentUserService.getUserId();
+        return ResponseEntity.ok(jobCardService.getCustomerJobCards(currentUserId));
+    }
 
     // -----------------------Job Card Management-----------------------
 

@@ -218,4 +218,14 @@ public class AppointmentAuthorizationTests {
         Appointment dbAppt = appointmentRepository.findById(appointment1.getId()).orElseThrow();
         assertEquals(Status.PENDING, dbAppt.getStatus());
     }
+
+    @Test
+    @DisplayName("Customer can view their own appointments via /me endpoint")
+    void testCustomerCanViewOwnAppointmentsViaMe() throws Exception {
+        mockMvc.perform(get("/api/appointments/me")
+                .header("Authorization", "Bearer " + customer1Token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)))
+                .andExpect(jsonPath("$[0].id", is(appointment1.getId().intValue())));
+    }
 }
