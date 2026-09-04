@@ -41,6 +41,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
     @org.springframework.web.bind.annotation.GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder

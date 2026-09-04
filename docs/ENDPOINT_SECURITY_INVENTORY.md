@@ -4,7 +4,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | POST | /api/auth/register | AuthController.register | Public | Anyone | N/A (creates CUSTOMER) | None (Public) | AuthService forced Role.CUSTOMER | 201 Created | 400 Bad Request (on role inject) | AuthenticationSecurityTests | VERIFIED |
 | POST | /api/auth/login | AuthController.login | Public | Anyone | N/A | None (Public) | AuthService validates creds & status | 200 / 401 | 401 Unauthorized | AuthenticationSecurityTests | VERIFIED |
-| GET | /api/auth/me | AuthController.getCurrentUser | Public/Auth | Authenticated | N/A | None | SecurityContext lookup | 200 / 401 | N/A | AuthenticationSecurityTests | VERIFIED |
+| GET | /api/auth/me | AuthController.getCurrentUser | Protected | Authenticated | N/A | `@PreAuthorize("isAuthenticated()")` | SecurityContext lookup | 401 | N/A | AuthenticationSecurityTests | VERIFIED |
 | GET | /api/users/me | UserController.getMyProfile | Auth | Any Role | Self | None (any authenticated) | CurrentUserService.getUserId() | 401 | 401 Unauthorized | UserAuthorizationTests | VERIFIED |
 | PUT | /api/users/me | UserController.updateMyProfile | Auth | Any Role | Self | None (any authenticated) | CurrentUserService.getUserId() + Safe DTO | 401 | 401 Unauthorized | UserAuthorizationTests | VERIFIED |
 | POST | /api/users | UserController.createStaff | Protected | ADMIN | Admin creates staff | `@PreAuthorize("hasRole('ADMIN')")` | UserService | 401 | 403 Forbidden | UserAuthorizationTests | VERIFIED |
