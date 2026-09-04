@@ -49,6 +49,12 @@ public interface JobCardRepository extends JpaRepository<JobCard, Long> {
 	@org.springframework.data.jpa.repository.Query("SELECT j FROM JobCard j WHERE j.appointment.vehicleDetails.customer.id = :customerId")
 	List<JobCard> findByCustomerId(Long customerId);
 
+	boolean existsByIdAndAppointment_VehicleDetails_Customer_Id(Long id, Long customerId);
+
+	boolean existsByIdAndManager_Id(Long id, Long managerId);
+
+	boolean existsByIdAndMechanic_Id(Long id, Long mechanicId);
+
 }
 
 // long countByStatus(JobCardStatus status);

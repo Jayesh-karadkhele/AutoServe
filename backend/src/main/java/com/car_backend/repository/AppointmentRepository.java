@@ -29,4 +29,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 	List<Appointment> findByMechanic_Id(Long mechanicId);
 
 	List<Appointment> findByManager_Id(Long managerId);
+
+	boolean existsByIdAndVehicleDetails_Customer_Id(Long id, Long customerId);
+
+	boolean existsByIdAndManager_Id(Long id, Long managerId);
+
+	boolean existsByIdAndMechanic_Id(Long id, Long mechanicId);
 }

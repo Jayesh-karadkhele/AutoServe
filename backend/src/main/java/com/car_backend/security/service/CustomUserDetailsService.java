@@ -47,13 +47,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 	 */
 	private UserDetails buildUserDetails(User user) {
 		var authorities = getAuthorities(user.getUserRole().toString());
-	    System.out.println(">>> Authenticating User: " + user.getEmail());
-	    System.out.println(">>> Granted Authorities: " + authorities);
 
 		return org.springframework.security.core.userdetails.User.builder().username(user.getEmail())
 				.password(user.getPassword()).authorities(authorities).accountExpired(false)
-				.accountLocked(false).credentialsExpired(false).disabled(false).build();
-//		.accountLocked(!user.isActive()).credentialsExpired(false).disabled(!user.isActive()).build();
+				.accountLocked(false).credentialsExpired(false).disabled(!user.isActive()).build();
 	}
 
 	/**

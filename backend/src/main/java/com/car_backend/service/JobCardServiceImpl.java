@@ -541,16 +541,13 @@ public class JobCardServiceImpl implements JobCardService {
 		User mechanic = userRepo.findById(mechanicId)
 				.orElseThrow(() -> new UserNotFoundException("mechanic not found"));
 
-		if (mechanic.getUserRole() != Role.MECHANIC) {
-			throw new InvalidRoleException("user is not a mechanic");
+		if (mechanic.getUserRole() != Role.MECHANIC || !mechanic.isActive()) {
+			throw new InvalidRoleException("user is not an active mechanic");
 		}
 
-		// if (mechanic.getManager() == null ||
-		// !mechanic.getManager().getId().equals(managerId)) {
-		// throw new UnauthorizedException(
-		// "this mechanic does not report to you. Mechanic can only be assigned by
-		// manager");
-		// }
+		if (mechanic.getManager() == null || !mechanic.getManager().getId().equals(managerId)) {
+			throw new InvalidOperationException("Mechanic does not report to this manager");
+		}
 		return mechanic;
 	}
 
@@ -619,6 +616,10 @@ public class JobCardServiceImpl implements JobCardService {
 
 		if (jobCard.getJobCardStatus() != JobCardStatus.COMPLETED) {
 			throw new InvalidOperationException("Rating can only be submitted for completed job cards");
+		}
+
+		if (rating == null || rating < 1 || rating > 5) {
+			throw new IllegalArgumentException("Rating must be between 1 and 5");
 		}
 
 		jobCard.setCustomerRating(rating);

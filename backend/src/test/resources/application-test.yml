@@ -1,0 +1,49 @@
+spring:
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  datasource:
+    url: jdbc:h2:mem:autoservetest;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+management:
+  health:
+    mail:
+      enabled: false
+
+jwt:
+  secret: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8
+  expiration: 3600000
+
+app:
+  demo:
+    seed-enabled: false
+    admin-password: "TestAdminPassword123!"
+    manager-password: "TestManagerPassword123!"
+    mechanic-password: "TestMechanicPassword123!"
+    customer-password: "TestCustomerPassword123!"
+
+cors:
+  allowed-origins: "http://localhost:5173"
+
+razorpay:
+  key-id: "rzp_test_mockKey"
+  key-secret: "mockRazorpaySecret"
+
+cloudinary:
+  cloud-name: "test-cloud"
+  api-key: "123456789"
+  api-secret: "mockCloudinarySecret"
+
+invoice:
+  tax-percentage: 18.0

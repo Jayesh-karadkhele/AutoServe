@@ -28,4 +28,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
 	@Query("SELECT SUM(i.totalAmount) FROM Invoice i WHERE i.jobCard.manager.id = :managerId AND i.paymentStatus = com.car_backend.entities.PaymentStatus.PAID")
 	Double calculateRevenueByManagerId(@Param("managerId") Long managerId);
+
+	boolean existsByIdAndJobCard_Appointment_VehicleDetails_Customer_Id(Long id, Long customerId);
+
+	boolean existsByIdAndJobCard_Manager_Id(Long id, Long managerId);
 }

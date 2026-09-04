@@ -20,4 +20,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	
 	Optional<Vehicle> findByIdAndIsActiveTrue(Long id);
 
+	boolean existsByIdAndCustomerId(Long id, Long customerId);
+
 }

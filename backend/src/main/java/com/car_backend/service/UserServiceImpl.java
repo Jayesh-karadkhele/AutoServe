@@ -33,31 +33,24 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponseDto createUser(CreateUserDto dto) {
 
-		System.out.println("*********************************************************   1111");
 		if (userRepo.existsByEmail(dto.getEmail())) {
 			throw new ResourceAlreadyExists("user already exists..");
 		}
 
-		System.out.println("*********************************************************   2222");
-
 		User entity = mapper.map(dto, User.class);
 		entity.setPassword(encoder.encode(dto.getPassword()));
-
-		System.out.println("*********************************************************   3333");
 
 		if (dto.getUserRole() == Role.MECHANIC && dto.getManagerId() != null) {
 			User manager = userRepo.findById(dto.getManagerId())
 					.orElseThrow(() -> new ResourceNotFoundException("Manager not found."));
+			if (manager.getUserRole() != Role.MANAGER || !manager.isActive()) {
+				throw new IllegalArgumentException("Assigned manager must be an active MANAGER");
+			}
 			entity.setManager(manager);
 		}
 
-		System.out.println("*********************************************************   4444");
-
 		User savedUser = userRepo.save(entity);
-		// SMTP
 		emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getUserName(), savedUser.getUserRole());
-		System.out.println("Email must be sent to\n" + savedUser.getEmail() + " | " + savedUser.getUserName() + " | "
-				+ savedUser.getUserRole());
 
 		return mapUserToResponseDto(savedUser);
 

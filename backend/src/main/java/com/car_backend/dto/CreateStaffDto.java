@@ -1,9 +1,11 @@
-package com.car_backend.dto.auth;
+package com.car_backend.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.car_backend.entities.Role;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,12 +17,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = false)
-public class RegisterRequestDto {
+public class CreateStaffDto {
 
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    private String name;
+    private String userName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
@@ -34,7 +35,15 @@ public class RegisterRequestDto {
     )
     private String password;
 
-    @NotBlank(message = "Phone is required")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
-    private String phone;
+    @NotNull(message = "Role is required for staff creation")
+    private Role userRole;
+
+    @NotBlank(message = "Mobile is required")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Mobile must be 10 digits")
+    private String mobile;
+
+    @Min(value = 0, message = "Salary must be non-negative")
+    private Double salary;
+
+    private Long managerId;
 }

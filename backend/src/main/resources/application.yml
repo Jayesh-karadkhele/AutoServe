@@ -3,6 +3,9 @@ spring:
     name: autoserve
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
   servlet:
     multipart:
       max-file-size: 10MB

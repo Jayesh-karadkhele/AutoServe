@@ -230,9 +230,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	public List<AppointmentResponseDto> getRsaAppointments() {
 		List<Appointment> rsaAppointments = appointmentRepo.findByRsaTrue();
-
-		log.info("Rsa Appointments {}", rsaAppointments.getFirst());
-
+		log.info("Found {} RSA appointments", rsaAppointments.size());
 		return rsaAppointments.stream().map(this::mapToResponseDto).collect(Collectors.toList());
 	}
 
@@ -263,8 +261,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		User manager = userRepo.findById(managerId)
 				.orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
 
-		if (manager.getUserRole() != com.car_backend.entities.Role.MANAGER) {
-			throw new InvalidOperationException("User is not a Manager");
+		if (manager.getUserRole() != com.car_backend.entities.Role.MANAGER || !manager.isActive()) {
+			throw new InvalidOperationException("User is not an active Manager");
 		}
 
 		appointment.setManager(manager);
@@ -282,8 +280,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		User mechanic = userRepo.findById(mechanicId)
 				.orElseThrow(() -> new ResourceNotFoundException("Mechanic not found"));
 
-		if (mechanic.getUserRole() != com.car_backend.entities.Role.MECHANIC) {
-			throw new InvalidOperationException("User is not a Mechanic");
+		if (mechanic.getUserRole() != com.car_backend.entities.Role.MECHANIC || !mechanic.isActive()) {
+			throw new InvalidOperationException("User is not an active Mechanic");
+		}
+
+		if (appointment.getManager() != null && mechanic.getManager() != null
+				&& !mechanic.getManager().getId().equals(appointment.getManager().getId())) {
+			throw new InvalidOperationException("Mechanic does not report to the assigned manager of this appointment");
 		}
 
 		appointment.setMechanic(mechanic);
