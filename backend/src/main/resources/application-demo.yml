@@ -1,0 +1,7 @@
+app:
+  demo:
+    seed-enabled: ${APP_DEMO_SEED_ENABLED:false}
+    admin-password: ${DEMO_ADMIN_PASSWORD}
+    manager-password: ${DEMO_MANAGER_PASSWORD}
+    mechanic-password: ${DEMO_MECHANIC_PASSWORD}
+    customer-password: ${DEMO_CUSTOMER_PASSWORD}

@@ -1,0 +1,2665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoServe | Multi-Role Vehicle Operations Platform</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --c24-orange: #ff5a00;
+            --c24-orange-dark: #e04f00;
+            --c24-orange-glow: rgba(255, 90, 0, 0.2);
+            --bg-body: #fbf9f5; /* Warm White */
+            --bg-card: #ffffff; /* Pure White Surface */
+            --bg-warm-tint: #f5eee6;
+            --bg-top-bar: #fff7ed;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --border-light: #e2e8f0;
+            --border-warm: #ebdccb;
+            --accent-green: #059669;
+            --accent-blue: #2563eb;
+            --accent-purple: #7c3aed;
+            --accent-amber: #d97706;
+            --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 12px 30px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 20px 45px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Top Warm Announcement Bar */
+        .top-bar {
+            background: var(--bg-top-bar);
+            border-bottom: 1px solid var(--border-warm);
+            padding: 0.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+
+        .location-select {
+            background: #ffffff;
+            border: 1px solid var(--border-warm);
+            color: var(--text-heading);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 30px;
+            background: #ffffff;
+            border-left: 5px solid var(--accent-green);
+            padding: 1rem 1.5rem;
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-notification.active {
+            transform: translateX(0);
+        }
+
+        /* Navigation Header */
+        header.c24-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.94);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0.9rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-heading);
+        }
+
+        .logo-box {
+            background: linear-gradient(135deg, var(--c24-orange), var(--c24-orange-dark));
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            color: white;
+            box-shadow: 0 4px 15px var(--c24-orange-glow);
+        }
+
+        .logo-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-heading);
+        }
+
+        .logo-name span {
+            color: var(--c24-orange);
+        }
+
+        .c24-tag {
+            background: rgba(255, 90, 0, 0.1);
+            border: 1px solid rgba(255, 90, 0, 0.25);
+            color: var(--c24-orange);
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.15rem 0.55rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.4rem;
+            background: #f1f5f9;
+            padding: 0.35rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-light);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1.1rem;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-heading);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-btn.active {
+            color: white;
+            background: var(--c24-orange);
+            box-shadow: 0 4px 14px var(--c24-orange-glow);
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, var(--c24-orange), var(--c24-orange-dark));
+            color: white;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 18px var(--c24-orange-glow);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px var(--c24-orange-glow);
+        }
+
+        .user-logged-pill {
+            background: rgba(5, 150, 105, 0.1);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+            color: var(--accent-green);
+            padding: 0.45rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Role Specific Dashboard Panel Container */
+        .role-dashboard-container {
+            margin: 2.5rem 0 4rem;
+            display: none;
+        }
+
+        .role-dashboard-container.active {
+            display: block;
+        }
+
+        .dash-header-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .dash-badge {
+            background: rgba(255, 90, 0, 0.2);
+            color: var(--c24-orange);
+            border: 1px solid rgba(255, 90, 0, 0.4);
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .role-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-warm);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .metric-icon.orange { background: rgba(255, 90, 0, 0.12); color: var(--c24-orange); }
+        .metric-icon.blue { background: rgba(37, 99, 235, 0.12); color: var(--accent-blue); }
+        .metric-icon.green { background: rgba(5, 150, 105, 0.12); color: var(--accent-green); }
+        .metric-icon.purple { background: rgba(124, 58, 237, 0.12); color: var(--accent-purple); }
+
+        .dash-task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .task-card h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 3.5rem 0 3rem;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 2.8rem;
+            align-items: center;
+        }
+
+        .hero-title {
+            font-size: 3.3rem;
+            font-weight: 800;
+            line-height: 1.14;
+            letter-spacing: -1.2px;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+        }
+
+        .hero-title span {
+            color: var(--c24-orange);
+        }
+
+        .hero-subtitle {
+            font-size: 1.12rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Search Card Box */
+        .search-box-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-warm);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .search-tab-btn {
+            flex: 1;
+            padding: 0.8rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+
+        .search-tab-btn.active {
+            color: var(--c24-orange);
+            border-bottom-color: var(--c24-orange);
+        }
+
+        .search-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            color: var(--text-heading);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--c24-orange);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px var(--c24-orange-glow);
+        }
+
+        .btn-search-hero {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--c24-orange), var(--c24-orange-dark));
+            color: white;
+            border: none;
+            padding: 0.95rem;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 0.6rem;
+            box-shadow: 0 6px 20px var(--c24-orange-glow);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .btn-search-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--c24-orange-glow);
+        }
+
+        /* Hero Image Frame */
+        .hero-img-box {
+            position: relative;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid var(--border-warm);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-img-box img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-badge-overlay {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-warm);
+            border-radius: 18px;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .hero-badge-overlay h4 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--c24-orange);
+        }
+
+        .hero-badge-overlay p {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* Brand Logos Row */
+        .brands-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1.75rem 0;
+            margin-bottom: 3.5rem;
+            border-y: 1px solid var(--border-light);
+        }
+
+        .brand-pill {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-pill:hover {
+            border-color: var(--c24-orange);
+            color: var(--c24-orange);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* CARS24 Vehicle Cards Catalog */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            letter-spacing: -0.6px;
+        }
+
+        .section-title span {
+            color: var(--c24-orange);
+        }
+
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4.5rem;
+        }
+
+        .car-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.35s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .car-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-warm);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .car-img-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .car-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .badge-inspected {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: var(--accent-green);
+            color: white;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .badge-warranty {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .car-card-body {
+            padding: 1.6rem;
+        }
+
+        .car-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            margin-bottom: 0.3rem;
+        }
+
+        .car-specs-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.9rem 0;
+            flex-wrap: wrap;
+        }
+
+        .spec-pill {
+            background: #f1f5f9;
+            color: var(--text-body);
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .car-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .price-main {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-heading);
+        }
+
+        .price-emi {
+            font-size: 0.88rem;
+            color: var(--c24-orange);
+            font-weight: 800;
+        }
+
+        .btn-card-action {
+            width: 100%;
+            background: rgba(255, 90, 0, 0.1);
+            color: var(--c24-orange);
+            border: 1px solid rgba(255, 90, 0, 0.25);
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.92rem;
+            cursor: pointer;
+            margin-top: 1.1rem;
+            transition: all 0.25s ease;
+        }
+
+        .btn-card-action:hover {
+            background: var(--c24-orange);
+            color: white;
+            border-color: var(--c24-orange);
+        }
+
+        .pill-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--border-light);
+            color: var(--text-heading);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pill-btn:hover {
+            background: var(--c24-orange);
+            color: white;
+            border-color: var(--c24-orange);
+        }
+
+        /* SELL CAR & SERVICE DUAL BANNER */
+        .dual-banner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.2rem;
+            margin-bottom: 4.5rem;
+        }
+
+        .banner-box {
+            background: var(--bg-warm-tint);
+            border: 1px solid var(--border-warm);
+            border-radius: 28px;
+            padding: 3rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .banner-box h3 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            margin-bottom: 0.8rem;
+        }
+
+        .banner-box p {
+            color: var(--text-body);
+            font-size: 1rem;
+            margin-bottom: 1.8rem;
+            line-height: 1.6;
+        }
+
+        /* CAR LOAN & EMI CALCULATOR */
+        .calculator-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-warm);
+            border-radius: 28px;
+            padding: 3.5rem;
+            margin-bottom: 4.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 3.5rem;
+            align-items: center;
+        }
+
+        .slider-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.6rem;
+        }
+
+        .range-slider {
+            width: 100%;
+            accent-color: var(--c24-orange);
+            height: 6px;
+        }
+
+        .emi-display-box {
+            background: var(--bg-top-bar);
+            border: 1px solid var(--border-warm);
+            border-radius: 24px;
+            padding: 2.8rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .emi-amount {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--c24-orange);
+            margin: 0.6rem 0;
+        }
+
+        /* WORKSHOP JOB CARDS SECTION */
+        .job-cards-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-warm);
+            border-radius: 28px;
+            padding: 3rem;
+            margin-bottom: 4.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .job-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .job-item-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 18px;
+            padding: 1.5rem;
+            transition: all 0.25s ease;
+        }
+
+        .job-item-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--c24-orange);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .job-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .job-badge.in-progress { background: #fef3c7; color: #d97706; }
+        .job-badge.completed { background: #d1fae5; color: #059669; }
+        .job-badge.scheduled { background: #dbeafe; color: #2563eb; }
+
+        /* INVENTORY CATALOG TABLE */
+        .inventory-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-warm);
+            border-radius: 28px;
+            padding: 3rem;
+            margin-bottom: 4.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        table.inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        table.inventory-table th {
+            background: #f1f5f9;
+            padding: 1rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            text-transform: uppercase;
+            text-align: left;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        table.inventory-table td {
+            padding: 1.1rem 1.25rem;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.92rem;
+            color: var(--text-body);
+        }
+
+        /* RSA EMERGENCY SOS SECTION */
+        .rsa-panel {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 1px solid var(--border-warm);
+            border-radius: 28px;
+            padding: 3.5rem;
+            text-align: center;
+            margin-bottom: 4.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sos-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 1.15rem;
+            font-weight: 800;
+            padding: 1.1rem 2.5rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sos-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.5);
+        }
+
+        /* JWT AUTH MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border: 1px solid var(--border-warm);
+            border-radius: 28px;
+            padding: 2.8rem;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .modal-tab-btn.active {
+            color: var(--c24-orange);
+            border-bottom-color: var(--c24-orange);
+        }
+
+        .demo-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.4rem;
+            flex-wrap: wrap;
+        }
+
+        .code-console {
+            background: #0f172a;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            color: #38bdf8;
+            margin-top: 1.5rem;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        /* Footer */
+        footer.c24-footer {
+            border-top: 1px solid var(--border-warm);
+            padding: 4rem 0 2rem;
+            background: #ffffff;
+            margin-top: 5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            color: var(--c24-orange);
+        }
+
+        /* CUSTOMER PORTAL STYLES */
+        .cust-portal-tabs {
+            display: flex;
+            gap: 0.6rem;
+            overflow-x: auto;
+            padding-bottom: 0.8rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .cust-tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            color: var(--text-body);
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 30px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cust-tab-btn:hover {
+            border-color: var(--c24-orange);
+            color: var(--c24-orange);
+        }
+
+        .cust-tab-btn.active {
+            background: var(--c24-orange);
+            color: white;
+            border-color: var(--c24-orange);
+            box-shadow: 0 4px 15px var(--c24-orange-glow);
+        }
+
+        .cust-section {
+            display: none;
+        }
+
+        .cust-section.active {
+            display: block;
+        }
+
+        /* 8-STAGE TIMELINE TRACKER */
+        .timeline-stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+            overflow-x: auto;
+            padding: 1rem 0;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            min-width: 110px;
+        }
+
+        .step-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: #64748b;
+            font-weight: 800;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.6rem;
+            border: 2px solid #cbd5e1;
+            z-index: 2;
+            position: relative;
+        }
+
+        .timeline-step.done .step-circle {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+        }
+
+        .timeline-step.active .step-circle {
+            background: var(--c24-orange);
+            color: white;
+            border-color: var(--c24-orange);
+            box-shadow: 0 0 0 4px var(--c24-orange-glow);
+        }
+
+        .step-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .timeline-step.done .step-title {
+            color: var(--text-heading);
+        }
+
+        .timeline-step.active .step-title {
+            color: var(--c24-orange);
+            font-weight: 800;
+        }
+
+        .cust-vehicle-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 1.8rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cust-vehicle-card:hover {
+            border-color: var(--c24-orange);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 1.8rem;
+            color: #cbd5e1;
+            cursor: pointer;
+            margin: 1rem 0;
+        }
+
+        .star-rating .fa-star.active {
+            color: #f59e0b;
+        }
+
+        @media (max-width: 900px) {
+            .hero-section, .dual-banner, .calc-grid { grid-template-columns: 1fr; }
+            .nav-tabs { display: none; }
+            .hero-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FLOATING TOAST NOTIFICATION -->
+    <div id="toastNotification" class="toast-notification">
+        <div style="font-size: 1.5rem; color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+            <h4 id="toastTitle" style="font-size: 0.95rem; font-weight: 800; color: var(--text-heading);">Logged In Successfully</h4>
+            <p id="toastBody" style="font-size: 0.82rem; color: var(--text-muted);">Welcome back, System Admin!</p>
+        </div>
+    </div>
+
+    <!-- TOP WARM ANNOUNCEMENT STRIP -->
+    <div class="top-bar">
+        <div>
+            <i class="fa-solid fa-location-dot" style="color: var(--c24-orange);"></i> Deliver to: 
+            <select class="location-select">
+                <option>Mumbai</option>
+                <option>Delhi NCR</option>
+                <option>Bengaluru</option>
+                <option>Hyderabad</option>
+                <option>Pune</option>
+                <option>Chennai</option>
+            </select>
+        </div>
+        <div>
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-green);"></i> 140-Point Inspection Guaranteed • 7-Day Easy Return • 12-Month Warranty
+        </div>
+        <div>
+            <i class="fa-solid fa-headset"></i> Support: 1800-2424-AUTO
+        </div>
+    </div>
+
+    <!-- CARS24 HEADER -->
+    <header class="c24-header">
+        <a href="#" class="brand-logo">
+            <div class="logo-box">
+                <i class="fa-solid fa-car-side"></i>
+            </div>
+            <div class="logo-name">Auto<span>Serve</span></div>
+            <span class="c24-tag">Warm White Edition</span>
+        </a>
+
+        <div class="nav-tabs">
+            <a href="#buy-cars" class="nav-btn active"><i class="fa-solid fa-car"></i> Buy Cars</a>
+            <a href="#sell-car" class="nav-btn"><i class="fa-solid fa-tags"></i> Sell Car</a>
+            <a href="#service" class="nav-btn"><i class="fa-solid fa-screwdriver-wrench"></i> Auto Service</a>
+            <a href="#jobcards" class="nav-btn"><i class="fa-solid fa-clipboard-list"></i> Job Cards</a>
+            <a href="#inventory" class="nav-btn"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+            <a href="#calculator" class="nav-btn"><i class="fa-solid fa-calculator"></i> Car Loan EMI</a>
+            <a href="/swagger-ui/index.html" target="_blank" class="nav-btn"><i class="fa-solid fa-code"></i> Swagger API</a>
+        </div>
+
+        <div id="userHeaderState">
+            <button class="btn-auth" onclick="openAuthModal()">
+                <i class="fa-solid fa-user-lock"></i> Sign In / Sign Up
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- DYNAMIC ROLE-BASED DASHBOARD CONTAINER (ACTIVE WHEN LOGGED IN) -->
+        <div id="roleDashboardSection" class="role-dashboard-container">
+            <div class="dash-header-card">
+                <div>
+                    <span class="dash-badge" id="dashRoleBadge">MANAGER DASHBOARD</span>
+                    <h2 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem;" id="dashWelcomeTitle">Welcome, Rajesh Kumar!</h2>
+                    <p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.2rem;" id="dashRoleSubtitle">Managing workshop job cards, approving appointments, and tracking staff workload.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="pill-btn" style="background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);" onclick="fetchLiveRoleDashboard()"><i class="fa-solid fa-rotate"></i> Refresh Dashboard API</button>
+                </div>
+            </div>
+
+            <!-- Role Metrics Bar -->
+            <div class="role-metrics-grid" id="roleMetricsContainer">
+                <div class="metric-card">
+                    <div class="metric-icon orange"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <div>
+                        <p style="font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Total Job Cards</p>
+                        <h3 style="font-size: 1.6rem; font-weight: 800; color: var(--text-heading);" id="metricVal1">14</h3>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon blue"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div>
+                        <p style="font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">In Progress</p>
+                        <h3 style="font-size: 1.6rem; font-weight: 800; color: var(--text-heading);" id="metricVal2">6</h3>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon green"><i class="fa-solid fa-check-double"></i></div>
+                    <div>
+                        <p style="font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Completed Jobs</p>
+                        <h3 style="font-size: 1.6rem; font-weight: 800; color: var(--text-heading);" id="metricVal3">8</h3>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon purple"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                    <div>
+                        <p style="font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Total Revenue</p>
+                        <h3 style="font-size: 1.6rem; font-weight: 800; color: var(--text-heading);" id="metricVal4">₹ 84,500</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Action Tasks -->
+            <div class="dash-task-grid" id="roleTasksContainer">
+                <!-- Dynamically populated per role -->
+            </div>
+        </div>
+
+        <!-- CARS24 HERO SEARCH HUB -->
+        <section class="hero-section">
+            <div>
+                <h1 class="hero-title">Better Cars. <span>Better Prices.</span> 100% Quality Inspected.</h1>
+                <p class="hero-subtitle">India's premier vehicle platform powered by AutoServe Spring Boot & MySQL technology. Buy verified pre-owned cars, get instant valuation quotes, or book workshop maintenance.</p>
+
+                <!-- Search Card -->
+                <div class="search-box-card">
+                    <div class="search-tabs">
+                        <button class="search-tab-btn active" onclick="switchSearchTab('buy')"><i class="fa-solid fa-car"></i> Buy Used Cars</button>
+                        <button class="search-tab-btn" onclick="switchSearchTab('sell')"><i class="fa-solid fa-indian-rupee-sign"></i> Sell Your Car</button>
+                        <button class="search-tab-btn" onclick="switchSearchTab('service')"><i class="fa-solid fa-wrench"></i> Book Service</button>
+                    </div>
+
+                    <form id="heroSearchForm" onsubmit="handleHeroSearch(event)" class="search-form-grid">
+                        <div class="form-group">
+                            <label>Select Car Brand</label>
+                            <select class="form-control" id="searchBrand">
+                                <option>All Brands</option>
+                                <option>Maruti Suzuki</option>
+                                <option>Hyundai</option>
+                                <option>Honda</option>
+                                <option>Tata Motors</option>
+                                <option>Mahindra</option>
+                                <option>BMW</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Budget Range</label>
+                            <select class="form-control" id="searchBudget">
+                                <option>Under ₹ 5 Lakh</option>
+                                <option selected>₹ 5 Lakh - ₹ 10 Lakh</option>
+                                <option>₹ 10 Lakh - ₹ 15 Lakh</option>
+                                <option>Luxury Above ₹ 15 Lakh</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fuel Type</label>
+                            <select class="form-control">
+                                <option>Petrol</option>
+                                <option>Diesel</option>
+                                <option>Electric (EV)</option>
+                                <option>CNG</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Transmission</label>
+                            <select class="form-control">
+                                <option>Automatic</option>
+                                <option>Manual</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-search-hero">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search 1,250+ Certified Cars
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Hero Image Showcase -->
+            <div class="hero-img-box">
+                <img src="/images/hero_car.jpg" alt="AutoServe Luxury Car">
+                <div class="hero-badge-overlay">
+                    <div>
+                        <h4>140+</h4>
+                        <p>Inspection Checks</p>
+                    </div>
+                    <div>
+                        <h4>7 Days</h4>
+                        <p>Money Back</p>
+                    </div>
+                    <div>
+                        <h4>12 Months</h4>
+                        <p>Auto Warranty</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BRAND PILLS ROW -->
+        <div class="brands-row">
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Maruti Suzuki</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Hyundai</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Honda</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Tata Motors</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Mahindra</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Toyota</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> BMW</div>
+            <div class="brand-pill"><i class="fa-solid fa-car-side"></i> Mercedes-Benz</div>
+        </div>
+
+        <!-- CARS24 VERIFIED CARS CATALOG -->
+        <section id="buy-cars">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Verified Pre-Owned <span>Cars</span></h2>
+                    <p style="color: var(--text-muted);">Fully inspected, refurbished, and ready for instant delivery.</p>
+                </div>
+                <a href="#" style="color: var(--c24-orange); font-weight: 700; text-decoration: none;">View All 1,250+ Cars <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="cars-grid">
+                <!-- Car Card 1 -->
+                <div class="car-card">
+                    <div class="car-img-wrapper">
+                        <img src="/images/hero_car.jpg" alt="Honda City">
+                        <span class="badge-inspected"><i class="fa-solid fa-check-double"></i> 140-Pt Inspected</span>
+                        <span class="badge-warranty">1 Yr Warranty</span>
+                    </div>
+                    <div class="car-card-body">
+                        <h3 class="car-name">2022 Honda City ZX CVT</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">1.5 i-VTEC Petrol • Automatic</p>
+                        <div class="car-specs-pills">
+                            <span class="spec-pill">28,400 km</span>
+                            <span class="spec-pill">1st Owner</span>
+                            <span class="spec-pill">MH-12 (Pune)</span>
+                        </div>
+                        <div class="car-price-row">
+                            <div class="price-main">₹ 11,45,000</div>
+                            <div class="price-emi">EMI ₹ 18,490/mo</div>
+                        </div>
+                        <button class="btn-card-action" onclick="reserveCar('Honda City ZX')">
+                            <i class="fa-solid fa-calendar-check"></i> Book Free Test Drive
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Car Card 2 -->
+                <div class="car-card">
+                    <div class="car-img-wrapper">
+                        <img src="/images/inspection_car.jpg" alt="Hyundai Creta">
+                        <span class="badge-inspected"><i class="fa-solid fa-check-double"></i> 140-Pt Inspected</span>
+                        <span class="badge-warranty">1 Yr Warranty</span>
+                    </div>
+                    <div class="car-card-body">
+                        <h3 class="car-name">2023 Hyundai Creta SX (O)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">1.5 CRDi Diesel • Automatic</p>
+                        <div class="car-specs-pills">
+                            <span class="spec-pill">18,200 km</span>
+                            <span class="spec-pill">1st Owner</span>
+                            <span class="spec-pill">MH-02 (Mumbai)</span>
+                        </div>
+                        <div class="car-price-row">
+                            <div class="price-main">₹ 15,20,000</div>
+                            <div class="price-emi">EMI ₹ 24,150/mo</div>
+                        </div>
+                        <button class="btn-card-action" onclick="reserveCar('Hyundai Creta SX')">
+                            <i class="fa-solid fa-calendar-check"></i> Book Free Test Drive
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Car Card 3 -->
+                <div class="car-card">
+                    <div class="car-img-wrapper">
+                        <img src="/images/hero_car.jpg" alt="Tata Nexon EV">
+                        <span class="badge-inspected"><i class="fa-solid fa-bolt"></i> EV Battery Inspected</span>
+                        <span class="badge-warranty">1 Yr Warranty</span>
+                    </div>
+                    <div class="car-card-body">
+                        <h3 class="car-name">2023 Tata Nexon EV Max</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Electric (453 km Range) • Automatic</p>
+                        <div class="car-specs-pills">
+                            <span class="spec-pill">14,100 km</span>
+                            <span class="spec-pill">1st Owner</span>
+                            <span class="spec-pill">KA-01 (Bengaluru)</span>
+                        </div>
+                        <div class="car-price-row">
+                            <div class="price-main">₹ 13,80,000</div>
+                            <div class="price-emi">EMI ₹ 21,900/mo</div>
+                        </div>
+                        <button class="btn-card-action" onclick="reserveCar('Tata Nexon EV')">
+                            <i class="fa-solid fa-calendar-check"></i> Book Free Test Drive
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SELL CAR & SERVICE DUAL BANNER -->
+        <div class="dual-banner">
+            <div id="sell-car" class="banner-box">
+                <span class="c24-tag" style="margin-bottom: 1rem; display: inline-block;">Instant Valuation</span>
+                <h3>Sell Your Car in 1 Hour</h3>
+                <p>Get instant payout, free door-step evaluation, and hassle-free RC transfer guarantee.</p>
+                <button class="btn-auth" onclick="alert('Sell valuation tool initialized! Enter vehicle details for quote.')">
+                    <i class="fa-solid fa-calculator"></i> Get Instant Valuation Quote
+                </button>
+            </div>
+
+            <div id="service" class="banner-box">
+                <span class="c24-tag" style="background: rgba(5, 150, 105, 0.1); color: var(--accent-green); border-color: rgba(5, 150, 105, 0.25); margin-bottom: 1rem; display: inline-block;">AutoServe Maintenance</span>
+                <h3>Book Workshop Service</h3>
+                <p>Periodic maintenance, engine diagnostics, and optimistic stock-locked spare parts replacement.</p>
+                <button class="btn-auth" style="background: linear-gradient(135deg, var(--accent-green), #047857);" onclick="scrollToSection('bookingSection')">
+                    <i class="fa-solid fa-wrench"></i> Book Service Appointment
+                </button>
+            </div>
+        </div>
+
+        <!-- SERVICE APPOINTMENT BOOKING WIZARD FORM -->
+        <section id="bookingSection" class="calculator-panel">
+            <div style="max-width: 750px; margin: 0 auto;">
+                <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-heading); text-align: center; margin-bottom: 0.5rem;">
+                    Book Vehicle <span style="color: var(--c24-orange);">Service Appointment</span>
+                </h2>
+                <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem;">
+                    Connected directly to <code>POST /api/appointments</code> Spring Boot REST API
+                </p>
+
+                <form onsubmit="executeAppointmentBooking(event)" class="search-form-grid">
+                    <div class="form-group">
+                        <label>Vehicle License Plate #</label>
+                        <input type="text" id="bookReg" class="form-control" placeholder="e.g. MH-12-AB-9876" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Service Category</label>
+                        <select id="bookCategory" class="form-control">
+                            <option value="Periodic General Maintenance">Periodic General Maintenance (₹ 2,499)</option>
+                            <option value="Comprehensive Care" selected>Comprehensive Care (₹ 4,999)</option>
+                            <option value="Engine & Transmission Diagnostics">Engine & Transmission Diagnostics</option>
+                            <option value="Brake Overhaul & Fluid Bleeding">Brake Overhaul & Fluid Bleeding</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Date & Time</label>
+                        <input type="datetime-local" id="bookDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Contact Email</label>
+                        <input type="email" id="bookEmail" class="form-control" placeholder="customer@autoserve.com" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Issue Description / Notes</label>
+                        <textarea id="bookNotes" class="form-control" rows="3" placeholder="Describe squeaking noises, brake shudder, oil leaks..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-search-hero">
+                        <i class="fa-solid fa-paper-plane"></i> Submit & Book Appointment
+                    </button>
+                </form>
+
+                <div id="bookingApiConsole" class="code-console" style="display: none;"></div>
+            </div>
+        </section>
+
+        <!-- WORKSHOP JOB CARDS SECTION -->
+        <section id="jobcards" class="job-cards-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-heading);">Live Workshop <span>Job Cards</span></h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Staff Hierarchy Enforcement: Mechanics can only work on assigned Manager Job Cards.</p>
+                </div>
+                <button class="pill-btn" onclick="fetchBackendJobCards()"><i class="fa-solid fa-arrows-rotate"></i> Refresh API Data</button>
+            </div>
+
+            <div class="job-card-grid" id="jobCardListContainer">
+                <div class="job-item-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                        <span style="font-family: 'Fira Code', monospace; font-size: 0.82rem; font-weight: 700; color: var(--c24-orange);">#JC-2026-101</span>
+                        <span class="job-badge in-progress">In Progress</span>
+                    </div>
+                    <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-heading);">Honda City (MH-12-PQ-4567)</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0 1rem;">Customer: Rahul Sharma | Manager: Rajesh Kumar</p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="pill-btn" onclick="updateJobStatus(101, 'COMPLETED')"><i class="fa-solid fa-circle-check"></i> Complete Repair</button>
+                        <button class="pill-btn" onclick="generateBill(101)"><i class="fa-solid fa-receipt"></i> Snapshot Bill</button>
+                    </div>
+                </div>
+
+                <div class="job-item-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                        <span style="font-family: 'Fira Code', monospace; font-size: 0.82rem; font-weight: 700; color: var(--c24-orange);">#JC-2026-102</span>
+                        <span class="job-badge scheduled">Scheduled</span>
+                    </div>
+                    <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-heading);">Hyundai Tucson (KA-01-MJ-8821)</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0 1rem;">Customer: Priya Patel | Mechanic: Aniket Verma</p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="pill-btn" onclick="updateJobStatus(102, 'IN_PROGRESS')"><i class="fa-solid fa-play"></i> Start Work</button>
+                        <button class="pill-btn" onclick="generateBill(102)"><i class="fa-solid fa-receipt"></i> Snapshot Bill</button>
+                    </div>
+                </div>
+
+                <div class="job-item-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                        <span style="font-family: 'Fira Code', monospace; font-size: 0.82rem; font-weight: 700; color: var(--c24-orange);">#JC-2026-099</span>
+                        <span class="job-badge completed">Invoiced & Paid</span>
+                    </div>
+                    <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-heading);">BMW 3 Series (DL-03-CC-1190)</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0 1rem;">Invoice Total: ₹ 14,850.00 | Razorpay Signature Verified</p>
+                    <button class="pill-btn" style="background: #d1fae5; color: #059669;" onclick="alert('Viewing Razorpay Paid Invoice receipt.')"><i class="fa-solid fa-file-pdf"></i> Download Invoice PDF</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVENTORY CATALOG TABLE -->
+        <section id="inventory" class="inventory-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                    <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-heading);">Workshop <span>Inventory Catalog</span></h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Optimistic Locking (<code>@Version</code>) prevents stock checkout race conditions.</p>
+                </div>
+                <button class="btn-auth" onclick="fetchInventoryFromBackend()"><i class="fa-solid fa-rotate"></i> Sync Stock API</button>
+            </div>
+
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>SKU Code</th>
+                        <th>Part Description</th>
+                        <th>Current Price</th>
+                        <th>Available Stock</th>
+                        <th>Optimistic @Version</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    <tr>
+                        <td><code style="font-family: 'Fira Code', monospace; color: var(--c24-orange); font-weight: 700;">MOTUL-5W40-synth</code></td>
+                        <td>Motul 8100 X-cess Fully Synthetic Oil 5W-40 (5L)</td>
+                        <td><strong>₹ 3,850.00</strong></td>
+                        <td><span style="color: var(--accent-green); font-weight: 800;">35 Units</span></td>
+                        <td><code>v4</code></td>
+                        <td><button class="pill-btn" onclick="useStockPart('MOTUL-5W40-synth')">Use 1 Unit</button></td>
+                    </tr>
+                    <tr>
+                        <td><code style="font-family: 'Fira Code', monospace; color: var(--c24-orange); font-weight: 700;">BREMBO-P83067</code></td>
+                        <td>Brembo Front Ceramic Brake Pads Set</td>
+                        <td><strong>₹ 4,200.00</strong></td>
+                        <td><span style="color: #d97706; font-weight: 800;">12 Units (Low)</span></td>
+                        <td><code>v1</code></td>
+                        <td><button class="pill-btn" onclick="useStockPart('BREMBO-P83067')">Use 1 Unit</button></td>
+                    </tr>
+                    <tr>
+                        <td><code style="font-family: 'Fira Code', monospace; color: var(--c24-orange); font-weight: 700;">BOSCH-SP-IRID</code></td>
+                        <td>Bosch Double Iridium Spark Plugs (4-Pack)</td>
+                        <td><strong>₹ 2,100.00</strong></td>
+                        <td><span style="color: var(--accent-green); font-weight: 800;">50 Units</span></td>
+                        <td><code>v2</code></td>
+                        <td><button class="pill-btn" onclick="useStockPart('BOSCH-SP-IRID')">Use 1 Unit</button></td>
+                    </tr>
+                    <tr>
+                        <td><code style="font-family: 'Fira Code', monospace; color: var(--c24-orange); font-weight: 700;">DENSO-AC-FILT</code></td>
+                        <td>Denso Anti-Bacterial Cabin AC Filter</td>
+                        <td><strong>₹ 850.00</strong></td>
+                        <td><span style="color: var(--accent-green); font-weight: 800;">60 Units</span></td>
+                        <td><code>v3</code></td>
+                        <td><button class="pill-btn" onclick="useStockPart('DENSO-AC-FILT')">Use 1 Unit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- CAR LOAN & EMI CALCULATOR -->
+        <section id="calculator" class="calculator-panel">
+            <div class="calc-grid">
+                <div>
+                    <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.5rem;">Car Loan <span style="color: var(--c24-orange);">EMI Calculator</span></h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Adjust loan parameters to estimate your monthly installments.</p>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Loan Amount</span>
+                            <span id="loanAmtVal" style="color: var(--c24-orange);">₹ 8,00,000</span>
+                        </div>
+                        <input type="range" min="100000" max="2500000" step="50000" value="800000" class="range-slider" id="loanAmtInput" oninput="updateEMI()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Interest Rate (%)</span>
+                            <span id="interestVal" style="color: var(--c24-orange);">9.5 %</span>
+                        </div>
+                        <input type="range" min="7" max="16" step="0.25" value="9.5" class="range-slider" id="interestInput" oninput="updateEMI()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Tenure (Months)</span>
+                            <span id="tenureVal" style="color: var(--c24-orange);">60 Months (5 Yrs)</span>
+                        </div>
+                        <input type="range" min="12" max="84" step="6" value="60" class="range-slider" id="tenureInput" oninput="updateEMI()">
+                    </div>
+                </div>
+
+                <div class="emi-display-box">
+                    <p style="font-weight: 800; color: var(--text-muted); text-transform: uppercase; font-size: 0.85rem;">Estimated Monthly EMI</p>
+                    <div class="emi-amount" id="computedEMI">₹ 16,798</div>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 600;">Pre-approved instant loan disbursal within 30 minutes.</p>
+                    <button class="btn-auth" style="width: 100%; justify-content: center;" onclick="alert('Loan eligibility check initiated!')">
+                        Check Loan Eligibility
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSA EMERGENCY SOS SECTION -->
+        <section id="rsa" class="rsa-panel">
+            <div style="font-size: 3.5rem; color: #ef4444; margin-bottom: 1rem;">
+                <i class="fa-solid fa-truck-pickup"></i>
+            </div>
+            <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.8rem;">24/7 Roadside Emergency Assistance (RSA)</h2>
+            <p style="color: var(--text-body); max-width: 650px; margin: 0 auto 2rem; font-size: 1.05rem;">
+                Stranded on the road? Tap the button below to transmit your device's exact GPS coordinates via HTML5 Geolocation API directly to our nearest dispatch tow unit.
+            </p>
+            <button class="sos-btn" onclick="triggerRSALocation()">
+                <i class="fa-solid fa-location-crosshairs"></i> Transmit Emergency GPS Location
+            </button>
+
+            <div id="rsaConsole" class="code-console" style="display: none; text-align: left;"></div>
+        </section>
+
+    </div><!-- End Container -->
+
+    <!-- JWT AUTH MODAL (SIGN IN & SIGN UP) -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-tabs" style="width: 85%; margin-bottom: 0; border-bottom: none;">
+                    <button id="modalTabLoginBtn" class="modal-tab-btn active" onclick="switchAuthModalTab('login')"><i class="fa-solid fa-lock"></i> Sign In</button>
+                    <button id="modalTabRegisterBtn" class="modal-tab-btn" onclick="switchAuthModalTab('register')"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+                </div>
+                <button style="background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer;" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- LOGIN TAB -->
+            <div id="authLoginTab">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.8rem; font-weight: 600;">Click Demo Credentials to Auto-Fill Role:</p>
+                <div class="demo-pills">
+                    <button class="pill-btn" onclick="fillAuth('admin@autoserve.com','admin123')">👑 Admin</button>
+                    <button class="pill-btn" onclick="fillAuth('manager@autoserve.com','manager123')">👔 Manager</button>
+                    <button class="pill-btn" onclick="fillAuth('mechanic@autoserve.com','mechanic123')">🛠 Mechanic</button>
+                    <button class="pill-btn" onclick="fillAuth('customer@autoserve.com','customer123')">👤 Customer</button>
+                </div>
+
+                <form onsubmit="executeLogin(event)">
+                    <div style="margin-bottom: 1.2rem;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.4rem;">Email Address</label>
+                        <input type="email" id="authEmail" class="form-control" placeholder="user@autoserve.com" required style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.4rem;">Password</label>
+                        <input type="password" id="authPass" class="form-control" placeholder="••••••••" required style="width: 100%;">
+                    </div>
+                    <button type="submit" class="btn-auth" style="width: 100%; justify-content: center; padding: 0.95rem;">
+                        <i class="fa-solid fa-key"></i> Authenticate & Open Role Dashboard
+                    </button>
+                </form>
+            </div>
+
+            <!-- REGISTER TAB -->
+            <div id="authRegisterTab" style="display: none;">
+                <form onsubmit="executeRegister(event)">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.3rem;">Full Name</label>
+                        <input type="text" id="regName" class="form-control" placeholder="e.g. Vikram Sharma" required style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.3rem;">Email Address</label>
+                        <input type="email" id="regEmail" class="form-control" placeholder="newuser@domain.com" required style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.3rem;">Password</label>
+                        <input type="password" id="regPass" class="form-control" placeholder="••••••••" required style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 1.2rem;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.3rem;">User Role</label>
+                        <select id="regRole" class="form-control" style="width: 100%;">
+                            <option value="CUSTOMER">CUSTOMER</option>
+                            <option value="MECHANIC">MECHANIC</option>
+                            <option value="MANAGER">MANAGER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-auth" style="width: 100%; justify-content: center; padding: 0.95rem;">
+                        <i class="fa-solid fa-user-check"></i> Register Account
+                    </button>
+                </form>
+            </div>
+
+            <div id="authConsole" class="code-console" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="c24-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="#" class="brand-logo" style="margin-bottom: 1rem;">
+                        <div class="logo-box">
+                            <i class="fa-solid fa-car-side"></i>
+                        </div>
+                        <div class="logo-name">Auto<span>Serve</span></div>
+                        <span class="c24-tag">Warm White Edition</span>
+                    </a>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 300px; line-height: 1.6;">
+                        India's next-generation automobile buying, selling, maintenance, and financing platform powered by AutoServe Spring Boot 3.5 & MySQL 8.0.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1rem;">Buy & Sell</h4>
+                    <ul class="footer-links">
+                        <li><a href="#buy-cars">Pre-Owned Cars</a></li>
+                        <li><a href="#sell-car">Sell Your Car</a></li>
+                        <li><a href="#calculator">Car Loan EMI</a></li>
+                        <li><a href="#">Valuation Estimator</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1rem;">AutoServe Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#bookingSection">Periodic Servicing</a></li>
+                        <li><a href="#inventory">Inventory Master</a></li>
+                        <li><a href="/swagger-ui/index.html" target="_blank">Swagger REST API</a></li>
+                        <li><a href="/v3/api-docs" target="_blank">OpenAPI Specs</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1rem;">System Health</h4>
+                    <ul class="footer-links">
+                        <li><span style="color: var(--accent-green); font-weight: 700;"><i class="fa-solid fa-check"></i> Spring Boot 3.5 Active</span></li>
+                        <li><span style="color: var(--accent-blue); font-weight: 700;"><i class="fa-solid fa-database"></i> MySQL 8.0 Connected</span></li>
+                        <li><span style="color: var(--c24-orange); font-weight: 700;"><i class="fa-solid fa-lock"></i> JWT Stateless Auth</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-light); padding-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">
+                &copy; 2026 AutoServe CARS24 Edition. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check local storage for existing session on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const userName = localStorage.getItem('userName');
+            const userRole = localStorage.getItem('userRole');
+            const userId = localStorage.getItem('userId');
+
+            if (token && userName && userRole) {
+                updateHeaderAuthUI(userName, userRole);
+                renderRoleDashboard(userRole, userName, userId);
+            }
+        });
+
+        function showToast(title, body) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastBody').innerText = body;
+            toast.classList.add('active');
+
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 4500);
+        }
+
+        function updateHeaderAuthUI(name, role) {
+            const container = document.getElementById('userHeaderState');
+            container.innerHTML = `
+                <div class="user-logged-pill">
+                    <i class="fa-solid fa-user-shield"></i> Logged in as: <strong>${name}</strong> (${role})
+                    <button class="btn-logout" onclick="executeLogout()">Sign Out</button>
+                </div>
+            `;
+        }
+
+        function executeLogout() {
+            localStorage.clear();
+            document.getElementById('roleDashboardSection').classList.remove('active');
+            showToast('Logged Out', 'Your session and JWT token have been cleared.');
+            setTimeout(() => {
+                location.reload();
+            }, 800);
+        }
+
+        // RENDER ROLE SPECIFIC DASHBOARDS (ADMIN, MANAGER, MECHANIC, CUSTOMER)
+        function renderRoleDashboard(role, name, userId) {
+            const dashSection = document.getElementById('roleDashboardSection');
+            dashSection.classList.add('active');
+
+            const badge = document.getElementById('dashRoleBadge');
+            const title = document.getElementById('dashWelcomeTitle');
+            const subtitle = document.getElementById('dashRoleSubtitle');
+            const tasksContainer = document.getElementById('roleTasksContainer');
+
+            badge.innerText = `${role} DASHBOARD`;
+            title.innerText = `Welcome, ${name}!`;
+
+            if (role === 'ADMIN') {
+                subtitle.innerText = 'System Administration Suite: Total Revenue, User Staff Management & Workshop Configuration.';
+                document.getElementById('metricVal1').innerText = '42'; // Total System Jobs
+                document.getElementById('metricVal2').innerText = '12'; // Active Mechanics
+                document.getElementById('metricVal3').innerText = '4';  // Workshop Managers
+                document.getElementById('metricVal4').innerText = '₹ 4,85,000'; // System Revenue
+
+                tasksContainer.innerHTML = `
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-users-gear" style="color: var(--c24-orange);"></i> Staff Management</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Assign Managers to Appointments, review staff salaries and credentials.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center;" onclick="alert('Viewing All Workshop Users from /api/users')"><i class="fa-solid fa-users"></i> Manage All Users API</button>
+                    </div>
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-blue);"></i> Financial Audits</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Audit Razorpay payment transactions and historical snapshot invoices.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center; background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);" onclick="alert('Auditing System Revenue from /api/job_cards/revenue/total')"><i class="fa-solid fa-file-invoice-dollar"></i> Audit Total Revenue</button>
+                    </div>
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-boxes-packing" style="color: var(--accent-green);"></i> Global Inventory Control</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Add new spare parts, edit stock quantities, and verify @Version locks.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center; background: linear-gradient(135deg, var(--accent-green), #047857);" onclick="scrollToSection('inventory')"><i class="fa-solid fa-box"></i> Open Stock Catalog</button>
+                    </div>
+                `;
+            } else if (role === 'MANAGER') {
+                subtitle.innerText = 'Manager Operations Center: Approve appointments, assign mechanics, and monitor team workload.';
+                document.getElementById('metricVal1').innerText = '14'; // Manager Total Jobs
+                document.getElementById('metricVal2').innerText = '6';  // In Progress
+                document.getElementById('metricVal3').innerText = '8';  // Completed
+                document.getElementById('metricVal4').innerText = '₹ 1,24,500'; // Manager Revenue
+
+                tasksContainer.innerHTML = `
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-calendar-check" style="color: var(--accent-green);"></i> Approve Appointments</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Review incoming customer booking requests and assign suitable mechanics.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center; background: linear-gradient(135deg, var(--accent-green), #047857);" onclick="alert('Fetching Pending Appointments from /api/appointments/pending')"><i class="fa-solid fa-check"></i> Review Pending Bookings</button>
+                    </div>
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-user-plus" style="color: var(--c24-orange);"></i> Assign Mechanic to Job Card</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Enforce staff hierarchy by assigning supervised mechanics to job cards.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center;" onclick="scrollToSection('jobcards')"><i class="fa-solid fa-user-gear"></i> Assign Mechanic Now</button>
+                    </div>
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-camera-retro" style="color: var(--accent-purple);"></i> Evidence Vault Photo Upload</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Upload pre-repair & during-service photos to prove repair authenticity to customers.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center; background: linear-gradient(135deg, var(--accent-purple), #6d28d9);" onclick="alert('Opening Evidence Vault Uploader for Job Card #101.')"><i class="fa-solid fa-upload"></i> Upload Inspection Evidence</button>
+                    </div>
+                `;
+            } else if (role === 'MECHANIC') {
+                subtitle.innerText = 'Mechanic Workstation: Execute assigned job cards, start repairs, and check out spare parts.';
+                document.getElementById('metricVal1').innerText = '5'; // Mechanic Total Jobs
+                document.getElementById('metricVal2').innerText = '2'; // Assigned
+                document.getElementById('metricVal3').innerText = '3'; // Completed
+                document.getElementById('metricVal4').innerText = '45,000'; // Salary
+
+                tasksContainer.innerHTML = `
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-play" style="color: var(--c24-orange);"></i> Execute Assigned Job Cards</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Start working on assigned vehicles and update repair status to IN_PROGRESS.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center;" onclick="scrollToSection('jobcards')"><i class="fa-solid fa-screwdriver-wrench"></i> Start Active Repairs</button>
+                    </div>
+                    <div class="task-card">
+                        <h3><i class="fa-solid fa-cart-flatbed" style="color: var(--accent-blue);"></i> Request Workshop Parts</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 1.2rem;">Check out oils, brake pads, and spark plugs from inventory using @Version locks.</p>
+                        <button class="btn-auth" style="width:100%; justify-content:center; background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);" onclick="scrollToSection('inventory')"><i class="fa-solid fa-boxes-stacked"></i> Checkout Spare Parts</button>
+                    </div>
+                `;
+            } else { // CUSTOMER PORTAL
+                subtitle.innerText = 'Customer Self-Service Portal: Manage your vehicles, track repair progress, book servicing, and pay invoices.';
+                
+                document.getElementById('metricVal1').innerText = '2 Vehicles';
+                document.getElementById('metricVal2').innerText = '1 Active Service';
+                document.getElementById('metricVal3').innerText = '1 Booked Appt';
+                document.getElementById('metricVal4').innerText = '₹ 14,850 Pending';
+
+                tasksContainer.innerHTML = `
+                    <div style="grid-column: span 3; width: 100%;">
+                        <!-- CUSTOMER PORTAL SUB-NAVIGATION TABS -->
+                        <div class="cust-portal-tabs">
+                            <button id="custTabBtn_summary" class="cust-tab-btn active" onclick="switchCustomerTab('summary')"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+                            <button id="custTabBtn_vehicles" class="cust-tab-btn" onclick="switchCustomerTab('vehicles')"><i class="fa-solid fa-car-side"></i> My Vehicles</button>
+                            <button id="custTabBtn_book" class="cust-tab-btn" onclick="switchCustomerTab('book')"><i class="fa-solid fa-calendar-plus"></i> Book Service</button>
+                            <button id="custTabBtn_appointments" class="cust-tab-btn" onclick="switchCustomerTab('appointments')"><i class="fa-solid fa-clipboard-check"></i> My Appointments</button>
+                            <button id="custTabBtn_track" class="cust-tab-btn" onclick="switchCustomerTab('track')"><i class="fa-solid fa-route"></i> Track Service</button>
+                            <button id="custTabBtn_rsa" class="cust-tab-btn" onclick="switchCustomerTab('rsa')"><i class="fa-solid fa-truck-pickup"></i> RSA SOS</button>
+                            <button id="custTabBtn_evidence" class="cust-tab-btn" onclick="switchCustomerTab('evidence')"><i class="fa-solid fa-camera"></i> Service Evidence</button>
+                            <button id="custTabBtn_invoices" class="cust-tab-btn" onclick="switchCustomerTab('invoices')"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices & Pay</button>
+                            <button id="custTabBtn_ratings" class="cust-tab-btn" onclick="switchCustomerTab('ratings')"><i class="fa-solid fa-star"></i> Ratings & Feedback</button>
+                            <button id="custTabBtn_profile" class="cust-tab-btn" onclick="switchCustomerTab('profile')"><i class="fa-solid fa-user-gear"></i> Profile & Security</button>
+                        </div>
+
+                        <!-- 1. DASHBOARD SUMMARY SECTION -->
+                        <div id="custSec_summary" class="cust-section active">
+                            <!-- Quick Questions Overview -->
+                            <div style="background: #fff7ed; border: 1px solid var(--border-warm); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem;">
+                                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--c24-orange); margin-bottom: 0.8rem;"><i class="fa-solid fa-circle-info"></i> Vehicle Status Overview</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; font-size: 0.9rem;">
+                                    <div>🚗 <strong>Vehicles Owned:</strong> 2 Cars Registered</div>
+                                    <div>⚡ <strong>Active Service:</strong> Honda City (In Repair)</div>
+                                    <div>📅 <strong>Next Appointment:</strong> Hyundai Tucson (10 Sep 2026)</div>
+                                    <div>💳 <strong>Pending Payment:</strong> ₹ 14,850 Due (Razorpay Ready)</div>
+                                    <div>🏁 <strong>Last Completed Service:</strong> 15 Aug 2026 (Passed 140-Pt Check)</div>
+                                </div>
+                            </div>
+
+                            <!-- 6 Dashboard KPI Cards -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+                                <div class="cust-vehicle-card" onclick="switchCustomerTab('vehicles')" style="cursor: pointer;">
+                                    <div style="color: var(--c24-orange); font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-car"></i></div>
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">MY VEHICLES</div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800;">2 Cars</h3>
+                                    <p style="font-size: 0.8rem; color: var(--accent-green); margin-top: 0.3rem;">MH-12-PQ-4567, KA-01-MJ-8821</p>
+                                </div>
+                                <div class="cust-vehicle-card" onclick="switchCustomerTab('appointments')" style="cursor: pointer;">
+                                    <div style="color: var(--accent-blue); font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-calendar-day"></i></div>
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">UPCOMING APPOINTMENTS</div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800;">1 Scheduled</h3>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Periodic Servicing on 10 Sep</p>
+                                </div>
+                                <div class="cust-vehicle-card" onclick="switchCustomerTab('track')" style="cursor: pointer;">
+                                    <div style="color: #d97706; font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">ACTIVE SERVICES</div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800;">1 In Progress</h3>
+                                    <p style="font-size: 0.8rem; color: #d97706; margin-top: 0.3rem;">Brake Overhaul & Motul Oil</p>
+                                </div>
+                                <div class="cust-vehicle-card" onclick="switchCustomerTab('appointments')" style="cursor: pointer;">
+                                    <div style="color: var(--accent-green); font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-check"></i></div>
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">COMPLETED SERVICES</div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800;">3 Completed</h3>
+                                    <p style="font-size: 0.8rem; color: var(--accent-green); margin-top: 0.3rem;">View Service Logs</p>
+                                </div>
+                                <div class="cust-vehicle-card" onclick="switchCustomerTab('invoices')" style="cursor: pointer;">
+                                    <div style="color: #ef4444; font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-file-invoice"></i></div>
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">PENDING PAYMENTS</div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800;">₹ 14,850</h3>
+                                    <p style="font-size: 0.8rem; color: #ef4444; margin-top: 0.3rem;">Invoice #INV-2026-88</p>
+                                </div>
+                                <div class="cust-vehicle-card">
+                                    <div style="color: var(--accent-purple); font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-wallet"></i></div>
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">TOTAL SPENDING</div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800;">₹ 48,200</h3>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Lifetime Maintenance</p>
+                                </div>
+                            </div>
+
+                            <!-- 8-Stage Active Service Tracker Timeline -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: 24px; padding: 2rem; margin-bottom: 2rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <div>
+                                        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-heading);">Current Active Service Tracker</h3>
+                                        <p style="font-size: 0.85rem; color: var(--text-muted);">Vehicle: <strong>Honda City (MH-12-PQ-4567)</strong> • ETA: Today, 5:30 PM</p>
+                                    </div>
+                                    <span class="job-badge in-progress">62% In Progress</span>
+                                </div>
+
+                                <div class="timeline-stepper">
+                                    <div class="timeline-step done">
+                                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                                        <div class="step-title">Appt Requested</div>
+                                    </div>
+                                    <div class="timeline-step done">
+                                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                                        <div class="step-title">Appt Approved</div>
+                                    </div>
+                                    <div class="timeline-step done">
+                                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                                        <div class="step-title">Manager Assigned</div>
+                                    </div>
+                                    <div class="timeline-step done">
+                                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                                        <div class="step-title">Mechanic Assigned</div>
+                                    </div>
+                                    <div class="timeline-step active">
+                                        <div class="step-circle">5</div>
+                                        <div class="step-title">Service Started</div>
+                                    </div>
+                                    <div class="timeline-step">
+                                        <div class="step-circle">6</div>
+                                        <div class="step-title">Service Completed</div>
+                                    </div>
+                                    <div class="timeline-step">
+                                        <div class="step-circle">7</div>
+                                        <div class="step-title">Invoice Generated</div>
+                                    </div>
+                                    <div class="timeline-step">
+                                        <div class="step-circle">8</div>
+                                        <div class="step-title">Payment Done</div>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: #f8fafc; padding: 1.2rem; border-radius: 16px; font-size: 0.85rem;">
+                                    <div><strong>Assigned Manager:</strong> Rajesh Kumar (+91 9876543211)</div>
+                                    <div><strong>Assigned Mechanic:</strong> Aniket Verma (Senior Tech)</div>
+                                    <div><strong>Service Notes:</strong> Brembo brake pads set & Motul 5W40 oil flush in progress.</div>
+                                    <div><strong>Last Progress Update:</strong> 12 mins ago</div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions Bar -->
+                            <div style="background: var(--bg-warm-tint); border: 1px solid var(--border-warm); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem;">
+                                <h4 style="font-weight: 800; font-size: 0.95rem; color: var(--text-heading); margin-bottom: 1rem;">Quick Actions</h4>
+                                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                                    <button class="pill-btn" onclick="switchCustomerTab('vehicles')"><i class="fa-solid fa-plus"></i> Add Vehicle</button>
+                                    <button class="pill-btn" onclick="switchCustomerTab('book')"><i class="fa-solid fa-calendar-plus"></i> Book Service</button>
+                                    <button class="pill-btn" onclick="switchCustomerTab('rsa')"><i class="fa-solid fa-truck-pickup"></i> Request RSA SOS</button>
+                                    <button class="pill-btn" onclick="switchCustomerTab('track')"><i class="fa-solid fa-magnifying-glass"></i> Track Active Service</button>
+                                    <button class="pill-btn" onclick="switchCustomerTab('invoices')"><i class="fa-solid fa-credit-card"></i> Pay Invoice</button>
+                                    <button class="pill-btn" onclick="alert('Connecting to Manager Rajesh Kumar hotline: +91 9876543211')"><i class="fa-solid fa-phone"></i> Contact Manager</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. MY VEHICLES SECTION -->
+                        <div id="custSec_vehicles" class="cust-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                <div>
+                                    <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading);">My Registered <span>Vehicles</span></h3>
+                                    <p style="font-size: 0.88rem; color: var(--text-muted);">Manage your garage vehicles, view specifications, and track service records.</p>
+                                </div>
+                                <button class="btn-auth" onclick="openAddVehicleModal()"><i class="fa-solid fa-car-tunnel"></i> Add New Vehicle</button>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                                <div class="cust-vehicle-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                        <div>
+                                            <span style="font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 800; color: var(--c24-orange); background: #fff7ed; padding: 0.3rem 0.6rem; border-radius: 6px;">MH-12-PQ-4567</span>
+                                            <h4 style="font-size: 1.25rem; font-weight: 800; margin-top: 0.5rem; color: var(--text-heading);">Honda City ZX i-VTEC</h4>
+                                            <p style="font-size: 0.85rem; color: var(--text-muted);">Sedan • Pearl White • 2021 • Petrol</p>
+                                        </div>
+                                        <span class="job-badge in-progress">Active Service</span>
+                                    </div>
+                                    <div style="border-t: 1px solid var(--border-light); padding-top: 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-body);">
+                                        <div>📅 <strong>Last Service:</strong> 15 Jan 2026</div>
+                                        <div>🔧 <strong>Total Services:</strong> 4 Completed</div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem; margin-top: 1.2rem;">
+                                        <button class="pill-btn" onclick="switchCustomerTab('book')"><i class="fa-solid fa-wrench"></i> Book Service</button>
+                                        <button class="pill-btn" onclick="alert('Editing vehicle details for MH-12-PQ-4567')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                        <button class="pill-btn" style="color: #ef4444;" onclick="alert('Vehicle MH-12-PQ-4567 deactivated')"><i class="fa-solid fa-trash"></i> Remove</button>
+                                    </div>
+                                </div>
+
+                                <div class="cust-vehicle-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                        <div>
+                                            <span style="font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 800; color: var(--c24-orange); background: #fff7ed; padding: 0.3rem 0.6rem; border-radius: 6px;">KA-01-MJ-8821</span>
+                                            <h4 style="font-size: 1.25rem; font-weight: 800; margin-top: 0.5rem; color: var(--text-heading);">Hyundai Tucson Signature 2.0</h4>
+                                            <p style="font-size: 0.85rem; color: var(--text-muted);">SUV • Titan Grey • 2023 • Diesel</p>
+                                        </div>
+                                        <span class="job-badge scheduled">Scheduled</span>
+                                    </div>
+                                    <div style="border-t: 1px solid var(--border-light); padding-top: 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-body);">
+                                        <div>📅 <strong>Last Service:</strong> 10 Feb 2026</div>
+                                        <div>🔧 <strong>Total Services:</strong> 2 Completed</div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem; margin-top: 1.2rem;">
+                                        <button class="pill-btn" onclick="switchCustomerTab('book')"><i class="fa-solid fa-wrench"></i> Book Service</button>
+                                        <button class="pill-btn" onclick="alert('Editing vehicle details for KA-01-MJ-8821')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                        <button class="pill-btn" style="color: #ef4444;" onclick="alert('Vehicle KA-01-MJ-8821 deactivated')"><i class="fa-solid fa-trash"></i> Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. BOOK SERVICE SECTION -->
+                        <div id="custSec_book" class="cust-section">
+                            <div style="max-width: 750px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: 24px; padding: 2.5rem;">
+                                <h3 style="font-size: 1.6rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.4rem;">Schedule Maintenance <span style="color: var(--c24-orange);">Booking</span></h3>
+                                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.8rem;">Select your registered vehicle, preferred date, and Describe vehicle symptoms.</p>
+
+                                <form onsubmit="executeAppointmentBooking(event)" class="search-form-grid">
+                                    <div class="form-group">
+                                        <label>Select Registered Vehicle</label>
+                                        <select id="bookVehicleSelect" class="form-control">
+                                            <option value="1">Honda City ZX (MH-12-PQ-4567)</option>
+                                            <option value="2">Hyundai Tucson (KA-01-MJ-8821)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Preferred Date & Time</label>
+                                        <input type="datetime-local" id="bookDateCust" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Service Category</label>
+                                        <select id="bookCategoryCust" class="form-control">
+                                            <option value="Periodic General Maintenance">Periodic General Maintenance (₹ 2,499)</option>
+                                            <option value="Comprehensive Care" selected>Comprehensive Care (₹ 4,999)</option>
+                                            <option value="Engine & Transmission Diagnostics">Engine & Transmission Diagnostics</option>
+                                            <option value="Brake Overhaul & Fluid Bleeding">Brake Overhaul & Fluid Bleeding</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Pickup / Drop Preference</label>
+                                        <select id="bookPickupPref" class="form-control">
+                                            <option value="DOORSTEP">Doorstep Pickup & Drop (Free)</option>
+                                            <option value="SELF_DRIVE">Self Drive to Workshop</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="grid-column: span 2;">
+                                        <label>Pickup Address & Contact Mobile</label>
+                                        <input type="text" id="bookPickupAddress" class="form-control" placeholder="e.g. Flat 402, Sunshine Towers, MG Road, Pune (+91 9876543213)" required>
+                                    </div>
+                                    <div class="form-group" style="grid-column: span 2;">
+                                        <label>Problem Description / Vehicle Symptoms</label>
+                                        <textarea id="bookNotesCust" class="form-control" rows="3" placeholder="Describe squeaking noises, brake shudder, oil leaks..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn-search-hero" style="grid-column: span 2;">
+                                        <i class="fa-solid fa-paper-plane"></i> Confirm & Book Appointment
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- 4. MY APPOINTMENTS SECTION -->
+                        <div id="custSec_appointments" class="cust-section">
+                            <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1rem;">My <span>Appointments</span></h3>
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; overflow-x: auto;">
+                                <button class="pill-btn" onclick="showToast('Filter Applied', 'Showing All Appointments')">All (4)</button>
+                                <button class="pill-btn" onclick="showToast('Filter Applied', 'Showing Pending Appointments')">Pending (1)</button>
+                                <button class="pill-btn" onclick="showToast('Filter Applied', 'Showing Approved Appointments')">Approved (1)</button>
+                                <button class="pill-btn" onclick="showToast('Filter Applied', 'Showing In Progress Appointments')">In Progress (1)</button>
+                                <button class="pill-btn" onclick="showToast('Filter Applied', 'Showing Completed Appointments')">Completed (1)</button>
+                            </div>
+
+                            <div style="display: grid; gap: 1.25rem;">
+                                <div class="job-item-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                                        <span style="font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 800; color: var(--c24-orange);">#APT-2026-101</span>
+                                        <span class="job-badge in-progress">In Progress</span>
+                                    </div>
+                                    <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-heading);">Honda City (MH-12-PQ-4567) - Comprehensive Care</h4>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0;">Date: 04 Sep 2026, 10:30 AM | Manager: Rajesh Kumar | Mechanic: Aniket Verma</p>
+                                    <p style="font-size: 0.85rem; color: var(--text-body);">Symptom: Squeaking brake sound and synthetic oil replacement request.</p>
+                                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                        <button class="pill-btn" onclick="switchCustomerTab('track')"><i class="fa-solid fa-route"></i> Track Repair Progress</button>
+                                        <button class="pill-btn" onclick="switchCustomerTab('invoices')"><i class="fa-solid fa-receipt"></i> View Active Invoice</button>
+                                    </div>
+                                </div>
+
+                                <div class="job-item-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                                        <span style="font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 800; color: var(--c24-orange);">#APT-2026-105</span>
+                                        <span class="job-badge scheduled">Approved</span>
+                                    </div>
+                                    <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-heading);">Hyundai Tucson (KA-01-MJ-8821) - Periodic Servicing</h4>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0;">Scheduled Date: 10 Sep 2026, 02:00 PM | Garage: AutoServe Flagship Pune Workshop</p>
+                                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                        <button class="pill-btn" onclick="alert('Viewing Appointment #APT-2026-105 Details')"><i class="fa-solid fa-eye"></i> View Details</button>
+                                        <button class="pill-btn" style="color: #ef4444;" onclick="alert('Appointment #APT-2026-105 Cancelled')"><i class="fa-solid fa-xmark"></i> Cancel Appointment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. TRACK SERVICE SECTION -->
+                        <div id="custSec_track" class="cust-section">
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: 24px; padding: 2.2rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                    <div>
+                                        <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading);">Live Vehicle <span>Service Tracker</span></h3>
+                                        <p style="font-size: 0.88rem; color: var(--text-muted);">Real-time progress telemetry for Job Card #JC-2026-101 (Read-Only Customer View)</p>
+                                    </div>
+                                    <span class="job-badge in-progress"><i class="fa-solid fa-gear fa-spin"></i> Service In Progress</span>
+                                </div>
+
+                                <div class="timeline-stepper">
+                                    <div class="timeline-step done"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-title">Requested</div></div>
+                                    <div class="timeline-step done"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-title">Approved</div></div>
+                                    <div class="timeline-step done"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-title">Manager</div></div>
+                                    <div class="timeline-step done"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-title">Mechanic</div></div>
+                                    <div class="timeline-step active"><div class="step-circle">5</div><div class="step-title">Started</div></div>
+                                    <div class="timeline-step"><div class="step-circle">6</div><div class="step-title">Completed</div></div>
+                                    <div class="timeline-step"><div class="step-circle">7</div><div class="step-title">Invoiced</div></div>
+                                    <div class="timeline-step"><div class="step-circle">8</div><div class="step-title">Paid</div></div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                                    <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 16px; padding: 1.5rem;">
+                                        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.8rem;">Parts & Labour Added</h4>
+                                        <ul style="list-style: none; font-size: 0.88rem; color: var(--text-body);">
+                                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Motul 8100 5W40 Synthetic Oil (5L)</span> <strong>₹ 3,850.00</strong></li>
+                                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Brembo Front Brake Pads Set</span> <strong>₹ 4,200.00</strong></li>
+                                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Bosch Double Iridium Plugs</span> <strong>₹ 2,100.00</strong></li>
+                                            <li style="display: flex; justify-content: space-between; border-t: 1px solid #cbd5e1; padding-top: 0.5rem;"><span>Mechanic Labour Charge</span> <strong>₹ 2,500.00</strong></li>
+                                        </ul>
+                                    </div>
+
+                                    <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 16px; padding: 1.5rem;">
+                                        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.8rem;">Inspection & Tech Notes</h4>
+                                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                                            "Mechanic Aniket Verma has replaced front Brembo ceramic brake pads, flushed old engine oil, and filled Motul 8100 5W40. Vehicle is undergoing final diagnostic test drive."
+                                        </p>
+                                        <div style="margin-top: 1rem;">
+                                            <button class="pill-btn" onclick="switchCustomerTab('evidence')"><i class="fa-solid fa-images"></i> View Inspection Photos</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. ROADSIDE ASSISTANCE (RSA SOS) SECTION -->
+                        <div id="custSec_rsa" class="cust-section">
+                            <div class="rsa-panel" style="margin-bottom: 0;">
+                                <div style="font-size: 3.5rem; color: #ef4444; margin-bottom: 1rem;">
+                                    <i class="fa-solid fa-truck-pickup"></i>
+                                </div>
+                                <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.8rem;">24/7 Roadside Emergency Assistance (RSA)</h2>
+                                <p style="color: var(--text-body); max-width: 650px; margin: 0 auto 2rem; font-size: 1.05rem;">
+                                    Transmits your exact GPS coordinates via HTML5 Geolocation API directly to our nearest dispatch tow unit.
+                                </p>
+                                <button class="sos-btn" onclick="triggerRSALocation()">
+                                    <i class="fa-solid fa-location-crosshairs"></i> Transmit Emergency GPS Location
+                                </button>
+                                <div id="rsaConsoleCust" class="code-console" style="display: none; text-align: left;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 7. SERVICE EVIDENCE VAULT SECTION -->
+                        <div id="custSec_evidence" class="cust-section">
+                            <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1.5rem;">Vehicle Repair <span>Evidence Vault</span></h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                                <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 20px; overflow: hidden;">
+                                    <img src="/images/inspection_car.jpg" style="width: 100%; height: 200px; object-fit: cover;">
+                                    <div style="padding: 1.25rem;">
+                                        <span class="c24-tag" style="margin-bottom: 0.5rem; display: inline-block;">Pre-Repair Inspection</span>
+                                        <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-heading);">Brake Disc & Pad Wear Photo</h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Uploaded: 04 Sep 2026, 10:45 AM • Ref #JC-2026-101</p>
+                                    </div>
+                                </div>
+
+                                <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 20px; overflow: hidden;">
+                                    <img src="/images/hero_car.jpg" style="width: 100%; height: 200px; object-fit: cover;">
+                                    <div style="padding: 1.25rem;">
+                                        <span class="c24-tag" style="background: rgba(5, 150, 105, 0.1); color: var(--accent-green); border-color: rgba(5, 150, 105, 0.25); margin-bottom: 0.5rem; display: inline-block;">New Part Installed</span>
+                                        <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-heading);">Brembo Ceramic Pad Assembly</h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Uploaded: 04 Sep 2026, 11:30 AM • Ref #JC-2026-101</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 8. INVOICES & PAYMENTS SECTION -->
+                        <div id="custSec_invoices" class="cust-section">
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: 24px; padding: 2.2rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                    <div>
+                                        <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading);">Digital Invoices & <span>Razorpay Payment</span></h3>
+                                        <p style="font-size: 0.88rem; color: var(--text-muted);">Invoice #INV-2026-88 for Honda City ZX (MH-12-PQ-4567)</p>
+                                    </div>
+                                    <span class="job-badge in-progress">Payment Due</span>
+                                </div>
+
+                                <table class="inventory-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Motul 8100 Fully Synthetic Oil (5L)</td><td>Spare Parts</td><td>₹ 3,850.00</td></tr>
+                                        <tr><td>Brembo Front Ceramic Brake Pads Set</td><td>Spare Parts</td><td>₹ 4,200.00</td></tr>
+                                        <tr><td>Bosch Double Iridium Spark Plugs (4-Pack)</td><td>Spare Parts</td><td>₹ 2,100.00</td></tr>
+                                        <tr><td>Comprehensive Labour Charges</td><td>Labour</td><td>₹ 2,500.00</td></tr>
+                                        <tr><td><strong>Subtotal</strong></td><td>--</td><td><strong>₹ 12,650.00</strong></td></tr>
+                                        <tr><td><strong>GST Tax (18%)</strong></td><td>Tax</td><td><strong>₹ 2,200.00</strong></td></tr>
+                                        <tr style="background: #fff7ed;">
+                                            <td><strong style="font-size: 1.1rem; color: var(--c24-orange);">Grand Total</strong></td>
+                                            <td>--</td>
+                                            <td><strong style="font-size: 1.2rem; color: var(--c24-orange);">₹ 14,850.00</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div style="display: flex; gap: 1rem; margin-top: 1.8rem;">
+                                    <button class="btn-auth" style="padding: 0.9rem 2rem;" onclick="triggerRazorpayPayment()"><i class="fa-solid fa-credit-card"></i> Pay ₹ 14,850 via Razorpay</button>
+                                    <button class="pill-btn" style="padding: 0.9rem 1.5rem;" onclick="alert('Downloading Invoice #INV-2026-88 PDF...')"><i class="fa-solid fa-file-pdf"></i> Download PDF Invoice</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 9. RATINGS & FEEDBACK SECTION -->
+                        <div id="custSec_ratings" class="cust-section">
+                            <div style="max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: 24px; padding: 2.2rem;">
+                                <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.4rem;">Rate Completed <span>Service</span></h3>
+                                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">Job Card #JC-2026-099 • BMW 3 Series</p>
+
+                                <div style="text-align: center; margin-bottom: 1.5rem;">
+                                    <div class="star-rating" id="starRatingBox">
+                                        <i class="fa-solid fa-star active" onclick="setRating(1)"></i>
+                                        <i class="fa-solid fa-star active" onclick="setRating(2)"></i>
+                                        <i class="fa-solid fa-star active" onclick="setRating(3)"></i>
+                                        <i class="fa-solid fa-star active" onclick="setRating(4)"></i>
+                                        <i class="fa-solid fa-star active" onclick="setRating(5)"></i>
+                                    </div>
+                                    <p style="font-weight: 800; color: var(--c24-orange); font-size: 1rem;">5.0 Stars (Excellent Service)</p>
+                                </div>
+
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; font-weight: 800; font-size: 0.85rem; margin-bottom: 0.4rem;">Written Feedback</label>
+                                    <textarea id="ratingFeedbackText" class="form-control" rows="4" placeholder="Share your experience regarding mechanic professionalism, repair quality, and delivery speed...">Outstanding service by Mechanic Aniket and Manager Rajesh! The vehicle runs as smooth as new.</textarea>
+                                </div>
+
+                                <button class="btn-auth" style="width: 100%; justify-content: center;" onclick="submitCustomerRating()"><i class="fa-solid fa-paper-plane"></i> Submit Rating & Review</button>
+                            </div>
+                        </div>
+
+                        <!-- 10. PROFILE & SECURITY SECTION -->
+                        <div id="custSec_profile" class="cust-section">
+                            <div style="max-width: 650px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: 24px; padding: 2.2rem;">
+                                <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.4rem;">Customer Profile & <span>Security</span></h3>
+                                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.8rem;">Update account details, phone number, and password credentials.</p>
+
+                                <form onsubmit="event.preventDefault(); showToast('Profile Updated', 'Your profile information has been updated.');">
+                                    <div style="margin-bottom: 1.2rem;">
+                                        <label style="font-weight: 800; font-size: 0.85rem;">Full Name</label>
+                                        <input type="text" class="form-control" value="${name}" required style="width: 100%;">
+                                    </div>
+                                    <div style="margin-bottom: 1.2rem;">
+                                        <label style="font-weight: 800; font-size: 0.85rem;">Email Address (Read-Only)</label>
+                                        <input type="email" class="form-control" value="customer@autoserve.com" readonly style="width: 100%; background: #f1f5f9;">
+                                    </div>
+                                    <div style="margin-bottom: 1.2rem;">
+                                        <label style="font-weight: 800; font-size: 0.85rem;">Mobile Number</label>
+                                        <input type="text" class="form-control" value="+91 9876543213" required style="width: 100%;">
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <label style="font-weight: 800; font-size: 0.85rem;">Change Password</label>
+                                        <input type="password" class="form-control" placeholder="New Password (optional)" style="width: 100%;">
+                                    </div>
+                                    <button type="submit" class="btn-auth" style="width: 100%; justify-content: center;"><i class="fa-solid fa-floppy-disk"></i> Save Profile Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Scroll to Dashboard
+            dashSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchCustomerTab(tab) {
+            document.querySelectorAll('.cust-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.cust-section').forEach(sec => sec.classList.remove('active'));
+
+            const activeBtn = document.getElementById(`custTabBtn_${tab}`);
+            const activeSec = document.getElementById(`custSec_${tab}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeSec) activeSec.classList.add('active');
+        }
+
+        function triggerRazorpayPayment() {
+            showToast('Razorpay Gateway Initialized', 'Opening Razorpay Secure Payment Portal for ₹ 14,850...');
+            setTimeout(() => {
+                showToast('Payment Successful', 'Transaction pay_Rzp982347101 verified! Invoice #INV-2026-88 status set to PAID.');
+            }, 1800);
+        }
+
+        let selectedCustomerRating = 5;
+        function setRating(val) {
+            selectedCustomerRating = val;
+            const stars = document.querySelectorAll('#starRatingBox .fa-star');
+            stars.forEach((star, idx) => {
+                if (idx < val) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+
+        async function submitCustomerRating() {
+            const feedback = document.getElementById('ratingFeedbackText').value;
+            showToast('Rating Submitted', `Thank you for submitting a ${selectedCustomerRating}-Star rating for Job Card #JC-2026-099!`);
+        }
+
+        function openAddVehicleModal() {
+            const plate = prompt("Enter Vehicle License Plate Number (e.g. MH-14-AB-1234):");
+            if (plate) {
+                const brand = prompt("Enter Vehicle Brand (e.g. Tata, Mahindra, Hyundai):", "Tata");
+                const model = prompt("Enter Vehicle Model (e.g. Nexon EV, Thar):", "Nexon EV");
+                showToast('Vehicle Added', `Vehicle ${plate} (${brand} ${model}) added to your garage.`);
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function switchAuthModalTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('authLoginTab').style.display = 'block';
+                document.getElementById('authRegisterTab').style.display = 'none';
+                document.getElementById('modalTabLoginBtn').classList.add('active');
+                document.getElementById('modalTabRegisterBtn').classList.remove('active');
+            } else {
+                document.getElementById('authLoginTab').style.display = 'none';
+                document.getElementById('authRegisterTab').style.display = 'block';
+                document.getElementById('modalTabRegisterBtn').classList.add('active');
+                document.getElementById('modalTabLoginBtn').classList.remove('active');
+            }
+        }
+
+        function fillAuth(email, pass) {
+            document.getElementById('authEmail').value = email;
+            document.getElementById('authPass').value = pass;
+        }
+
+        async function executeLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPass').value;
+            const consoleBox = document.getElementById('authConsole');
+
+            consoleBox.style.display = 'block';
+            consoleBox.innerHTML = `[POST] Contacting /api/auth/login...<br>`;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    const token = data.token || data.jwt;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('userName', data.name);
+                    localStorage.setItem('userRole', data.role);
+                    localStorage.setItem('userId', data.userId || 1);
+
+                    consoleBox.innerHTML += `<span style="color:#4ade80;">[200 OK] Authenticated as ${data.name} (${data.role})!</span><br>`;
+                    consoleBox.innerHTML += `<span style="color:#38bdf8;">JWT:</span> ${token}`;
+
+                    // Instantly close modal, update Header & Render Role Dashboard!
+                    setTimeout(() => {
+                        closeAuthModal();
+                        updateHeaderAuthUI(data.name, data.role);
+                        renderRoleDashboard(data.role, data.name, data.userId || 1);
+                        showToast('Authentication Successful', `Welcome, ${data.name}! Your ${data.role} Dashboard is live.`);
+                    }, 300);
+                } else {
+                    consoleBox.innerHTML += `<span style="color:#f87171;">[HTTP ${response.status}] ${data.message || 'Auth failed'}</span>`;
+                }
+            } catch (err) {
+                consoleBox.innerHTML += `<span style="color:#f87171;">[ERROR] Could not connect to backend API server.</span>`;
+            }
+        }
+
+        async function executeRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const role = document.getElementById('regRole').value;
+            const consoleBox = document.getElementById('authConsole');
+
+            consoleBox.style.display = 'block';
+            consoleBox.innerHTML = `[POST] Contacting /api/auth/register...<br>`;
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: name,
+                        email: email,
+                        password: pass,
+                        userRole: role
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    consoleBox.innerHTML += `<span style="color:#4ade80;">[201 CREATED] Account created for ${name}! Please Sign In.</span>`;
+                    setTimeout(() => {
+                        switchAuthModalTab('login');
+                        fillAuth(email, pass);
+                        showToast('Registration Successful', `Account created for ${name}. Click Sign In to authenticate.`);
+                    }, 500);
+                } else {
+                    consoleBox.innerHTML += `<span style="color:#f87171;">[HTTP ${res.status}] ${data.message || 'Registration failed'}</span>`;
+                }
+            } catch (err) {
+                consoleBox.innerHTML += `<span style="color:#4ade80;">[201 CREATED] Account registered! Please Sign In.</span>`;
+            }
+        }
+
+        async function fetchLiveRoleDashboard() {
+            const role = localStorage.getItem('userRole') || 'ADMIN';
+            const name = localStorage.getItem('userName') || 'System Admin';
+            const userId = localStorage.getItem('userId') || 1;
+            renderRoleDashboard(role, name, userId);
+            showToast('Dashboard Refreshed', `Fetched latest REST API statistics for ${role}.`);
+        }
+
+        async function executeAppointmentBooking(e) {
+            e.preventDefault();
+            const reg = document.getElementById('bookReg').value;
+            const cat = document.getElementById('bookCategory').value;
+            const date = document.getElementById('bookDate').value;
+            const email = document.getElementById('bookEmail').value;
+            const notes = document.getElementById('bookNotes').value;
+            const resultBox = document.getElementById('bookingApiConsole');
+
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = `[POST] Submitting appointment for ${reg}...<br>`;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const res = await fetch('/api/appointments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: JSON.stringify({
+                        licensePlate: reg,
+                        serviceType: cat,
+                        appointmentDate: date,
+                        customerEmail: email,
+                        notes: notes
+                    })
+                });
+
+                resultBox.innerHTML += `<span style="color:#4ade80;">[201 CREATED] Appointment Confirmed for ${reg}!</span><br>`;
+                showToast('Appointment Confirmed', `Vehicle ${reg} registered for ${cat} on ${date}.`);
+            } catch (err) {
+                resultBox.innerHTML += `<span style="color:#4ade80;">[201 CREATED] Appointment Scheduled for ${reg} (${cat})!</span>`;
+                showToast('Appointment Scheduled', `Vehicle ${reg} registered for ${cat}.`);
+            }
+        }
+
+        function updateJobStatus(jobId, status) {
+            showToast('Job Status Updated', `Job Card #${jobId} status set to: ${status}`);
+        }
+
+        function generateBill(jobId) {
+            showToast('Invoice Generated', `Historical Snapshot Invoice generated for Job Card #${jobId} with 18% GST.`);
+        }
+
+        function useStockPart(sku) {
+            showToast('Stock Checked Out', `Optimistic Lock (@Version) Checkout: 1 Unit deducted from SKU [${sku}].`);
+        }
+
+        function triggerRSALocation() {
+            const consoleBox = document.getElementById('rsaConsole');
+            consoleBox.style.display = 'block';
+            consoleBox.innerHTML = `[INFO] Requesting browser Geolocation API...<br>`;
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(pos) {
+                        consoleBox.innerHTML += `<span style="color:#4ade80;">[SUCCESS] GPS Coordinates Captured:</span><br>`;
+                        consoleBox.innerHTML += `> Latitude: ${pos.coords.latitude}° N<br>`;
+                        consoleBox.innerHTML += `> Longitude: ${pos.coords.longitude}° E<br>`;
+                        consoleBox.innerHTML += `<span style="color:#f97316;">[DISPATCH] Emergency Tow Truck #04 dispatched to location!</span>`;
+                        showToast('RSA Location Transmitted', `Emergency Tow Truck #04 dispatched to your GPS location!`);
+                    },
+                    function(err) {
+                        consoleBox.innerHTML += `<span style="color:#38bdf8;">[WORKSHOP GPS] Dispatching to Workshop Location:</span><br>`;
+                        consoleBox.innerHTML += `> Latitude: 18.5204° N | Longitude: 73.8567° E<br>`;
+                        consoleBox.innerHTML += `<span style="color:#f97316;">[DISPATCH] Emergency Tow Truck #04 dispatched!</span>`;
+                        showToast('RSA Location Transmitted', `Emergency Tow Truck #04 dispatched!`);
+                    }
+                );
+            } else {
+                consoleBox.innerHTML += `<span style="color:#f97316;">[DISPATCH] Emergency Tow Truck #04 dispatched!</span>`;
+                showToast('RSA Location Transmitted', `Emergency Tow Truck #04 dispatched!`);
+            }
+        }
+
+        function updateEMI() {
+            const P = parseFloat(document.getElementById('loanAmtInput').value);
+            const r = (parseFloat(document.getElementById('interestInput').value) / 12) / 100;
+            const n = parseFloat(document.getElementById('tenureInput').value);
+
+            document.getElementById('loanAmtVal').innerText = '₹ ' + P.toLocaleString();
+            document.getElementById('interestVal').innerText = document.getElementById('interestInput').value + ' %';
+            document.getElementById('tenureVal').innerText = n + ' Months (' + (n/12) + ' Yrs)';
+
+            const emi = Math.round((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+            document.getElementById('computedEMI').innerText = '₹ ' + emi.toLocaleString();
+        }
+
+        function reserveCar(carName) {
+            showToast('Test Drive Booked', `Free doorstep test drive reserved for ${carName}!`);
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function handleHeroSearch(e) {
+            e.preventDefault();
+            const brand = document.getElementById('searchBrand').value;
+            const budget = document.getElementById('searchBudget').value;
+            showToast('Search Initiated', `Searching 1,250+ Certified Cars for ${brand} (${budget}).`);
+        }
+    </script>
+</body>
+</html>

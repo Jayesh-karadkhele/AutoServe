@@ -1,0 +1,54 @@
+# AutoServe Platform Root .gitignore
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.*
+!.env.example
+
+# Secret Local Configuration Profiles
+application-local.properties
+application-local.yml
+application-secret.properties
+application-secret.yml
+**/application-local.*
+**/application-secret.*
+
+# Archive / Obsolete Code
+archive/
+
+# Build Output Directories
+backend/target/
+frontend/dist/
+frontend/build/
+target/
+
+# Node Dependencies
+frontend/node_modules/
+
+# IDE & Tooling Secret / Local Settings Files
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.factorypath
+*.launch
+
+# Log & Heap Dump Files
+*.log
+*.log.*
+backend_log.txt
+build_errors.txt
+
+# Compiled Java Classes
+*.class
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
