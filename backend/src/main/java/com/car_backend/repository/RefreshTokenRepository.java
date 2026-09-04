@@ -28,6 +28,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     int revokeAllTokensForSession(@Param("sessionId") String sessionId, @Param("now") LocalDateTime now);
 
     @Modifying
-    @Query("DELETE FROM RefreshToken r WHERE r.expiresAt < :cutoff AND (r.consumedAt IS NOT NULL OR r.revokedAt IS NOT NULL)")
-    int deleteExpiredConsumedTokens(@Param("cutoff") LocalDateTime cutoff);
+    @Query("DELETE FROM RefreshToken r WHERE (r.consumedAt IS NOT NULL AND r.consumedAt < :consumedCutoff) OR (r.expiresAt < :expiredCutoff)")
+    int deleteOldTokens(@Param("consumedCutoff") LocalDateTime consumedCutoff, @Param("expiredCutoff") LocalDateTime expiredCutoff);
 }

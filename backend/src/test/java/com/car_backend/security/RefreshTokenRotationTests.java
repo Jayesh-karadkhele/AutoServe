@@ -179,4 +179,36 @@ public class RefreshTokenRotationTests {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status", is(401)));
     }
+
+    @Test
+    @DisplayName("Completely unknown refresh token hash does not revoke unrelated active user sessions")
+    void testUnknownRefreshTokenHashDoesNotRevokeUnrelatedSession() throws Exception {
+        String loginJson = """
+            {
+                "email": "testuser@autoserve.com",
+                "password": "ValidPass123!"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .header("Origin", "http://localhost:5173")
+                .header("X-AutoServe-Client", "web")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(status().isOk());
+
+        assertEquals(1, authSessionRepository.count());
+
+        Cookie unknownCookie = new Cookie("AUTOSERVE_REFRESH", "completely_unknown_token_value_xyz987654321");
+
+        mockMvc.perform(post("/api/auth/refresh")
+                .header("Origin", "http://localhost:5173")
+                .header("X-AutoServe-Client", "web")
+                .cookie(unknownCookie))
+                .andExpect(status().isUnauthorized());
+
+        // Verify active user session remains active
+        AuthSession session = authSessionRepository.findAll().get(0);
+        assertTrue(session.isActive());
+    }
 }

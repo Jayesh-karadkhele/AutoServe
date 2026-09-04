@@ -6,11 +6,12 @@ AutoServe Part 7A establishes a production-grade, stateful authentication securi
 ### Core Security Guarantees
 1. **Short-Lived JWT Access Tokens**: Signed using HMAC-SHA512 (`HS512`). Access tokens have a default lifetime of 15 minutes (`900,000 ms`). They contain non-sensitive identity claims (`sub`, `email`, `role`, `sid`, `jti`, `iat`, `exp`).
 2. **Opaque Refresh Tokens**: 256-bit cryptographically secure random entropy strings generated via `SecureRandom`. Raw refresh tokens are never persisted in the database; only their SHA-256 binary/hex hashes are stored in `refresh_tokens`.
-3. **HttpOnly Refresh Cookies**: Refresh tokens are returned exclusively via an HttpOnly cookie (`AUTOSERVE_REFRESH`, `HttpOnly=true`, `SameSite=Strict`, `Path=/api/auth`). They are never accessible via JavaScript or returned in JSON responses.
+3. **HttpOnly Refresh Cookies**: Refresh tokens are returned exclusively via an HttpOnly cookie (`AUTOSERVE_REFRESH`, `HttpOnly=true`, `SameSite=Strict`, `Path=/api/auth`). Creation and deletion cookies share identical Name, Path, HttpOnly, Secure, SameSite, and Domain attributes.
 4. **Database Session Validation**: Every incoming authenticated request validates JWT signature, expiration, user active status, AND database authentication session state (`auth_sessions.revoked_at is null`). Session revocation immediately invalidates all associated access tokens before JWT expiration.
 5. **Atomic Token Rotation & Theft Detection**: Refresh tokens are single-use. Refreshing consumes the presented token and issues a new token pair inside a database transaction with pessimistic write locking (`@Lock(LockModeType.PESSIMISTIC_WRITE)`). Presenting an already-consumed token triggers theft detection, immediately revoking the entire authentication session.
-6. **Custom Client Header Verification**: All authentication cookie endpoints (`/api/auth/*`) require a custom request header `X-AutoServe-Client: web` to prevent cross-site request forgery and unauthorized browser submission.
+6. **Explicit Origin & Custom Header Defenses**: `AuthRequestProtectionFilter` selectively validates state-changing POST authentication endpoints (`/api/auth/register`, `/login`, `/refresh`, `/logout`, `/logout-all`). Requiring `X-AutoServe-Client: web` and validating `Origin` against allowed origins (`http://localhost:5173`).
 7. **Environment-Gated Admin Bootstrap**: First-Admin account creation is handled by `AdminBootstrapRunner`, gated by `@ConditionalOnProperty(prefix = "app.bootstrap.admin", name = "enabled", havingValue = "true")`. It uses the shared `PasswordEncoder` and runs idempotently only when zero Admin accounts exist.
+8. **Bounded Token Cleanup Strategy**: `AuthTokenCleanupService` executes bounded cleanup of expired sessions and tokens (deleting child tokens before parent sessions, retaining consumed tokens for 14 days for theft detection). Scheduled cleanup is disabled during test profiles (`app.auth.cleanup.enabled=false`).
 
 ---
 
@@ -22,8 +23,9 @@ AutoServe Part 7A establishes a production-grade, stateful authentication securi
 +-------+--------+          +---------+---------+          +----------+-----------+
         |                             |                               |
         | POST /api/auth/login        |                               |
-        |---------------------------->| Authenticate Credentials      |
-        |                             | Create AuthSession (sid)      |
+        | Origin: http://localhost... | Validate Origin & Client Hdr  |
+        | Header: X-AutoServe-Client  | Authenticate Credentials      |
+        |---------------------------->| Create AuthSession (sid)      |
         |                             | Create RefreshToken (hash)    |------> Persist Session & Hash
         | HTTP 200 OK + JWT           |                               |
         |<----------------------------| Set HttpOnly AUTOSERVE_REFRESH|
@@ -50,26 +52,13 @@ AutoServe Part 7A establishes a production-grade, stateful authentication securi
 
 ---
 
-## 3. Database Schema Overview
+## 3. Flyway Database Schema Overview
 
-### `auth_sessions` Table
-- `session_id` (`VARCHAR(36)` PK UUID): Unique session identifier embedded in JWT `sid` claim.
-- `user_id` (`BIGINT` FK): User owning the session.
-- `created_at` (`DATETIME(6)`): Timestamp when session was initiated.
-- `last_used_at` (`DATETIME(6)`): Updated upon token refresh.
-- `expires_at` (`DATETIME(6)`): Fixed absolute session expiration timestamp (`created_at` + `AUTH_SESSION_EXPIRATION`).
-- `revoked_at` (`DATETIME(6)`): Timestamp when session was revoked (if revoked).
-- `revocation_reason` (`VARCHAR(255)`): Audit trail reason (e.g. `LOGOUT`, `LOGOUT_ALL`, `THEFT_REUSE_DETECTED`).
-
-### `refresh_tokens` Table
-- `id` (`BIGINT` PK AUTO_INCREMENT): Synthetic primary key.
-- `session_id` (`VARCHAR(36)` FK): Parent authentication session.
-- `token_hash` (`VARCHAR(64)` UNIQUE): SHA-256 hash of the 256-bit opaque refresh token string.
-- `issued_at` (`DATETIME(6)`): Timestamp when token was issued.
-- `expires_at` (`DATETIME(6)`): Token expiration timestamp (capped at `session.expires_at`).
-- `consumed_at` (`DATETIME(6)`): Set when token is successfully rotated.
-- `revoked_at` (`DATETIME(6)`): Set when token is explicitly revoked.
-- `replaced_by_id` (`BIGINT` FK): Self-referential link to the newly rotated token.
+### Migration Inventory
+- `V1__initial_schema.sql` (Initial core database tables)
+- `V2__financial_precision_and_indexes.sql` (BigDecimal monetary columns and performance indexes)
+- `V3__authentication_sessions_and_refresh_tokens.sql` (`auth_sessions` and `refresh_tokens` tables)
+- `V4__authentication_schema_corrections.sql` (Removes redundant non-unique `idx_refresh_tokens_hash` index, preserving unique constraint)
 
 ---
 
@@ -88,6 +77,7 @@ AutoServe Part 7A establishes a production-grade, stateful authentication securi
 | `app.auth.cookie-path` | `/api/auth` | Cookie path scoping |
 | `app.auth.required-client-header` | `X-AutoServe-Client` | Header required for cookie auth requests |
 | `app.auth.allowed-client-header-value` | `web` | Required header value |
+| `app.auth.cleanup.enabled` | `true` (dev/prod) / `false` (test) | Enables bounded token cleanup scheduler |
 | `app.bootstrap.admin.enabled` | `false` (dev) / `true` (prod) | Master toggle for initial Admin bootstrap |
 | `app.bootstrap.admin.email` | `env(BOOTSTRAP_ADMIN_EMAIL)` | Initial admin email |
 | `app.bootstrap.admin.password` | `env(BOOTSTRAP_ADMIN_PASSWORD)` | Initial admin password |

@@ -15,11 +15,11 @@ This document lists every REST API endpoint existing in the codebase, alongside 
 
 | Endpoint | Method | Permitted Role | Request DTO | Response DTO | Implementation Status | Security / Audit Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `/api/auth/register` | `POST` | Public (`permitAll`) | `RegisterRequestDto` | `UserResponseDto` | IMPLEMENTED | Strictly registers `CUSTOMER` accounts. Returns `UserResponseDto` without token. Requires `X-AutoServe-Client: web`. |
-| `/api/auth/login` | `POST` | Public (`permitAll`) | `LoginRequestDto` | `AuthResponseDto` | IMPLEMENTED | Validates active user, creates `AuthSession`, sets HttpOnly `AUTOSERVE_REFRESH` cookie, returns short-lived JWT. Requires `X-AutoServe-Client: web`. |
-| `/api/auth/refresh` | `POST` | Public (`permitAll`) | None (Cookie) | `AuthResponseDto` | IMPLEMENTED | Rotates single-use refresh token, updates HttpOnly cookie, returns new access token. Theft detection revokes session on reuse. Requires `X-AutoServe-Client: web`. |
-| `/api/auth/logout` | `POST` | Public (`permitAll`) | None (Cookie/Bearer) | `204 No Content` | IMPLEMENTED | Idempotent single-session revocation, clears `AUTOSERVE_REFRESH` cookie (`Max-Age=0`). Requires `X-AutoServe-Client: web`. |
-| `/api/auth/logout-all` | `POST` | Authenticated | None (Bearer) | `204 No Content` | IMPLEMENTED | Revokes ALL active sessions in DB belonging to current user. Requires `X-AutoServe-Client: web`. |
+| `/api/auth/register` | `POST` | Public (`permitAll`) | `RegisterRequestDto` | `UserResponseDto` | IMPLEMENTED | Strictly registers `CUSTOMER` accounts. Returns `UserResponseDto` without token. Requires `X-AutoServe-Client: web` and allowed `Origin`. |
+| `/api/auth/login` | `POST` | Public (`permitAll`) | `LoginRequestDto` | `AuthResponseDto` | IMPLEMENTED | Validates active user, creates `AuthSession`, sets HttpOnly `AUTOSERVE_REFRESH` cookie, returns short-lived JWT. Requires `X-AutoServe-Client: web` and allowed `Origin`. |
+| `/api/auth/refresh` | `POST` | Public (`permitAll`) | None (Cookie) | `AuthResponseDto` | IMPLEMENTED | Rotates single-use refresh token, updates HttpOnly cookie, returns new access token. Theft detection revokes session on reuse. Requires `X-AutoServe-Client: web` and allowed `Origin`. |
+| `/api/auth/logout` | `POST` | Public (`permitAll`) | None (Cookie/Bearer) | `204 No Content` | IMPLEMENTED | Idempotent single-session revocation, clears `AUTOSERVE_REFRESH` cookie (`Max-Age=0`). Requires `X-AutoServe-Client: web` and allowed `Origin`. |
+| `/api/auth/logout-all` | `POST` | Authenticated | None (Bearer) | `204 No Content` | IMPLEMENTED | Revokes ALL active sessions in DB belonging to current user. Requires `X-AutoServe-Client: web` and allowed `Origin`. |
 | `/api/users/me` | `GET` | Authenticated | None (Bearer) | `UserResponseDto` | IMPLEMENTED | Validates JWT signature, expiration, user active status, AND active DB session state. Returns authenticated user profile. |
 
 ---

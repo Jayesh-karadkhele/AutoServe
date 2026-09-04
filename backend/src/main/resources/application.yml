@@ -68,6 +68,9 @@ app:
     cookie-domain: ${REFRESH_COOKIE_DOMAIN:}
     client-header-name: X-AutoServe-Client
     client-header-value: web
+    cleanup:
+      enabled: ${APP_AUTH_CLEANUP_ENABLED:true}
+      cron: ${APP_AUTH_CLEANUP_CRON:0 0 3 * * *}
   bootstrap:
     admin:
       enabled: ${APP_BOOTSTRAP_ADMIN_ENABLED:false}

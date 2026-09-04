@@ -28,6 +28,6 @@ public interface AuthSessionRepository extends JpaRepository<AuthSession, String
     int revokeAllActiveSessionsForUser(@Param("userId") Long userId, @Param("now") LocalDateTime now, @Param("reason") String reason);
 
     @Modifying
-    @Query("DELETE FROM AuthSession s WHERE s.expiresAt < :cutoff AND s.revokedAt IS NOT NULL")
-    int deleteExpiredAndRevokedSessions(@Param("cutoff") LocalDateTime cutoff);
+    @Query("DELETE FROM AuthSession s WHERE s.expiresAt < :cutoff OR (s.revokedAt IS NOT NULL AND s.revokedAt < :cutoff)")
+    int deleteOldSessions(@Param("cutoff") LocalDateTime cutoff);
 }
