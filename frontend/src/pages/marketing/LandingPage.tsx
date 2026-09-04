@@ -6,7 +6,9 @@ import { ProblemStorySection } from '@/components/marketing/problem/ProblemStory
 import { TransformationBridge } from '@/components/marketing/TransformationBridge';
 import { SolutionStorySection } from '@/components/marketing/solution/SolutionStorySection';
 import { CapabilityRail } from '@/components/marketing/rail/CapabilityRail';
-import { WorkflowPreview } from '@/components/marketing/workflow/WorkflowPreview';
+import { HowItWorksSection } from '@/features/landing/how-it-works/HowItWorksSection';
+import { WorkOrderHandoff } from '@/features/landing/handoff/WorkOrderHandoff';
+import { RoleExperienceSection } from '@/features/landing/roles/RoleExperienceSection';
 import { Container } from '@/components/ui/Container';
 import { BrandMark } from '@/components/ui/BrandMark';
 import { Wordmark } from '@/components/ui/Wordmark';
@@ -33,7 +35,9 @@ export const LandingPage: React.FC = () => {
         <TransformationBridge />
         <SolutionStorySection />
         <CapabilityRail />
-        <WorkflowPreview />
+        <HowItWorksSection />
+        <WorkOrderHandoff />
+        <RoleExperienceSection />
       </main>
 
       {/* Footer Baseline */}
@@ -58,6 +62,9 @@ export const LandingPage: React.FC = () => {
               </a>
               <a href="#how-it-works" className="hover:text-[#17212B] transition-colors">
                 How It Works
+              </a>
+              <a href="#roles" className="hover:text-[#17212B] transition-colors">
+                For Every Role
               </a>
             </div>
           </div>

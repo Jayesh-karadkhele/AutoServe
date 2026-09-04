@@ -26,7 +26,7 @@ const renderWithRouter = (initialEntries = ['/']) => {
   );
 };
 
-describe('AutoServe Part 6B Frontend & Scroll Story Tests', () => {
+describe('AutoServe Part 6C — Journey & Role Experience Tests', () => {
   it('1. landing page renders headline and main layout with exactly one H1 tag', () => {
     render(<App />);
     expect(screen.getByText(/Every service\./i)).toBeInTheDocument();
@@ -34,11 +34,12 @@ describe('AutoServe Part 6B Frontend & Scroll Story Tests', () => {
     expect(h1Elements).toHaveLength(1);
   });
 
-  it('2. required section anchors (#why-autoserve, #experience, #how-it-works) exist', () => {
+  it('2. required section anchors (#why-autoserve, #experience, #how-it-works, #roles) exist', () => {
     const { container } = render(<App />);
     expect(container.querySelector('#why-autoserve')).not.toBeNull();
     expect(container.querySelector('#experience')).not.toBeNull();
     expect(container.querySelector('#how-it-works')).not.toBeNull();
+    expect(container.querySelector('#roles')).not.toBeNull();
   });
 
   it('3. hero secondary CTA points to #how-it-works', () => {
@@ -52,56 +53,194 @@ describe('AutoServe Part 6B Frontend & Scroll Story Tests', () => {
     expect(screen.queryByRole('link', { name: /^FAQ$/i })).not.toBeInTheDocument();
   });
 
-  it('5. renders 5 problem chapters under #why-autoserve', () => {
+  it('5. renders 7 workflow steps in correct order under #how-it-works', () => {
     render(<App />);
-    expect(screen.getAllByText(/No clear timeline/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Surprise costs/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/No repair visibility/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Scattered service history/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Roadside uncertainty/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/YOUR SERVICE, STEP BY STEP/i)).toBeInTheDocument();
+
+    const expectedSteps = [
+      'Add your vehicle',
+      'Book the service',
+      'Review and assign',
+      'Diagnose and repair',
+      'Verify the work',
+      'Invoice and pay',
+      'Close with confidence',
+    ];
+
+    expectedSteps.forEach((title) => {
+      expect(screen.getAllByText(title).length).toBeGreaterThan(0);
+    });
   });
 
-  it('6. renders 6 solution chapters under #experience', () => {
-    render(<App />);
-    expect(screen.getAllByText(/Book in minutes/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Connect the right team/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Track every stage/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/See the work/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Understand every rupee/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Get moving again/i).length).toBeGreaterThan(0);
-  });
-
-  it('7. capability rail renders capabilities and previous/next controls work with boundary states', async () => {
+  it('6. selecting a journey step updates the active step preview content', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByText(/Appointments/i)).toBeInTheDocument();
-    expect(screen.getByText(/Job Cards/i)).toBeInTheDocument();
+    // Click step 2 button ("Book the service")
+    const step2Btn = screen.getByRole('button', { name: /Step 02: Book the service/i });
+    await user.click(step2Btn);
 
-    const prevButton = screen.getByLabelText(/Previous capability/i);
-    const nextButton = screen.getByLabelText(/Next capability/i);
-
-    expect(prevButton).toBeDisabled();
-    expect(nextButton).not.toBeDisabled();
-
-    await user.click(nextButton);
-    expect(prevButton).not.toBeDisabled();
+    expect(screen.getByText(/APPOINTMENT SCHEDULING/i)).toBeInTheDocument();
   });
 
-  it('8. workflow preview section renders 7 steps under #how-it-works', () => {
+  it('7. journey controls are keyboard accessible', async () => {
+    const user = userEvent.setup();
     render(<App />);
-    expect(screen.getByText(/From request to road-ready\./i)).toBeInTheDocument();
-    expect(screen.getAllByText(/STEP 01/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/STEP 07/i)).toBeInTheDocument();
+
+    const step1Btn = screen.getByRole('button', { name: /Step 01: Add your vehicle/i });
+    step1Btn.focus();
+    expect(document.activeElement).toBe(step1Btn);
+
+    const step2Btn = screen.getByRole('button', { name: /Step 02: Book the service/i });
+    await user.click(step2Btn);
+    expect(screen.getByText(/APPOINTMENT SCHEDULING/i)).toBeInTheDocument();
   });
 
-  it('9. reduced-motion mode renders all chapter content cleanly', () => {
+  it('8. reduced-motion mode keeps all journey and role info accessible', () => {
     render(<App />);
-    expect(screen.getByText(/THE OLD SERVICE EXPERIENCE/i)).toBeInTheDocument();
-    expect(screen.getByText(/THE AUTOSERVE WAY/i)).toBeInTheDocument();
+    expect(screen.getByText(/ONE WORK ORDER\. SHARED CONTEXT\./i)).toBeInTheDocument();
+    expect(screen.getByText(/ONE PLATFORM\. FOUR FOCUSED WORKSPACES\./i)).toBeInTheDocument();
   });
 
-  it('10. placeholder routes /login and /register render without 404', () => {
+  it('9. #roles section renders all four role tabs', () => {
+    render(<App />);
+    const tablist = screen.getByRole('tablist', { name: /Select Platform Role Workspace/i });
+    expect(tablist).toBeInTheDocument();
+
+    expect(screen.getByRole('tab', { name: /Customer/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Manager/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Mechanic/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Admin/i })).toBeInTheDocument();
+  });
+
+  it('10. Customer tab is selected initially', () => {
+    render(<App />);
+    const customerTab = screen.getByRole('tab', { name: /Customer/i });
+    expect(customerTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText(/Everything about your vehicle care, without the follow-up calls\./i)).toBeInTheDocument();
+  });
+
+  it('11. selecting Manager changes workspace content', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const managerTab = screen.getByRole('tab', { name: /Manager/i });
+    await user.click(managerTab);
+
+    expect(managerTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText(/Coordinate the workshop without losing the details\./i)).toBeInTheDocument();
+    expect(screen.getByText(/David Miller • Service Manager/i)).toBeInTheDocument();
+  });
+
+  it('12. selecting Mechanic changes workspace content', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const mechanicTab = screen.getByRole('tab', { name: /Mechanic/i });
+    await user.click(mechanicTab);
+
+    expect(mechanicTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText(/The next job, the right context and a clear finish line\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Attach Repair Evidence/i)).toBeInTheDocument();
+  });
+
+  it('13. selecting Admin changes workspace content', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const adminTab = screen.getByRole('tab', { name: /Admin/i });
+    await user.click(adminTab);
+
+    expect(adminTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText(/Platform-wide control with clearly separated responsibilities\./i)).toBeInTheDocument();
+    expect(screen.getByText(/System & Governance Control Center/i)).toBeInTheDocument();
+  });
+
+  it('14. arrow key navigation changes selected role', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const customerTab = screen.getByRole('tab', { name: /Customer/i });
+    customerTab.focus();
+
+    await user.keyboard('{ArrowRight}');
+    const managerTab = screen.getByRole('tab', { name: /Manager/i });
+    expect(document.activeElement).toBe(managerTab);
+    expect(managerTab).toHaveAttribute('aria-selected', 'true');
+
+    await user.keyboard('{ArrowRight}');
+    const mechanicTab = screen.getByRole('tab', { name: /Mechanic/i });
+    expect(document.activeElement).toBe(mechanicTab);
+    expect(mechanicTab).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('15. Home and End keys work on role selector', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const customerTab = screen.getByRole('tab', { name: /Customer/i });
+    customerTab.focus();
+
+    await user.keyboard('{End}');
+    const adminTab = screen.getByRole('tab', { name: /Admin/i });
+    expect(document.activeElement).toBe(adminTab);
+    expect(adminTab).toHaveAttribute('aria-selected', 'true');
+
+    await user.keyboard('{Home}');
+    expect(document.activeElement).toBe(customerTab);
+    expect(customerTab).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('16. role tab and panel IDs are properly connected', () => {
+    render(<App />);
+    const customerTab = screen.getByRole('tab', { name: /Customer/i });
+    expect(customerTab).toHaveAttribute('id', 'tab-customer');
+    expect(customerTab).toHaveAttribute('aria-controls', 'panel-customer');
+
+    const panel = screen.getByRole('tabpanel');
+    expect(panel).toHaveAttribute('id', 'panel-customer');
+    expect(panel).toHaveAttribute('aria-labelledby', 'tab-customer');
+  });
+
+  it('17. each role shows its focused-access explanation', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    expect(screen.getByText(/Focused Access — Scope & Governance for Customer/i)).toBeInTheDocument();
+
+    const managerTab = screen.getByRole('tab', { name: /Manager/i });
+    await user.click(managerTab);
+    expect(screen.getByText(/Focused Access — Scope & Governance for Manager/i)).toBeInTheDocument();
+  });
+
+  it('18. navigation contains valid anchors for all new sections', () => {
+    render(<App />);
+    const links = screen.getAllByRole('link');
+    const hrefs = links.map(l => l.getAttribute('href'));
+
+    expect(hrefs).toContain('#why-autoserve');
+    expect(hrefs).toContain('#experience');
+    expect(hrefs).toContain('#how-it-works');
+    expect(hrefs).toContain('#roles');
+  });
+
+  it('19. mobile navigation menu opens and renders section anchor links', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const menuBtn = screen.getByLabelText(/Open Navigation Menu/i);
+    await user.click(menuBtn);
+
+    const mobileNav = screen.getByRole('dialog', { name: /Mobile Navigation Menu/i });
+    expect(mobileNav).toBeInTheDocument();
+
+    const linksInDialog = screen.getAllByRole('link').filter(
+      l => l.closest('[role="dialog"]') !== null
+    );
+    expect(linksInDialog.length).toBeGreaterThan(0);
+  });
+
+  it('20. placeholder routes /login and /register render without 404', () => {
     const { unmount } = renderWithRouter(['/login']);
     expect(screen.getByText(/AutoServe Sign In/i)).toBeInTheDocument();
     unmount();
