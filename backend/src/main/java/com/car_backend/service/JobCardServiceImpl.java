@@ -199,6 +199,10 @@ public class JobCardServiceImpl implements JobCardService {
 		JobCard jobCard = jobCardRepo.findById(jobCardId)
 				.orElseThrow(() -> new ResourceNotFoundException("Job card not found"));
 
+		if (jobCard.getJobCardStatus() != JobCardStatus.IN_PROGRESS) {
+			throw new InvalidOperationException("Job card must be IN_PROGRESS to complete work");
+		}
+
 		jobCard.setJobCardStatus(JobCardStatus.COMPLETED);
 		jobCard.setCompletionTime(LocalDateTime.now());
 
