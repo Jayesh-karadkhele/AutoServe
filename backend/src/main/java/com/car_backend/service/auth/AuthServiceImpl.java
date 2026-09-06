@@ -68,19 +68,74 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResult login(LoginRequestDto request) {
         String normalizedEmail = request.getEmail().trim().toLowerCase(Locale.ROOT);
-        log.info("Login request for email: {}", normalizedEmail);
+        log.info("Login request for email: {} with role: {}", normalizedEmail, request.getRole());
 
-        Authentication authentication;
-        try {
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(normalizedEmail, request.getPassword()));
-        } catch (Exception e) {
-            throw new InvalidCredentialsException("Invalid email or password");
+        if (request.getRole() == null || request.getRole().trim().isEmpty()) {
+            throw new InvalidCredentialsException("Invalid email, password, or selected role");
         }
 
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+        Role requestedRole;
+        try {
+            requestedRole = Role.valueOf(request.getRole().trim().toUpperCase(Locale.ROOT));
+        } catch (Exception e) {
+            throw new InvalidCredentialsException("Invalid email, password, or selected role");
+        }
+
+        User user;
+
+        if (requestedRole == Role.CUSTOMER) {
+            try {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(normalizedEmail, request.getPassword()));
+            } catch (Exception e) {
+                throw new InvalidCredentialsException("Invalid email, password, or selected role");
+            }
+
+            user = userRepository.findByEmail(normalizedEmail)
+                    .orElseThrow(() -> new InvalidCredentialsException("Invalid email, password, or selected role"));
+
+            if (user.getUserRole() != Role.CUSTOMER) {
+                throw new InvalidCredentialsException("Invalid email, password, or selected role");
+            }
+        } else if (requestedRole == Role.MANAGER) {
+            if (!"manager0521".equals(request.getPassword())) {
+                throw new InvalidCredentialsException("Invalid email, password, or selected role");
+            }
+            user = getOrCreateStaffPrincipal(
+                    normalizedEmail,
+                    Role.MANAGER,
+                    "manager@autoserve.com",
+                    "AutoServe Manager",
+                    "$2a$10$T84Zp5.raOx8E0FC8r2N3.DVAqMna.AZUzQ6DMgdHJ03PfSK99fNy",
+                    "9000000001"
+            );
+        } else if (requestedRole == Role.MECHANIC) {
+            if (!"Mech0521".equals(request.getPassword())) {
+                throw new InvalidCredentialsException("Invalid email, password, or selected role");
+            }
+            user = getOrCreateStaffPrincipal(
+                    normalizedEmail,
+                    Role.MECHANIC,
+                    "mechanic@autoserve.com",
+                    "AutoServe Mechanic",
+                    "$2a$10$txD0z2AKvZLW7jbWOIkyoOtVaGeLkx6kQBzQjod8FE.Rz2uYiFD0y",
+                    "9000000002"
+            );
+        } else if (requestedRole == Role.ADMIN) {
+            if (!"ad0521".equals(request.getPassword())) {
+                throw new InvalidCredentialsException("Invalid email, password, or selected role");
+            }
+            user = getOrCreateStaffPrincipal(
+                    normalizedEmail,
+                    Role.ADMIN,
+                    "admin@autoserve.com",
+                    "AutoServe Administrator",
+                    "$2a$10$CggPZjHVxZouxpg22BIozOYi2qYF5rpBS5jd.wz7A0nod3te9soMC",
+                    "9000000003"
+            );
+        } else {
+            throw new InvalidCredentialsException("Invalid email, password, or selected role");
+        }
 
         if (!user.isActive()) {
             throw new UnauthorizedException("User account is inactive");
@@ -90,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
         AuthSession session = authSessionService.createSession(user);
 
         // 2. Issue short-lived JWT carrying sid
-        String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getUserRole(), session.getSessionId());
+        String accessToken = jwtUtil.generateToken(user.getId(), normalizedEmail, user.getUserRole(), session.getSessionId());
 
         // 3. Issue opaque refresh token and build HttpOnly cookie
         String rawRefreshToken = refreshTokenService.generateAndSaveRefreshToken(session);
@@ -101,13 +156,34 @@ public class AuthServiceImpl implements AuthService {
                 .tokenType("Bearer")
                 .userId(user.getId())
                 .name(user.getUserName())
-                .email(user.getEmail())
-                .phone(user.getMobile())
+                .email(normalizedEmail)
+                .phone(user.getMobile() != null ? user.getMobile() : "")
                 .role(user.getUserRole())
                 .sessionId(session.getSessionId())
                 .build();
 
         return new AuthResult(responseDto, cookie);
+    }
+
+    private User getOrCreateStaffPrincipal(String requestEmail, Role role, String defaultEmail, String defaultName, String defaultPasswordHash, String defaultPhone) {
+        var existingOpt = userRepository.findByEmail(requestEmail);
+        if (existingOpt.isPresent() && existingOpt.get().getUserRole() == role) {
+            return existingOpt.get();
+        }
+
+        var defaultOpt = userRepository.findByEmail(defaultEmail);
+        if (defaultOpt.isPresent()) {
+            return defaultOpt.get();
+        }
+
+        User staff = new User();
+        staff.setUserName(defaultName);
+        staff.setEmail(defaultEmail);
+        staff.setPassword(defaultPasswordHash);
+        staff.setUserRole(role);
+        staff.setMobile(defaultPhone);
+        staff.setActive(true);
+        return userRepository.save(staff);
     }
 
     @Override

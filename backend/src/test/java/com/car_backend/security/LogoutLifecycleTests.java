@@ -78,7 +78,8 @@ public class LogoutLifecycleTests {
         String loginJson = """
             {
                 "email": "logout@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -132,7 +133,8 @@ public class LogoutLifecycleTests {
         String loginJson = """
             {
                 "email": "logout@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -175,7 +177,8 @@ public class LogoutLifecycleTests {
         String loginJson = """
             {
                 "email": "logout@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 

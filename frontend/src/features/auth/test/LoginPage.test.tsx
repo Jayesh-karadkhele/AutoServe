@@ -180,7 +180,7 @@ describe('LoginPage Four-Role Selector & Security Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: /sign in as customer/i }));
 
     await waitFor(() => {
-      expect(mockContext.login).toHaveBeenCalledWith({ email: 'customer@autoserve.com', password: 'CustomerPass123!' });
+      expect(mockContext.login).toHaveBeenCalledWith({ email: 'customer@autoserve.com', password: 'CustomerPass123!', role: 'CUSTOMER' });
     });
   });
 
@@ -196,7 +196,7 @@ describe('LoginPage Four-Role Selector & Security Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: /sign in as manager/i }));
 
     await waitFor(() => {
-      expect(mockContext.login).toHaveBeenCalledWith({ email: 'manager@autoserve.com', password: 'ManagerPass123!' });
+      expect(mockContext.login).toHaveBeenCalledWith({ email: 'manager@autoserve.com', password: 'ManagerPass123!', role: 'MANAGER' });
     });
   });
 
@@ -212,7 +212,7 @@ describe('LoginPage Four-Role Selector & Security Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: /sign in as mechanic/i }));
 
     await waitFor(() => {
-      expect(mockContext.login).toHaveBeenCalledWith({ email: 'mechanic@autoserve.com', password: 'MechanicPass123!' });
+      expect(mockContext.login).toHaveBeenCalledWith({ email: 'mechanic@autoserve.com', password: 'MechanicPass123!', role: 'MECHANIC' });
     });
   });
 
@@ -228,7 +228,7 @@ describe('LoginPage Four-Role Selector & Security Tests', () => {
     fireEvent.click(screen.getByRole('button', { name: /sign in as admin/i }));
 
     await waitFor(() => {
-      expect(mockContext.login).toHaveBeenCalledWith({ email: 'admin@autoserve.com', password: 'AdminPass123!' });
+      expect(mockContext.login).toHaveBeenCalledWith({ email: 'admin@autoserve.com', password: 'AdminPass123!', role: 'ADMIN' });
     });
   });
 

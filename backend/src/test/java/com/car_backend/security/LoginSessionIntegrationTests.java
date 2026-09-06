@@ -35,8 +35,6 @@ import com.car_backend.repository.AuthSessionRepository;
 import com.car_backend.repository.UserRepository;
 import com.car_backend.security.jwt.JwtUtil;
 
-import jakarta.servlet.http.Cookie;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -75,7 +73,8 @@ public class LoginSessionIntegrationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -108,6 +107,99 @@ public class LoginSessionIntegrationTests {
     }
 
     @Test
+    @DisplayName("Manager login with manager0521 succeeds and binds session to MANAGER principal")
+    void testManagerLoginSuccess() throws Exception {
+        String loginJson = """
+            {
+                "email": "alex.manager@service.com",
+                "password": "manager0521",
+                "role": "MANAGER"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .header("Origin", "http://localhost:5173")
+                .header("X-AutoServe-Client", "web")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role", is("MANAGER")))
+                .andExpect(jsonPath("$.email", is("alex.manager@service.com")))
+                .andExpect(jsonPath("$.token", notNullValue()));
+
+        assertEquals(1, authSessionRepository.count());
+    }
+
+    @Test
+    @DisplayName("Mechanic login with Mech0521 succeeds and binds session to MECHANIC principal")
+    void testMechanicLoginSuccess() throws Exception {
+        String loginJson = """
+            {
+                "email": "sam.mechanic@service.com",
+                "password": "Mech0521",
+                "role": "MECHANIC"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .header("Origin", "http://localhost:5173")
+                .header("X-AutoServe-Client", "web")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role", is("MECHANIC")))
+                .andExpect(jsonPath("$.email", is("sam.mechanic@service.com")))
+                .andExpect(jsonPath("$.token", notNullValue()));
+
+        assertEquals(1, authSessionRepository.count());
+    }
+
+    @Test
+    @DisplayName("Admin login with ad0521 succeeds and binds session to ADMIN principal")
+    void testAdminLoginSuccess() throws Exception {
+        String loginJson = """
+            {
+                "email": "sysadmin@service.com",
+                "password": "ad0521",
+                "role": "ADMIN"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .header("Origin", "http://localhost:5173")
+                .header("X-AutoServe-Client", "web")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role", is("ADMIN")))
+                .andExpect(jsonPath("$.email", is("sysadmin@service.com")))
+                .andExpect(jsonPath("$.token", notNullValue()));
+
+        assertEquals(1, authSessionRepository.count());
+    }
+
+    @Test
+    @DisplayName("Manager login with wrong password returns 401 Unauthorized")
+    void testManagerLoginWrongPasswordReturns401() throws Exception {
+        String loginJson = """
+            {
+                "email": "alex.manager@service.com",
+                "password": "wrongpassword",
+                "role": "MANAGER"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .header("Origin", "http://localhost:5173")
+                .header("X-AutoServe-Client", "web")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginJson))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("Unauthorized")))
+                .andExpect(jsonPath("$.message", is("Invalid email, password, or selected role")));
+    }
+
+    @Test
     @DisplayName("Login for inactive user is rejected with HTTP 401")
     void testLoginValidatesActiveUserStatus() throws Exception {
         User inactive = SecurityTestUtils.createUser(
@@ -117,7 +209,8 @@ public class LoginSessionIntegrationTests {
         String loginJson = """
             {
                 "email": "inactive@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -136,7 +229,8 @@ public class LoginSessionIntegrationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -170,7 +264,8 @@ public class LoginSessionIntegrationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -200,7 +295,8 @@ public class LoginSessionIntegrationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 

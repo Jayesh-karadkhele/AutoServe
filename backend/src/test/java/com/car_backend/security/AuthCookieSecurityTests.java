@@ -51,7 +51,8 @@ public class AuthCookieSecurityTests {
         String loginJson = """
             {
                 "email": "cookie@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -69,7 +70,8 @@ public class AuthCookieSecurityTests {
         String loginJson = """
             {
                 "email": "cookie@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -99,7 +101,8 @@ public class AuthCookieSecurityTests {
         String loginJson = """
             {
                 "email": "cookie@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -117,7 +120,8 @@ public class AuthCookieSecurityTests {
         String loginJson = """
             {
                 "email": "cookie@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -144,7 +148,8 @@ public class AuthCookieSecurityTests {
         String loginJson = """
             {
                 "email": "cookie@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 

@@ -223,7 +223,8 @@ public class AuthenticationSecurityTests {
         String json = """
             {
                 "email": "active@autoserve.com",
-                "password": "WrongPassword123!"
+                "password": "WrongPassword123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -242,7 +243,8 @@ public class AuthenticationSecurityTests {
         String json = """
             {
                 "email": "inactive@autoserve.com",
-                "password": "InactivePass123!"
+                "password": "InactivePass123!",
+                "role": "CUSTOMER"
             }
             """;
 

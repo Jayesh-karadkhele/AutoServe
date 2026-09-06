@@ -85,7 +85,8 @@ public class RefreshTokenRotationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -130,7 +131,8 @@ public class RefreshTokenRotationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 
@@ -186,7 +188,8 @@ public class RefreshTokenRotationTests {
         String loginJson = """
             {
                 "email": "testuser@autoserve.com",
-                "password": "ValidPass123!"
+                "password": "ValidPass123!",
+                "role": "CUSTOMER"
             }
             """;
 

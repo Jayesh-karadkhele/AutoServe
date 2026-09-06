@@ -169,7 +169,7 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const user = await login({ email: email.trim(), password });
+      const user = await login({ email: email.trim(), password, role: selectedRole });
       
       // Authoritative role from backend session
       const realRole = (user.role || '').toUpperCase().replace(/^ROLE_/, '') as RoleType;
@@ -198,7 +198,7 @@ export const LoginPage: React.FC = () => {
       const status = axiosError.response?.status;
 
       if (status === 401) {
-        setServerError('We couldn’t sign you in with those details.');
+        setServerError(axiosError.response?.data?.message || 'Invalid email, password, or selected role');
       } else if (status === 403) {
         setServerError(axiosError.response?.data?.message || 'Access denied or account disabled.');
       } else if (!status || status >= 500) {
