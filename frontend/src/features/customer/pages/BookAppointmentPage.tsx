@@ -93,13 +93,15 @@ export const BookAppointmentPage: React.FC = () => {
         {
           vehicleId: effectiveVehicleId,
           serviceType: finalServiceDescription,
+          description: finalServiceDescription,
           preferredDate,
+          requestDate: preferredDate,
           timeSlot,
           notes: notes.trim() || undefined,
           fulfilmentMode,
           pickupAddress: fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' ? pickupAddress.trim() : undefined,
           logisticsInstructions: logisticsInstructions.trim() || undefined,
-        },
+        } as any,
         undefined
       );
 

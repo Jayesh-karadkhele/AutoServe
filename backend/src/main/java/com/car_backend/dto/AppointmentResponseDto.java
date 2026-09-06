@@ -49,4 +49,23 @@ public class AppointmentResponseDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
+	@com.fasterxml.jackson.annotation.JsonProperty("preferredDate")
+	public LocalDate getPreferredDate() {
+		return requestDate;
+	}
+
+	@com.fasterxml.jackson.annotation.JsonProperty("serviceType")
+	public String getServiceType() {
+		return problemDescription;
+	}
+
+	@com.fasterxml.jackson.annotation.JsonProperty("vehicleRegistration")
+	public String getVehicleRegistration() {
+		return licensePlate;
+	}
+
+	@com.fasterxml.jackson.annotation.JsonProperty("vehicleMakeModel")
+	public String getVehicleMakeModel() {
+		return (brand != null ? brand : "") + (model != null ? " " + model : "");
+	}
 }
