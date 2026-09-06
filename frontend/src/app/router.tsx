@@ -224,6 +224,10 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: '/customer',
+        element: <Navigate to="/customer/dashboard" replace />,
+      },
+      {
         path: '/customer/dashboard',
         element: <CustomerDashboardPage />,
       },

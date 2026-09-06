@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { Mail, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AuthLayout } from '../components/AuthLayout';
 import { AuthField } from '../components/AuthField';
@@ -8,7 +8,6 @@ import { PasswordField } from '../components/PasswordField';
 import { AuthAlert } from '../components/AuthAlert';
 import { AuthSubmitButton } from '../components/AuthSubmitButton';
 import { validateEmail } from '../validation/authValidation';
-
 import { getRoleDestination } from '../routing/roleUtils';
 
 export const LoginPage: React.FC = () => {
@@ -46,7 +45,7 @@ export const LoginPage: React.FC = () => {
     try {
       const user = await login({ email: email.trim(), password });
       
-      // Determine role-based redirection path
+      // Determine role-based redirection path from backend trusted session response
       const targetPath = stateLocation?.from || getRoleDestination(user.role);
       navigate(targetPath, { replace: true });
     } catch (err: unknown) {
@@ -59,7 +58,7 @@ export const LoginPage: React.FC = () => {
       if (status === 401) {
         setServerError('We couldn’t sign you in with those details.');
       } else if (status === 403) {
-        setServerError(axiosError.response?.data?.message || 'Access denied or invalid client request.');
+        setServerError(axiosError.response?.data?.message || 'Access denied or account disabled.');
       } else if (!status || status >= 500) {
         setServerError('AutoServe is temporarily unable to connect. Please try again.');
       } else {
@@ -71,9 +70,15 @@ export const LoginPage: React.FC = () => {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Continue where your vehicle’s service story left off."
+      subtitle="Sign in to continue to your secure AutoServe workspace."
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
+        {/* Workspace Scope Banner */}
+        <div className="rounded-xl border border-sky-200 bg-sky-50/80 p-3 flex items-start gap-2.5 text-xs text-sky-900 font-medium">
+          <ShieldCheck className="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
+          <span>One secure sign-in for Customers, Managers, Mechanics and Administrators.</span>
+        </div>
+
         <AuthAlert message={serverError} />
 
         <AuthField
@@ -116,18 +121,18 @@ export const LoginPage: React.FC = () => {
           Sign in to AutoServe
         </AuthSubmitButton>
 
-        <div className="pt-2 text-center text-xs text-slate-600 space-y-2">
+        <div className="pt-2 text-center text-xs text-slate-600 space-y-2 border-t border-slate-100 mt-4">
           <p>
-            Don't have an account?{' '}
+            New Customer?{' '}
             <Link
               to="/register"
               className="font-bold text-amber-600 transition-colors hover:text-amber-700 focus:outline-none focus:underline"
             >
-              Create a Customer account
+              Create your account.
             </Link>
           </p>
-          <p className="text-slate-400 text-[11px]">
-            Manager, Mechanic, and Admin accounts are created through authorized staff workflows.
+          <p className="text-slate-400 text-[11px] leading-normal">
+            Manager, Mechanic and Admin accounts are securely provisioned through authorized administrative workflows.
           </p>
         </div>
       </form>
