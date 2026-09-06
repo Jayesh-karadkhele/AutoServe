@@ -1,0 +1,13 @@
+package com.car_backend.entities;
+
+public enum AuditEventAction {
+    STAFF_CREATE,
+    USER_ACTIVATED,
+    USER_DEACTIVATED,
+    TEAM_REASSIGNMENT,
+    APPOINTMENT_MANAGER_ASSIGNMENT,
+    STOCK_ADJUSTMENT,
+    INVENTORY_CREATE,
+    INVENTORY_UPDATE,
+    ADMIN_OVERRIDE
+}

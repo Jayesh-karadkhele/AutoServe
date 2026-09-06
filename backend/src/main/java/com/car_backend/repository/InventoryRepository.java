@@ -21,6 +21,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 	@Query("SELECT i FROM Inventory i WHERE i.deleted = false AND i.stockQuantity = 0")
 	List<Inventory> findOutOfStockItems();
 	
+	long countByDeletedFalseAndStockQuantityLessThan(int threshold);
 	
 	@Query("SELECT i FROM Inventory i WHERE i.deleted = false AND " +
 		       "(LOWER(i.itemName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

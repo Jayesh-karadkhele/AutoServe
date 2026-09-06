@@ -16,6 +16,14 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
 	List<Appointment> findByStatus(Status status);
 
+	long countByStatus(Status status);
+
+	long countByManagerIsNull();
+
+	long countByManagerId(Long managerId);
+
+	long countByManager_Id(Long managerId);
+
 	@Query("SELECT COUNT(*) FROM Appointment WHERE status='PENDING'")
 	Long countPendingAppointments();
 

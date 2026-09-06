@@ -19,9 +19,6 @@ const ProtectedRoute = React.lazy(() =>
 const RoleRedirect = React.lazy(() =>
   import('@/features/auth/routing/RoleRedirect').then((m) => ({ default: m.RoleRedirect }))
 );
-const RoleEntryPage = React.lazy(() =>
-  import('@/features/auth/routing/RoleEntryPage').then((m) => ({ default: m.RoleEntryPage }))
-);
 const ForbiddenPage = React.lazy(() =>
   import('@/features/auth/routing/ForbiddenPage').then((m) => ({ default: m.ForbiddenPage }))
 );
@@ -101,6 +98,7 @@ const ManagerActivityPage = React.lazy(() =>
 const ManagerProfilePage = React.lazy(() =>
   import('@/features/manager/pages/ManagerProfilePage').then((m) => ({ default: m.ManagerProfilePage }))
 );
+
 // Lazy-load Mechanic Experience pages
 const MechanicDashboardPage = React.lazy(() =>
   import('@/features/mechanic/pages/MechanicDashboardPage').then((m) => ({ default: m.MechanicDashboardPage }))
@@ -116,6 +114,50 @@ const MechanicCompletedJobsPage = React.lazy(() =>
 );
 const MechanicProfilePage = React.lazy(() =>
   import('@/features/mechanic/pages/MechanicProfilePage').then((m) => ({ default: m.MechanicProfilePage }))
+);
+
+// Lazy-load Admin Experience pages
+const AdminDashboardPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage }))
+);
+const AdminUserListPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminUserListPage').then((m) => ({ default: m.AdminUserListPage }))
+);
+const AdminUserDetailPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminUserDetailPage').then((m) => ({ default: m.AdminUserDetailPage }))
+);
+const AdminManagerListPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminManagerListPage').then((m) => ({ default: m.AdminManagerListPage }))
+);
+const AdminMechanicListPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminMechanicListPage').then((m) => ({ default: m.AdminMechanicListPage }))
+);
+const AdminTeamStructurePage = React.lazy(() =>
+  import('@/features/admin/pages/AdminTeamStructurePage').then((m) => ({ default: m.AdminTeamStructurePage }))
+);
+const AdminAppointmentListPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminAppointmentListPage').then((m) => ({ default: m.AdminAppointmentListPage }))
+);
+const AdminJobCardListPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminJobCardListPage').then((m) => ({ default: m.AdminJobCardListPage }))
+);
+const AdminInventoryPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminInventoryPage').then((m) => ({ default: m.AdminInventoryPage }))
+);
+const AdminInvoiceListPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminInvoiceListPage').then((m) => ({ default: m.AdminInvoiceListPage }))
+);
+const AdminReportsPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminReportsPage').then((m) => ({ default: m.AdminReportsPage }))
+);
+const AdminAuditPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminAuditPage').then((m) => ({ default: m.AdminAuditPage }))
+);
+const AdminSettingsPage = React.lazy(() =>
+  import('@/features/admin/pages/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage }))
+);
+const AdminProfilePage = React.lazy(() =>
+  import('@/features/admin/pages/AdminProfilePage').then((m) => ({ default: m.AdminProfilePage }))
 );
 
 export const router = createBrowserRouter([
@@ -312,8 +354,64 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: '/admin',
+        element: <AdminDashboardPage />,
+      },
+      {
         path: '/admin/dashboard',
-        element: <RoleEntryPage roleTitle="Admin" />,
+        element: <Navigate to="/admin" replace />,
+      },
+      {
+        path: '/admin/users',
+        element: <AdminUserListPage />,
+      },
+      {
+        path: '/admin/users/:userId',
+        element: <AdminUserDetailPage />,
+      },
+      {
+        path: '/admin/managers',
+        element: <AdminManagerListPage />,
+      },
+      {
+        path: '/admin/mechanics',
+        element: <AdminMechanicListPage />,
+      },
+      {
+        path: '/admin/teams',
+        element: <AdminTeamStructurePage />,
+      },
+      {
+        path: '/admin/appointments',
+        element: <AdminAppointmentListPage />,
+      },
+      {
+        path: '/admin/job-cards',
+        element: <AdminJobCardListPage />,
+      },
+      {
+        path: '/admin/inventory',
+        element: <AdminInventoryPage />,
+      },
+      {
+        path: '/admin/invoices',
+        element: <AdminInvoiceListPage />,
+      },
+      {
+        path: '/admin/reports',
+        element: <AdminReportsPage />,
+      },
+      {
+        path: '/admin/audit',
+        element: <AdminAuditPage />,
+      },
+      {
+        path: '/admin/settings',
+        element: <AdminSettingsPage />,
+      },
+      {
+        path: '/admin/profile',
+        element: <AdminProfilePage />,
       },
     ],
   },
