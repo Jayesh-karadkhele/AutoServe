@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,19 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final List<String> allowedOrigins;
 
+    private static class RateWindow {
+        final long windowStartSecond;
+        final AtomicInteger count;
+
+        RateWindow(long windowStartSecond) {
+            this.windowStartSecond = windowStartSecond;
+            this.count = new AtomicInteger(1);
+        }
+    }
+
+    private final Map<String, RateWindow> rateLimitMap = new ConcurrentHashMap<>();
+    private static final int MAX_REQUESTS_PER_MINUTE = 20;
+
     public AuthRequestProtectionFilter(
             AuthProperties authProperties,
             ObjectMapper objectMapper,
@@ -52,7 +67,6 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Target endpoints: POST /api/auth/register, POST /api/auth/login, POST /api/auth/refresh, POST /api/auth/logout, POST /api/auth/logout-all
         boolean isTargetAuthEndpoint = "POST".equalsIgnoreCase(method) &&
                 (path.equalsIgnoreCase("/api/auth/register") ||
                  path.equalsIgnoreCase("/api/auth/login") ||
@@ -62,6 +76,42 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
                  path.equalsIgnoreCase("/api/auth/forgot-password") ||
                  path.equalsIgnoreCase("/api/auth/reset-password") ||
                  path.equalsIgnoreCase("/api/users/me/change-password"));
+
+        boolean isRateLimitedEndpoint = "POST".equalsIgnoreCase(method) &&
+                (isTargetAuthEndpoint || path.contains("/payment-order") || path.contains("/verify-payment"));
+
+        if (isRateLimitedEndpoint) {
+            String clientIp = getClientIp(request);
+            String rateKey = clientIp + ":" + path;
+            long currentSecond = Instant.now().getEpochSecond();
+            long currentMinuteWindow = currentSecond / 60;
+
+            RateWindow window = rateLimitMap.compute(rateKey, (k, v) -> {
+                if (v == null || v.windowStartSecond != currentMinuteWindow) {
+                    return new RateWindow(currentMinuteWindow);
+                } else {
+                    v.count.incrementAndGet();
+                    return v;
+                }
+            });
+
+            if (window.count.get() > MAX_REQUESTS_PER_MINUTE) {
+                log.warn("Rate limit exceeded for IP {} on path {}", clientIp, path);
+                response.setStatus(429);
+                response.setHeader("Retry-After", "60");
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", Instant.now().toString());
+                body.put("status", 429);
+                body.put("error", "Too Many Requests");
+                body.put("message", "Rate limit exceeded. Please try again after 60 seconds.");
+                body.put("path", path);
+
+                objectMapper.writeValue(response.getOutputStream(), body);
+                return;
+            }
+        }
 
         if (isTargetAuthEndpoint) {
             // 1. Verify custom client header
@@ -83,11 +133,17 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
                     return;
                 }
             }
-            // Missing-Origin Policy: Direct same-origin requests or trusted non-browser clients without Origin header
-            // are permitted as long as valid X-AutoServe-Client header is present.
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     private void sendForbiddenError(HttpServletResponse response, String path, String message) throws IOException {

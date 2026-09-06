@@ -51,6 +51,17 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/api/invoices/{invoiceId}/capture-payment")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    public ResponseEntity<PaymentAttemptDto> capturePayment(
+            @PathVariable Long invoiceId,
+            @RequestParam String providerOrderId,
+            @RequestParam(required = false) String providerPaymentId) {
+        User currentUser = getCurrentUser();
+        PaymentAttemptDto result = paymentService.verifyAndCapturePayment(invoiceId, providerOrderId, providerPaymentId, currentUser);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/api/payments/webhooks/razorpay")
     public ResponseEntity<String> handleRazorpayWebhook(
             @RequestBody String rawBody,

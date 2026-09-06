@@ -12,6 +12,13 @@ export const paymentApi = {
     return res.data;
   },
 
+  capturePayment: async (invoiceId: number, providerOrderId: string, providerPaymentId?: string): Promise<PaymentAttempt> => {
+    const res = await api.post<PaymentAttempt>(`/api/invoices/${invoiceId}/capture-payment`, null, {
+      params: { providerOrderId, providerPaymentId },
+    });
+    return res.data;
+  },
+
   getPaymentHistory: async (invoiceId: number): Promise<PaymentAttempt[]> => {
     const res = await api.get<PaymentAttempt[]>(`/api/invoices/${invoiceId}/payment-history`);
     return res.data;

@@ -16,6 +16,8 @@ public interface PaymentService {
 
     PaymentAttemptDto verifyCheckoutSignature(Long invoiceId, VerifyPaymentRequestDto dto, User customerUser);
 
+    PaymentAttemptDto verifyAndCapturePayment(Long invoiceId, String providerOrderId, String providerPaymentId, User currentUser);
+
     void processRazorpayWebhook(String rawBody, String signatureHeader);
 
     List<PaymentAttemptDto> getPaymentHistoryForInvoice(Long invoiceId, User currentUser);

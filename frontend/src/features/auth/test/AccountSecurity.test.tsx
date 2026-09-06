@@ -46,4 +46,19 @@ describe('Account Security & Password Recovery Tests', () => {
     expect(screen.getByLabelText(/Reset Verification Token/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^New Password/i)).toBeInTheDocument();
   });
+
+  it('4. ResetPasswordPage extracts token from location hash and cleans history', () => {
+    window.location.hash = '#token=test_hash_token_123';
+    const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+
+    render(
+      <MemoryRouter>
+        <ResetPasswordPage />
+      </MemoryRouter>
+    );
+
+    const tokenInput = screen.getByLabelText(/Reset Verification Token/i) as HTMLInputElement;
+    expect(tokenInput.value).toBe('test_hash_token_123');
+    expect(replaceStateSpy).toHaveBeenCalledWith(null, '', window.location.pathname);
+  });
 });

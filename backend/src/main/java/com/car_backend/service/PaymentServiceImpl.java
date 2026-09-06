@@ -62,6 +62,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentOrderResponseDto createPaymentOrder(Long invoiceId, User customerUser) {
+        if (customerUser == null || customerUser.getUserRole() != Role.CUSTOMER) {
+            throw new AccessDeniedException("Only customers can create payment orders");
+        }
+
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + invoiceId));
 
@@ -112,6 +116,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentAttemptDto verifyCheckoutSignature(Long invoiceId, VerifyPaymentRequestDto dto, User customerUser) {
+        if (customerUser == null || customerUser.getUserRole() != Role.CUSTOMER) {
+            throw new AccessDeniedException("Only customers can verify payment signatures");
+        }
+
         PaymentAttempt attempt = paymentAttemptRepository.findByProviderOrderId(dto.getRazorpayOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Payment order not found: " + dto.getRazorpayOrderId()));
 
@@ -135,8 +143,35 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         attempt.setProviderPaymentId(dto.getRazorpayPaymentId());
-        attempt.setStatus(PaymentAttemptStatus.PAID);
+        attempt.setStatus(PaymentAttemptStatus.SIGNATURE_VERIFIED);
         attempt.setSignatureVerifiedAt(LocalDateTime.now());
+        PaymentAttempt savedAttempt = paymentAttemptRepository.save(attempt);
+
+        return mapToDto(savedAttempt);
+    }
+
+    @Override
+    public PaymentAttemptDto verifyAndCapturePayment(Long invoiceId, String providerOrderId, String providerPaymentId, User currentUser) {
+        if (currentUser == null || (currentUser.getUserRole() != Role.CUSTOMER && currentUser.getUserRole() != Role.ADMIN)) {
+            throw new AccessDeniedException("Unauthorized to capture payment");
+        }
+
+        PaymentAttempt attempt = paymentAttemptRepository.findByProviderOrderId(providerOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment order not found: " + providerOrderId));
+
+        if (!attempt.getInvoice().getId().equals(invoiceId)) {
+            throw new IllegalArgumentException("Invoice ID mismatch for payment order");
+        }
+
+        if (currentUser.getUserRole() == Role.CUSTOMER && !attempt.getCustomer().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You do not own this payment attempt");
+        }
+
+        if (providerPaymentId != null && !providerPaymentId.isBlank()) {
+            attempt.setProviderPaymentId(providerPaymentId);
+        }
+
+        attempt.setStatus(PaymentAttemptStatus.PAID);
         attempt.setCapturedAt(LocalDateTime.now());
         PaymentAttempt savedAttempt = paymentAttemptRepository.save(attempt);
 
@@ -146,7 +181,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         adminService.recordAuditEvent(AuditEventAction.INVOICE_PAID, AuditEventResource.INVOICE,
                 String.valueOf(invoice.getId()), "SUCCESS",
-                "Payment verified & invoice marked PAID via Razorpay order: " + dto.getRazorpayOrderId());
+                "Payment captured & invoice marked PAID via Razorpay order: " + providerOrderId);
 
         return mapToDto(savedAttempt);
     }
@@ -157,7 +192,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new IllegalArgumentException("Missing X-Razorpay-Signature header");
         }
 
-        String expectedSignature = calculateHmacSha256(rawBody, razorpayWebhookSecret);
+        String expectedSignature = calculateHmacSha256(rawBody, getEffectiveWebhookSecret());
         if (!constantTimeEquals(expectedSignature, signatureHeader)) {
             log.warn("Razorpay webhook signature verification failed!");
             throw new IllegalArgumentException("Invalid webhook signature");
@@ -189,7 +224,9 @@ public class PaymentServiceImpl implements PaymentService {
                 paymentAttemptRepository.findByProviderOrderId(providerOrderId).ifPresent(attempt -> {
                     if (attempt.getStatus() != PaymentAttemptStatus.PAID) {
                         attempt.setStatus(PaymentAttemptStatus.PAID);
-                        attempt.setProviderPaymentId(providerPaymentId);
+                        if (providerPaymentId != null && !providerPaymentId.isBlank()) {
+                            attempt.setProviderPaymentId(providerPaymentId);
+                        }
                         attempt.setCapturedAt(LocalDateTime.now());
                         paymentAttemptRepository.save(attempt);
 
@@ -216,6 +253,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(readOnly = true)
     public List<PaymentAttemptDto> getPaymentHistoryForInvoice(Long invoiceId, User currentUser) {
+        if (currentUser == null || currentUser.getUserRole() == Role.MECHANIC) {
+            throw new AccessDeniedException("Mechanics have no access to payment history");
+        }
+
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + invoiceId));
 

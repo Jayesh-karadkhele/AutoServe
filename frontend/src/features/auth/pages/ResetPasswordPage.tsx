@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { accountSecurityApi } from '../api/accountSecurityApi';
 
 export const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [token, setToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -15,17 +14,23 @@ export const ResetPasswordPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    // Extract token from URL hash (#token=xxx) or query (?token=xxx)
-    const hash = location.hash;
+    // Extract token from URL hash (#token=xxx) or query (?token=xxx) for backward compatibility
+    let rawToken: string | null = null;
+    const hash = window.location.hash;
+
     if (hash && hash.includes('token=')) {
-      const parsedToken = new URLSearchParams(hash.substring(1)).get('token');
-      if (parsedToken) setToken(parsedToken);
-    } else {
-      const searchParams = new URLSearchParams(location.search);
-      const queryToken = searchParams.get('token');
-      if (queryToken) setToken(queryToken);
+      rawToken = new URLSearchParams(hash.substring(1)).get('token');
+      // Immediately strip sensitive URL fragment from browser history and address bar
+      window.history.replaceState(null, '', window.location.pathname);
+    } else if (window.location.search && window.location.search.includes('token=')) {
+      rawToken = new URLSearchParams(window.location.search).get('token');
+      window.history.replaceState(null, '', window.location.pathname);
     }
-  }, [location]);
+
+    if (rawToken) {
+      setToken(rawToken);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -18,6 +18,7 @@ export const InvoiceDetailPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState<boolean>(false);
 
   const numericId = invoiceId ? parseInt(invoiceId, 10) : NaN;
 
@@ -72,6 +73,39 @@ export const InvoiceDetailPage: React.FC = () => {
       alert('Failed to download PDF invoice. Please try again.');
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  const handlePayInvoice = async () => {
+    if (!invoice || isProcessingPayment) return;
+    setIsProcessingPayment(true);
+    try {
+      // 1. Create Payment Order
+      const order = await paymentApi.createPaymentOrder(invoice.id);
+      const mockPaymentId = 'pay_mock_' + Date.now();
+      
+      // 2. Client verification callback (HMAC verification -> state: SIGNATURE_VERIFIED)
+      await paymentApi.verifyPayment(invoice.id, {
+        razorpayOrderId: order.providerOrderId,
+        razorpayPaymentId: mockPaymentId,
+        razorpaySignature: 'simulated_test_sig',
+      });
+
+      // 3. Authoritative server capture settlement -> state: PAID
+      const capturedAttempt = await paymentApi.capturePayment(
+        invoice.id,
+        order.providerOrderId,
+        mockPaymentId
+      );
+
+      if (capturedAttempt.status === 'PAID') {
+        setInvoice((prev) => prev ? { ...prev, paymentStatus: 'PAID' } : prev);
+        alert('Payment processed and captured successfully! Invoice status is now PAID.');
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.message || err?.message || 'Payment processing failed');
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -224,29 +258,17 @@ export const InvoiceDetailPage: React.FC = () => {
                 {invoice.paymentStatus !== 'PAID' && (
                   <button
                     type="button"
-                    onClick={async () => {
-                      try {
-                        const order = await paymentApi.createPaymentOrder(invoice.id);
-                        // Trigger signature verification callback
-                        await paymentApi.verifyPayment(invoice.id, {
-                          razorpayOrderId: order.providerOrderId,
-                          razorpayPaymentId: 'pay_mock_' + Date.now(),
-                          razorpaySignature: 'simulated_test_sig',
-                        });
-                        setInvoice((prev) => prev ? { ...prev, paymentStatus: 'PAID' } : prev);
-                        alert('Payment signature verified successfully! Invoice is now PAID.');
-                      } catch (err: any) {
-                        alert(err?.response?.data?.message || 'Payment processing failed');
-                      }
-                    }}
-                    className="px-4 py-2 bg-[#EA580C] hover:bg-[#C2410C] text-white font-bold text-xs rounded-xl shadow-xs transition-colors min-h-[38px]"
+                    disabled={isProcessingPayment}
+                    onClick={handlePayInvoice}
+                    className="px-4 py-2 bg-[#EA580C] hover:bg-[#C2410C] text-white font-bold text-xs rounded-xl shadow-xs transition-colors min-h-[38px] flex items-center gap-2 disabled:opacity-50"
                   >
+                    {isProcessingPayment && <Loader2 className="w-4 h-4 animate-spin" />}
                     Pay Securely Now ({formatCurrency(invoice.totalAmount)})
                   </button>
                 )}
               </div>
               <p className="leading-relaxed">
-                Payment is processed by Razorpay. AutoServe confirms the result through server-side signature verification.
+                Payment is processed by Razorpay. AutoServe confirms signature verification and authoritative server-side capture before updating invoice settlement status.
               </p>
             </div>
 
