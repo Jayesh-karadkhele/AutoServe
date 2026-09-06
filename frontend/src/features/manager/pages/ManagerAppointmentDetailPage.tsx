@@ -64,7 +64,11 @@ export const ManagerAppointmentDetailPage: React.FC = () => {
       setAppointment(updated);
       setActionSuccess('Appointment approved successfully.');
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to approve appointment.');
+      if (err.response?.status === 409) {
+        setError(err.response?.data?.message || 'This appointment has already been claimed by another manager.');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Failed to approve appointment.');
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -79,7 +83,11 @@ export const ManagerAppointmentDetailPage: React.FC = () => {
       setAppointment(updated);
       setActionSuccess('Appointment rejected with specified reason.');
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to reject appointment.');
+      if (err.response?.status === 409) {
+        setError(err.response?.data?.message || 'This appointment has already been claimed by another manager.');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Failed to reject appointment.');
+      }
     } finally {
       setIsProcessing(false);
     }

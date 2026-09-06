@@ -107,18 +107,24 @@ public class AppointmentController {
     }
 
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+    @GetMapping("/manager/pending")
+    public ResponseEntity<List<AppointmentResponseDto>> getManagerPendingAppointments() {
+        return ResponseEntity.ok(appointmentService.findManagerPendingQueue());
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/status/{status}")
     public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByStatus(@PathVariable Status status) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesAppointment(#appointmentId)")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @PutMapping("/{appointmentId}/approve")
     public ResponseEntity<AppointmentResponseDto> approveAppointment(@PathVariable Long appointmentId) {
         return ResponseEntity.ok(appointmentService.approveAppointment(appointmentId));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesAppointment(#appointmentId)")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @PutMapping("/{appointmentId}/reject")
     public ResponseEntity<AppointmentResponseDto> rejectAppointment(
             @PathVariable Long appointmentId,

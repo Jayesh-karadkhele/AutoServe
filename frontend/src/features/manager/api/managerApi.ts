@@ -30,9 +30,23 @@ export async function getManagerActivity(): Promise<ManagerActivityItem[]> {
   return response.data;
 }
 
-export async function getManagerAppointments(): Promise<Appointment[]> {
-  const response = await apiClient.get<Appointment[]>('/api/appointments/manager/me');
+export async function getPendingAppointments(): Promise<Appointment[]> {
+  const response = await apiClient.get<Appointment[]>('/api/appointments/manager/pending');
   return response.data;
+}
+
+export async function getManagerAppointments(): Promise<Appointment[]> {
+  const [assignedRes, pendingRes] = await Promise.all([
+    apiClient.get<Appointment[]>('/api/appointments/manager/me'),
+    apiClient.get<Appointment[]>('/api/appointments/manager/pending'),
+  ]);
+  const combined = [...pendingRes.data];
+  for (const item of assignedRes.data) {
+    if (!combined.some((a) => a.id === item.id)) {
+      combined.push(item);
+    }
+  }
+  return combined;
 }
 
 export async function approveAppointment(appointmentId: number): Promise<Appointment> {

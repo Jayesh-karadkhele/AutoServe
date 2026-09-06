@@ -209,11 +209,11 @@ public class AppointmentAuthorizationTests {
     }
 
     @Test
-    @DisplayName("Unassigned manager cannot approve appointment (returns 403)")
+    @DisplayName("Another manager cannot approve appointment already claimed by manager1 (returns 409 Conflict)")
     void testUnassignedManagerCannotApproveAppointment() throws Exception {
         mockMvc.perform(put("/api/appointments/" + appointment1.getId() + "/approve")
                 .header("Authorization", "Bearer " + manager2Token))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isConflict());
 
         Appointment dbAppt = appointmentRepository.findById(appointment1.getId()).orElseThrow();
         assertEquals(Status.PENDING, dbAppt.getStatus());

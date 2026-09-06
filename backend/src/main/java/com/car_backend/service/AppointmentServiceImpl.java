@@ -15,12 +15,14 @@ import com.car_backend.entities.Appointment;
 import com.car_backend.entities.Status;
 import com.car_backend.entities.User;
 import com.car_backend.entities.Vehicle;
+import com.car_backend.exceptions.AppointmentAlreadyClaimedException;
 import com.car_backend.exceptions.InvalidDateException;
 import com.car_backend.exceptions.InvalidOperationException;
 import com.car_backend.exceptions.ResourceNotFoundException;
 import com.car_backend.repository.AppointmentRepository;
 import com.car_backend.repository.UserRepository;
 import com.car_backend.repository.VehicleRepository;
+import com.car_backend.security.service.CurrentUserService;
 import com.car_backend.service.smtp.EmailService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private final UserRepository userRepo;
 	private final EmailService emailService;
 	private final ImageService imageService;
+	private final CurrentUserService currentUserService;
 
 	@Override
 	public AppointmentResponseDto createAppointment(CreateAppointmentDto dto,
@@ -180,6 +183,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
+	public List<AppointmentResponseDto> findManagerPendingQueue() {
+		List<Appointment> pendingAppointments = appointmentRepo.findByStatusAndManagerIsNull(Status.PENDING);
+
+		return pendingAppointments.stream().map(this::mapToResponseDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<AppointmentResponseDto> getAppointmentsByStatus(Status status) {
 		List<Appointment> appointments = appointmentRepo.findByStatus(status);
 
@@ -191,15 +201,24 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment appointment = appointmentRepo.findById(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("appointment not found"));
 
+		Long currentUserId = currentUserService.getUserId();
+		if (appointment.getManager() != null && !appointment.getManager().getId().equals(currentUserId)) {
+			throw new AppointmentAlreadyClaimedException("Appointment has already been claimed by another manager.");
+		}
+
 		if (appointment.getStatus() != Status.PENDING) {
 			throw new InvalidOperationException("Only pending appointments can be approved.");
 		}
 
+		User currentManager = userRepo.findById(currentUserId)
+				.orElseThrow(() -> new ResourceNotFoundException("Manager entity not found"));
+
+		appointment.setManager(currentManager);
 		appointment.setStatus(Status.APPROVED);
 		Appointment approved = appointmentRepo.save(appointment);
-		emailService.sendAppointMentApprovedMail(appointment);
+		emailService.sendAppointMentApprovedMail(approved);
 
-		log.info("Appointment {} approved by manager", appointmentId);
+		log.info("Appointment {} approved and claimed by manager {}", appointmentId, currentUserId);
 		return mapToResponseDto(approved);
 	}
 
@@ -207,6 +226,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public AppointmentResponseDto rejectAppointment(Long appointmentId, String rejectionReason) {
 		Appointment appointment = appointmentRepo.findById(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("appointment not found"));
+
+		Long currentUserId = currentUserService.getUserId();
+		if (appointment.getManager() != null && !appointment.getManager().getId().equals(currentUserId)) {
+			throw new AppointmentAlreadyClaimedException("Appointment has already been claimed by another manager.");
+		}
 
 		if (appointment.getStatus() != Status.PENDING) {
 			throw new InvalidOperationException("only pending appointments can be rejected");
@@ -216,11 +240,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 			throw new IllegalArgumentException("Rejection reason is required.");
 		}
 
+		User currentManager = userRepo.findById(currentUserId)
+				.orElseThrow(() -> new ResourceNotFoundException("Manager entity not found"));
+
+		appointment.setManager(currentManager);
 		appointment.setStatus(Status.REJECTED);
 		appointment.setRejectionReason(rejectionReason);
 
 		Appointment rejected = appointmentRepo.save(appointment);
-		log.info("Appointment {} rejected by manager. Reason {} ", appointmentId, rejectionReason);
+		log.info("Appointment {} rejected and claimed by manager {}. Reason: {}", appointmentId, currentUserId, rejectionReason);
 		return mapToResponseDto(rejected);
 	}
 

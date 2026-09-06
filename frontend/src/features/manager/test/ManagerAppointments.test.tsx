@@ -87,4 +87,43 @@ describe('Manager Appointments Workflow', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Appointment approved successfully.');
   });
+
+  it('displays error alert when approval returns 409 Conflict', async () => {
+    const mockAppt = {
+      id: 102,
+      vehicleId: 11,
+      serviceType: 'Oil Change',
+      preferredDate: '2026-09-16',
+      status: 'PENDING' as const,
+      customerName: 'Customer Bob',
+      vehicleRegistration: 'KA02XY9876',
+      fulfilmentMode: 'WORKSHOP_DROP_OFF' as const,
+    };
+
+    vi.mocked(apiClient.get).mockImplementation((url: string) => {
+      if (url.includes('/team')) return Promise.resolve({ data: [] });
+      return Promise.resolve({ data: mockAppt });
+    });
+
+    const error409 = {
+      response: {
+        status: 409,
+        data: { message: 'Appointment has already been claimed by another manager.' },
+      },
+    };
+    vi.mocked(apiClient.put).mockRejectedValue(error409);
+
+    render(
+      <MemoryRouter initialEntries={['/manager/appointments/102']}>
+        <Routes>
+          <Route path="/manager/appointments/:appointmentId" element={<ManagerAppointmentDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('Appointment Reference #102')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Approve Appointment'));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Appointment has already been claimed by another manager.');
+  });
 });

@@ -94,7 +94,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             return ownsAppointment(appointmentId);
         }
         if (current.getUserRole() == Role.MANAGER) {
-            return managesAppointment(appointmentId);
+            return managesAppointment(appointmentId) || appointmentRepository.existsByIdAndStatusAndManagerIsNull(appointmentId, com.car_backend.entities.Status.PENDING);
         }
         if (current.getUserRole() == Role.MECHANIC) {
             return isAssignedMechanicForAppointment(appointmentId);

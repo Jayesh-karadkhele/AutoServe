@@ -50,4 +50,5 @@ public interface AppointmentService {
 
 	List<AppointmentResponseDto> getAppointmentsByManagerId(Long managerId);
 
+	List<AppointmentResponseDto> findManagerPendingQueue();
 }

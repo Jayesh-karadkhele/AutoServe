@@ -53,6 +53,7 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public ManagerOverviewDto getOverview(Long managerId) {
         List<Appointment> managerAppointments = appointmentRepo.findByManager_Id(managerId);
+        List<Appointment> unassignedPendingAppointments = appointmentRepo.findByStatusAndManagerIsNull(Status.PENDING);
         User manager = userRepo.findById(managerId).orElse(null);
         List<JobCard> managerJobCards = jobCardRepo.findByManager(manager);
         List<Invoice> managerInvoices = invoiceRepo.findByJobCard_Manager_Id(managerId);
@@ -63,11 +64,11 @@ public class ManagerServiceImpl implements ManagerService {
 
         long assignedAppointmentsToday = managerAppointments.stream()
                 .filter(a -> a.getRequestDate() != null && a.getRequestDate().equals(today))
+                .count() + unassignedPendingAppointments.stream()
+                .filter(a -> a.getRequestDate() != null && a.getRequestDate().equals(today))
                 .count();
 
-        long awaitingDecisionCount = managerAppointments.stream()
-                .filter(a -> a.getStatus() == Status.PENDING)
-                .count();
+        long awaitingDecisionCount = unassignedPendingAppointments.size();
 
         long approvedAwaitingMechanicCount = managerAppointments.stream()
                 .filter(a -> a.getStatus() == Status.APPROVED && a.getMechanic() == null)
@@ -77,9 +78,7 @@ public class ManagerServiceImpl implements ManagerService {
                 .filter(j -> j.getJobCardStatus() == JobCardStatus.IN_PROGRESS)
                 .count();
 
-        long jobsAwaitingAttentionCount = managerAppointments.stream()
-                .filter(a -> a.getStatus() == Status.PENDING)
-                .count() + managerJobCards.stream()
+        long jobsAwaitingAttentionCount = awaitingDecisionCount + managerJobCards.stream()
                 .filter(j -> j.getJobCardStatus() == JobCardStatus.CREATED)
                 .count();
 
@@ -103,8 +102,17 @@ public class ManagerServiceImpl implements ManagerService {
                 .count();
 
         List<AppointmentResponseDto> recentAppointments = appointmentService.getAppointmentsByManagerId(managerId);
-        if (recentAppointments.size() > 5) {
-            recentAppointments = recentAppointments.subList(0, 5);
+        List<AppointmentResponseDto> pendingUnassignedDtos = appointmentService.findManagerPendingQueue();
+
+        List<AppointmentResponseDto> combinedAppointments = new ArrayList<>(pendingUnassignedDtos);
+        for (AppointmentResponseDto dto : recentAppointments) {
+            if (combinedAppointments.stream().noneMatch(a -> a.getId().equals(dto.getId()))) {
+                combinedAppointments.add(dto);
+            }
+        }
+
+        if (combinedAppointments.size() > 5) {
+            combinedAppointments = combinedAppointments.subList(0, 5);
         }
 
         List<JobCardResponseDto> activeJobCards = jobCardService.getJobCardByManager(managerId);
@@ -123,7 +131,7 @@ public class ManagerServiceImpl implements ManagerService {
                 .lowStockItemsCount(lowStockItemsCount)
                 .invoiceReadyJobsCount(invoiceReadyJobsCount)
                 .outstandingInvoiceCount(outstandingInvoiceCount)
-                .recentAppointments(recentAppointments)
+                .recentAppointments(combinedAppointments)
                 .activeJobCards(activeJobCards)
                 .build();
     }
