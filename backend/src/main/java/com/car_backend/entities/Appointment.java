@@ -46,6 +46,16 @@ public class Appointment extends BaseEntity {
 	@Column(name = "rejection_reason")
 	private String rejectionReason;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "fulfilment_mode")
+	private ServiceFulfilmentMode fulfilmentMode = ServiceFulfilmentMode.WORKSHOP_DROP_OFF;
+
+	@Column(name = "pickup_address", length = 500)
+	private String pickupAddress;
+
+	@Column(name = "logistics_instructions", length = 1000)
+	private String logisticsInstructions;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "vehicle_id", nullable = false)
 	private Vehicle vehicleDetails;

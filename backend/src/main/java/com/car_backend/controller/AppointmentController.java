@@ -37,12 +37,18 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final CurrentUserService currentUserService;
 
-    // -----CUSTOMER MAPPING-------
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/me")
     public ResponseEntity<List<AppointmentResponseDto>> getMyAppointments() {
         Long currentUserId = currentUserService.getUserId();
         return ResponseEntity.ok(appointmentService.getAppointmentsByCustomerId(currentUserId));
+    }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/manager/me")
+    public ResponseEntity<List<AppointmentResponseDto>> getMyManagerAppointments() {
+        Long currentUserId = currentUserService.getUserId();
+        return ResponseEntity.ok(appointmentService.getAppointmentsByManagerId(currentUserId));
     }
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @accessControlService.ownsVehicle(#dto.vehicleId))")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

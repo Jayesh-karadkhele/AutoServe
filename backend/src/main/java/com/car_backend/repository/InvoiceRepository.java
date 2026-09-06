@@ -33,4 +33,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 	boolean existsByIdAndJobCard_Appointment_VehicleDetails_Customer_Id(Long id, Long customerId);
 
 	boolean existsByIdAndJobCard_Manager_Id(Long id, Long managerId);
+
+	List<Invoice> findByJobCard_Manager_Id(Long managerId);
 }

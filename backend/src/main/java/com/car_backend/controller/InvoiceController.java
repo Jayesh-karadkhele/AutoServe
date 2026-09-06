@@ -43,6 +43,13 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.getInvoicesByCustomerId(currentUserId));
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/manager/me")
+    public ResponseEntity<List<InvoiceResponseDto>> getManagerInvoices() {
+        Long managerId = currentUserService.getUserId();
+        return ResponseEntity.ok(invoiceService.getInvoicesByManagerId(managerId));
+    }
+
     // ------------------Invoice Generation-------------------
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#jobCardId)")

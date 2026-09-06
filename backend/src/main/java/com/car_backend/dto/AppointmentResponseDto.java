@@ -42,6 +42,10 @@ public class AppointmentResponseDto {
 	private Long mechanicId;
 	private String mechanicName;
 
+	private com.car_backend.entities.ServiceFulfilmentMode fulfilmentMode;
+	private String pickupAddress;
+	private String logisticsInstructions;
+
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 

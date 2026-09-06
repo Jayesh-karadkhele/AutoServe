@@ -65,19 +65,26 @@ describe('Appointment Booking & List Tests', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Step 1: Select Your Vehicle')).toBeInTheDocument();
+      expect(screen.getByText('Honda City')).toBeInTheDocument();
     });
 
     // Step 1 -> Step 2
     fireEvent.click(screen.getByRole('button', { name: /Next/i }));
-    expect(screen.getByText('Step 2: Choose Service Type')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Step 2: Choose Service Type')).toBeInTheDocument();
+    });
 
     // Step 2 -> Step 3
     fireEvent.click(screen.getByRole('button', { name: /Next/i }));
-    expect(screen.getByText('Step 3: Preferred Date & Time')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Step 3: Schedule & Fulfilment')).toBeInTheDocument();
+    });
 
     // Step 3 -> Step 4
     fireEvent.click(screen.getByRole('button', { name: /Next/i }));
-    expect(screen.getByText('Step 4: Review Appointment Details')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Step 4: Review Appointment Details')).toBeInTheDocument();
+    });
   });
 
   it('15. verifies customer cannot select a mechanic or manager in form UI', async () => {
@@ -121,6 +128,7 @@ describe('Appointment Booking & List Tests', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Step 1: Select Your Vehicle')).toBeInTheDocument();
+      expect(screen.getByText('Honda City')).toBeInTheDocument();
     });
 
     // Step 1 -> Step 2
@@ -132,7 +140,7 @@ describe('Appointment Booking & List Tests', () => {
     // Step 2 -> Step 3
     fireEvent.click(screen.getByRole('button', { name: /Next/i }));
     await waitFor(() => {
-      expect(screen.getByText('Step 3: Preferred Date & Time')).toBeInTheDocument();
+      expect(screen.getByText('Step 3: Schedule & Fulfilment')).toBeInTheDocument();
     });
 
     // Step 3 -> Step 4

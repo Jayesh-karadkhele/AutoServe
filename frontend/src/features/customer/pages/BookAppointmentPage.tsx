@@ -28,6 +28,9 @@ export const BookAppointmentPage: React.FC = () => {
   const [preferredDate, setPreferredDate] = useState<string>('2026-09-15');
   const [timeSlot, setTimeSlot] = useState<string>('09:00 AM - 11:00 AM');
   const [notes, setNotes] = useState<string>('');
+  const [fulfilmentMode, setFulfilmentMode] = useState<'WORKSHOP_DROP_OFF' | 'PICKUP_AND_RETURN_REQUESTED'>('WORKSHOP_DROP_OFF');
+  const [pickupAddress, setPickupAddress] = useState<string>('');
+  const [logisticsInstructions, setLogisticsInstructions] = useState<string>('');
 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -60,6 +63,10 @@ export const BookAppointmentPage: React.FC = () => {
         setValidationError('Please select a preferred date for the appointment.');
         return;
       }
+      if (fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' && !pickupAddress.trim()) {
+        setValidationError('Pickup address is required when requesting vehicle pickup and return.');
+        return;
+      }
     }
 
     setStep((prev) => prev + 1);
@@ -89,6 +96,9 @@ export const BookAppointmentPage: React.FC = () => {
           preferredDate,
           timeSlot,
           notes: notes.trim() || undefined,
+          fulfilmentMode,
+          pickupAddress: fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' ? pickupAddress.trim() : undefined,
+          logisticsInstructions: logisticsInstructions.trim() || undefined,
         },
         undefined
       );
@@ -349,9 +359,9 @@ export const BookAppointmentPage: React.FC = () => {
           {step === 3 && (
             <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-8 space-y-6 shadow-xs">
               <div>
-                <h2 className="text-xl font-bold text-[#111827]">Step 3: Preferred Date & Time</h2>
+                <h2 className="text-xl font-bold text-[#111827]">Step 3: Schedule & Fulfilment</h2>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Select your desired appointment date and time window.
+                  Select your appointment date, time window, and service fulfilment preference.
                 </p>
               </div>
 
@@ -387,6 +397,82 @@ export const BookAppointmentPage: React.FC = () => {
                     <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM (Evening)</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Fulfilment Mode Options */}
+              <div className="pt-4 border-t border-[#E5E7EB] space-y-4">
+                <label className="block text-sm font-bold text-[#111827]">
+                  Service Fulfilment Preference <span className="text-[#DC2626]">*</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setFulfilmentMode('WORKSHOP_DROP_OFF')}
+                    className={`p-4 rounded-2xl border text-left transition-all min-h-[44px] flex items-center justify-between ${
+                      fulfilmentMode === 'WORKSHOP_DROP_OFF'
+                        ? 'border-[#EA580C] bg-[#FFF7ED] ring-2 ring-[#EA580C]/20'
+                        : 'border-[#E5E7EB] hover:border-[#D1D5DB]'
+                    }`}
+                  >
+                    <div>
+                      <h4 className="font-bold text-[#111827] text-sm">Self Drop-Off at Workshop</h4>
+                      <p className="text-xs text-[#6B7280] mt-0.5">Bring vehicle directly to workshop</p>
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${fulfilmentMode === 'WORKSHOP_DROP_OFF' ? 'bg-[#EA580C] border-[#EA580C] text-white' : 'border-[#D1D5DB]'}`}>
+                      {fulfilmentMode === 'WORKSHOP_DROP_OFF' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFulfilmentMode('PICKUP_AND_RETURN_REQUESTED')}
+                    className={`p-4 rounded-2xl border text-left transition-all min-h-[44px] flex items-center justify-between ${
+                      fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED'
+                        ? 'border-[#EA580C] bg-[#FFF7ED] ring-2 ring-[#EA580C]/20'
+                        : 'border-[#E5E7EB] hover:border-[#D1D5DB]'
+                    }`}
+                  >
+                    <div>
+                      <h4 className="font-bold text-[#111827] text-sm">Request Vehicle Pickup & Return</h4>
+                      <p className="text-xs text-[#6B7280] mt-0.5">Subject to manager confirmation</p>
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' ? 'bg-[#EA580C] border-[#EA580C] text-white' : 'border-[#D1D5DB]'}`}>
+                      {fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </div>
+                  </button>
+                </div>
+
+                {fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' && (
+                  <div className="p-4 bg-[#F0F9FF] border border-[#BAE6FD] rounded-xl space-y-4">
+                    <div>
+                      <label htmlFor="pickupAddress" className="block text-xs font-bold text-[#0369A1] mb-1">
+                        Pickup & Delivery Address <span className="text-[#DC2626]">*</span>
+                      </label>
+                      <input
+                        id="pickupAddress"
+                        type="text"
+                        required
+                        placeholder="Complete residential or office address for vehicle pickup..."
+                        value={pickupAddress}
+                        onChange={(e) => setPickupAddress(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#7DD3FC] text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white min-h-[44px]"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="logisticsInstructions" className="block text-xs font-bold text-[#0369A1] mb-1">
+                        Logistics Instructions / Gate Access (Optional)
+                      </label>
+                      <input
+                        id="logisticsInstructions"
+                        type="text"
+                        placeholder="e.g. Call upon arrival at security gate 2..."
+                        value={logisticsInstructions}
+                        onChange={(e) => setLogisticsInstructions(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#7DD3FC] text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white min-h-[44px]"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -424,6 +510,20 @@ export const BookAppointmentPage: React.FC = () => {
                     {preferredDate} ({timeSlot})
                   </span>
                 </div>
+
+                <div className="flex justify-between border-b border-[#E2E8F0] pb-3">
+                  <span className="text-[#6B7280] font-medium">Fulfilment Mode:</span>
+                  <span className="font-semibold text-[#0369A1]">
+                    {fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' ? 'Pickup & Return Requested' : 'Self Drop-Off at Workshop'}
+                  </span>
+                </div>
+
+                {fulfilmentMode === 'PICKUP_AND_RETURN_REQUESTED' && pickupAddress && (
+                  <div className="flex justify-between border-b border-[#E2E8F0] pb-3">
+                    <span className="text-[#6B7280] font-medium">Pickup Address:</span>
+                    <span className="font-normal text-[#111827] max-w-xs text-right">{pickupAddress}</span>
+                  </div>
+                )}
 
                 {notes && (
                   <div className="flex justify-between">

@@ -31,6 +31,22 @@ public class CreateAppointmentDto {
 
 	private String rsaCoordinates;
 
+	private com.car_backend.entities.ServiceFulfilmentMode fulfilmentMode = com.car_backend.entities.ServiceFulfilmentMode.WORKSHOP_DROP_OFF;
+
+	@Size(max = 500, message = "Pickup address cannot exceed 500 characters.")
+	private String pickupAddress;
+
+	@Size(max = 1000, message = "Logistics instructions cannot exceed 1000 characters.")
+	private String logisticsInstructions;
+
+	@AssertTrue(message = "Pickup address is required when pickup and return is requested.")
+	private boolean isPickupAddressValid() {
+		if (com.car_backend.entities.ServiceFulfilmentMode.PICKUP_AND_RETURN_REQUESTED.equals(fulfilmentMode)) {
+			return pickupAddress != null && !pickupAddress.trim().isEmpty();
+		}
+		return true;
+	}
+
 	@AssertTrue(message = "RSA coordinates are required for roadside assistance")
 	private boolean isDataValid() {
 		if (Boolean.TRUE.equals(rsa)) {

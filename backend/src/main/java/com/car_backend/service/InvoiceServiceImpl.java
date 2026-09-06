@@ -164,6 +164,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 	}
 
 	@Override
+	public List<InvoiceResponseDto> getInvoicesByManagerId(Long managerId) {
+		List<Invoice> invoices = invoiceRepo.findByJobCard_Manager_Id(managerId);
+		return invoices.stream().map(this::mapToResponseDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<InvoiceResponseDto> getInvoicesByStatus(PaymentStatus status) {
 		List<Invoice> invoices = invoiceRepo.findByPaymentStatus(status);
 		return invoices.stream().map(this::mapToResponseDto).collect(Collectors.toList());

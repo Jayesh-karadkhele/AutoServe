@@ -23,6 +23,8 @@ public interface InvoiceService {
 
 	List<InvoiceResponseDto> getInvoicesByCustomerId(Long customerId);
 
+	List<InvoiceResponseDto> getInvoicesByManagerId(Long managerId);
+
 	List<InvoiceResponseDto> getInvoicesByStatus(PaymentStatus status);
 
 	CreatePaymentOrderResponseDto createPaymentDto(Long invoiceId);

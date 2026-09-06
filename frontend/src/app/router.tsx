@@ -64,6 +64,44 @@ const RoadsideAssistancePage = React.lazy(() =>
   import('@/features/customer/pages/RoadsideAssistancePage').then((m) => ({ default: m.RoadsideAssistancePage }))
 );
 
+// Lazy-load Manager Experience pages
+const ManagerDashboardPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerDashboardPage').then((m) => ({ default: m.ManagerDashboardPage }))
+);
+const ManagerAppointmentListPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerAppointmentListPage').then((m) => ({ default: m.ManagerAppointmentListPage }))
+);
+const ManagerAppointmentDetailPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerAppointmentDetailPage').then((m) => ({ default: m.ManagerAppointmentDetailPage }))
+);
+const ManagerTeamPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerTeamPage').then((m) => ({ default: m.ManagerTeamPage }))
+);
+const ManagerJobCardListPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerJobCardListPage').then((m) => ({ default: m.ManagerJobCardListPage }))
+);
+const ManagerJobCardDetailPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerJobCardDetailPage').then((m) => ({ default: m.ManagerJobCardDetailPage }))
+);
+const ManagerInventoryPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerInventoryPage').then((m) => ({ default: m.ManagerInventoryPage }))
+);
+const ManagerInvoiceListPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerInvoiceListPage').then((m) => ({ default: m.ManagerInvoiceListPage }))
+);
+const ManagerInvoiceDetailPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerInvoiceDetailPage').then((m) => ({ default: m.ManagerInvoiceDetailPage }))
+);
+const ManagerReportsPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerReportsPage').then((m) => ({ default: m.ManagerReportsPage }))
+);
+const ManagerActivityPage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerActivityPage').then((m) => ({ default: m.ManagerActivityPage }))
+);
+const ManagerProfilePage = React.lazy(() =>
+  import('@/features/manager/pages/ManagerProfilePage').then((m) => ({ default: m.ManagerProfilePage }))
+);
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -164,8 +202,56 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: '/manager',
+        element: <ManagerDashboardPage />,
+      },
+      {
         path: '/manager/dashboard',
-        element: <RoleEntryPage roleTitle="Manager" />,
+        element: <Navigate to="/manager" replace />,
+      },
+      {
+        path: '/manager/appointments',
+        element: <ManagerAppointmentListPage />,
+      },
+      {
+        path: '/manager/appointments/:appointmentId',
+        element: <ManagerAppointmentDetailPage />,
+      },
+      {
+        path: '/manager/team',
+        element: <ManagerTeamPage />,
+      },
+      {
+        path: '/manager/job-cards',
+        element: <ManagerJobCardListPage />,
+      },
+      {
+        path: '/manager/job-cards/:jobCardId',
+        element: <ManagerJobCardDetailPage />,
+      },
+      {
+        path: '/manager/inventory',
+        element: <ManagerInventoryPage />,
+      },
+      {
+        path: '/manager/invoices',
+        element: <ManagerInvoiceListPage />,
+      },
+      {
+        path: '/manager/invoices/:invoiceId',
+        element: <ManagerInvoiceDetailPage />,
+      },
+      {
+        path: '/manager/reports',
+        element: <ManagerReportsPage />,
+      },
+      {
+        path: '/manager/activity',
+        element: <ManagerActivityPage />,
+      },
+      {
+        path: '/manager/profile',
+        element: <ManagerProfilePage />,
       },
     ],
   },

@@ -51,6 +51,9 @@ export interface Appointment {
   preferredDate: string;
   timeSlot?: string | null;
   notes?: string | null;
+  fulfilmentMode?: 'WORKSHOP_DROP_OFF' | 'PICKUP_AND_RETURN_REQUESTED' | null;
+  pickupAddress?: string | null;
+  logisticsInstructions?: string | null;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'IN_PROGRESS' | 'COMPLETED';
   managerId?: number | null;
   mechanicId?: number | null;
@@ -65,6 +68,9 @@ export interface CreateAppointmentDto {
   preferredDate: string;
   timeSlot?: string;
   notes?: string;
+  fulfilmentMode?: 'WORKSHOP_DROP_OFF' | 'PICKUP_AND_RETURN_REQUESTED';
+  pickupAddress?: string;
+  logisticsInstructions?: string;
 }
 
 export interface JobCardItem {

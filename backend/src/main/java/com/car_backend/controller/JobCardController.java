@@ -50,6 +50,13 @@ public class JobCardController {
         return ResponseEntity.ok(jobCardService.getCustomerJobCards(currentUserId));
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/manager/me")
+    public ResponseEntity<List<JobCardResponseDto>> getMyManagerJobCards() {
+        Long currentUserId = currentUserService.getUserId();
+        return ResponseEntity.ok(jobCardService.getJobCardByManager(currentUserId));
+    }
+
     // -----------------------Job Card Management-----------------------
 
     @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @accessControlService.managesAppointment(#dto.appointmentId))")

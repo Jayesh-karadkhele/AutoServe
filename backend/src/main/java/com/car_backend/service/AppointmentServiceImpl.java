@@ -63,6 +63,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		appointment.setCustomerPhotoUrl(dto.getCustomerPhotoUrl());
 		appointment.setRsa(Boolean.TRUE.equals(dto.isRsa()));
 		appointment.setRsaCoordinates(dto.getRsaCoordinates());
+		appointment.setFulfilmentMode(dto.getFulfilmentMode() != null ? dto.getFulfilmentMode() : com.car_backend.entities.ServiceFulfilmentMode.WORKSHOP_DROP_OFF);
+		appointment.setPickupAddress(dto.getPickupAddress());
+		appointment.setLogisticsInstructions(dto.getLogisticsInstructions());
 		appointment.setStatus(Status.PENDING);
 
 		// Handle Image Upload
@@ -358,6 +361,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				.managerName(appointment.getManager() != null ? appointment.getManager().getUserName() : null)
 				.mechanicId(appointment.getMechanic() != null ? appointment.getMechanic().getId() : null)
 				.mechanicName(appointment.getMechanic() != null ? appointment.getMechanic().getUserName() : null)
+				.fulfilmentMode(appointment.getFulfilmentMode())
+				.pickupAddress(appointment.getPickupAddress())
+				.logisticsInstructions(appointment.getLogisticsInstructions())
 				.createdAt(appointment.getCreatedOn())
 				.updatedAt(appointment.getLastUpdated())
 				.build();
