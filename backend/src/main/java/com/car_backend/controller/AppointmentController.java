@@ -2,6 +2,10 @@ package com.car_backend.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,6 +54,7 @@ public class AppointmentController {
         Long currentUserId = currentUserService.getUserId();
         return ResponseEntity.ok(appointmentService.getAppointmentsByManagerId(currentUserId));
     }
+
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @accessControlService.ownsVehicle(#dto.vehicleId))")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AppointmentResponseDto> createAppointment(
@@ -62,7 +67,7 @@ public class AppointmentController {
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsAppointment(#appointmentId)")
     @PutMapping("/{appointmentId}")
     public ResponseEntity<AppointmentResponseDto> updateAppointment(
-            @PathVariable Long appointmentId,
+            @PathVariable("appointmentId") Long appointmentId,
             @Valid @RequestBody UpdateAppointmentDto dto) {
         log.info("Received update appointment request for ID {}", appointmentId);
         return ResponseEntity.ok(appointmentService.updateAppointment(appointmentId, dto));
@@ -70,20 +75,20 @@ public class AppointmentController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsAppointment(#appointmentId)")
     @DeleteMapping("/{appointmentId}/cancel")
-    public ResponseEntity<Void> cancelAppointment(@PathVariable Long appointmentId) {
+    public ResponseEntity<Void> cancelAppointment(@PathVariable("appointmentId") Long appointmentId) {
         appointmentService.cancelAppointment(appointmentId);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#customerId)")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsByCustomer(@PathVariable Long customerId) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsByCustomer(@PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByCustomerId(customerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessVehicle(#vehicleId)")
     @GetMapping("/vehicle/{vehicleId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByVehicle(@PathVariable Long vehicleId) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByVehicle(@PathVariable("vehicleId") Long vehicleId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByVehicleId(vehicleId));
     }
 
@@ -96,7 +101,7 @@ public class AppointmentController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessAppointment(#appointmentId)")
     @GetMapping("/{appointmentId}")
-    public ResponseEntity<AppointmentResponseDto> getAppointmentById(@PathVariable Long appointmentId) {
+    public ResponseEntity<AppointmentResponseDto> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) {
         return ResponseEntity.ok(appointmentService.getAppointmentById(appointmentId));
     }
 
@@ -108,26 +113,27 @@ public class AppointmentController {
 
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/manager/pending")
-    public ResponseEntity<List<AppointmentResponseDto>> getManagerPendingAppointments() {
-        return ResponseEntity.ok(appointmentService.findManagerPendingQueue());
+    public ResponseEntity<Page<AppointmentResponseDto>> getManagerPendingAppointments(
+            @PageableDefault(size = 10, sort = {"requestDate", "createdOn"}, direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(appointmentService.findManagerPendingQueue(pageable));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByStatus(@PathVariable Status status) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByStatus(@PathVariable("status") Status status) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{appointmentId}/approve")
-    public ResponseEntity<AppointmentResponseDto> approveAppointment(@PathVariable Long appointmentId) {
+    public ResponseEntity<AppointmentResponseDto> approveAppointment(@PathVariable("appointmentId") Long appointmentId) {
         return ResponseEntity.ok(appointmentService.approveAppointment(appointmentId));
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{appointmentId}/reject")
     public ResponseEntity<AppointmentResponseDto> rejectAppointment(
-            @PathVariable Long appointmentId,
+            @PathVariable("appointmentId") Long appointmentId,
             @Valid @RequestBody ApproveRejectDto dto) {
         return ResponseEntity.ok(appointmentService.rejectAppointment(appointmentId, dto.getRejectionReason()));
     }
@@ -153,7 +159,7 @@ public class AppointmentController {
 
     @PreAuthorize("hasAnyRole('MANAGER','MECHANIC','ADMIN')")
     @GetMapping("/rsa/{status}")
-    public ResponseEntity<List<AppointmentResponseDto>> getRsaAppointmentsByStatus(@PathVariable Status status) {
+    public ResponseEntity<List<AppointmentResponseDto>> getRsaAppointmentsByStatus(@PathVariable("status") Status status) {
         return ResponseEntity.ok(appointmentService.getRsaAppointmentsByStatus(status));
     }
 

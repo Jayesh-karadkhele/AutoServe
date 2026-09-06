@@ -2,6 +2,9 @@ package com.car_backend.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.car_backend.dto.AppointmentResponseDto;
 import com.car_backend.dto.CreateAppointmentDto;
 import com.car_backend.dto.UpdateAppointmentDto;
@@ -51,4 +54,6 @@ public interface AppointmentService {
 	List<AppointmentResponseDto> getAppointmentsByManagerId(Long managerId);
 
 	List<AppointmentResponseDto> findManagerPendingQueue();
+
+	Page<AppointmentResponseDto> findManagerPendingQueue(Pageable pageable);
 }

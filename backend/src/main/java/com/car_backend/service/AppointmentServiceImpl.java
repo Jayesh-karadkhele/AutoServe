@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -190,6 +192,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
+	public Page<AppointmentResponseDto> findManagerPendingQueue(Pageable pageable) {
+		Page<Appointment> pendingAppointments = appointmentRepo.findByStatusAndManagerIsNull(Status.PENDING, pageable);
+		return pendingAppointments.map(this::mapToResponseDto);
+	}
+
+	@Override
 	public List<AppointmentResponseDto> getAppointmentsByStatus(Status status) {
 		List<Appointment> appointments = appointmentRepo.findByStatus(status);
 
@@ -198,7 +206,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public AppointmentResponseDto approveAppointment(Long appointmentId) {
-		Appointment appointment = appointmentRepo.findById(appointmentId)
+		Appointment appointment = appointmentRepo.findByIdWithLock(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("appointment not found"));
 
 		Long currentUserId = currentUserService.getUserId();
@@ -224,7 +232,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public AppointmentResponseDto rejectAppointment(Long appointmentId, String rejectionReason) {
-		Appointment appointment = appointmentRepo.findById(appointmentId)
+		Appointment appointment = appointmentRepo.findByIdWithLock(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("appointment not found"));
 
 		Long currentUserId = currentUserService.getUserId();

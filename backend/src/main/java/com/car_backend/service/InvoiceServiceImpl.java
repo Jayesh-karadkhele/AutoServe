@@ -219,7 +219,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 					.razorpayKey(razorpayKeyId)
 					.build();
 
-		} catch (RazorpayException e) {
+		} catch (RazorpayException | org.json.JSONException e) {
 			log.error("razorpay order creation failed. ", e);
 			throw new PaymentException("failed to create payment order: " + e.getMessage());
 		}
