@@ -22,6 +22,15 @@ const RoleRedirect = React.lazy(() =>
 const ForbiddenPage = React.lazy(() =>
   import('@/features/auth/routing/ForbiddenPage').then((m) => ({ default: m.ForbiddenPage }))
 );
+const ForgotPasswordPage = React.lazy(() =>
+  import('@/features/auth/pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage }))
+);
+const ResetPasswordPage = React.lazy(() =>
+  import('@/features/auth/pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage }))
+);
+const AccountSecurityPage = React.lazy(() =>
+  import('@/features/auth/pages/AccountSecurityPage').then((m) => ({ default: m.AccountSecurityPage }))
+);
 
 // Lazy-load Customer Experience pages
 const CustomerDashboardPage = React.lazy(() =>
@@ -180,6 +189,14 @@ export const router = createBrowserRouter([
         path: '/register',
         element: <RegisterPage />,
       },
+      {
+        path: '/forgot-password',
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: '/reset-password',
+        element: <ResetPasswordPage />,
+      },
     ],
   },
   {
@@ -192,6 +209,10 @@ export const router = createBrowserRouter([
       {
         path: '/app',
         element: <RoleRedirect />,
+      },
+      {
+        path: '/account/security',
+        element: <AccountSecurityPage />,
       },
     ],
   },

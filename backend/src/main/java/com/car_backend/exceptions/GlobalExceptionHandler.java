@@ -118,6 +118,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(MechanicTransferConflictException.class)
+    public ResponseEntity<ApiResponse> handleMechanicTransferConflictException(MechanicTransferConflictException ex) {
+        ApiResponse response = new ApiResponse(ex.getMessage(), "MECHANIC_TRANSFER_CONFLICT");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
         Map<String, Object> body = new HashMap<>();

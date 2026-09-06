@@ -88,8 +88,8 @@ describe('Invoices, Profile & Roadside Tests', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Payment Provider Safeguard/i)).toBeInTheDocument();
-      expect(screen.getByText(/Online payment provider integration is unconfigured/i)).toBeInTheDocument();
+      expect(screen.getByText(/Razorpay Verified Payment Processing/i)).toBeInTheDocument();
+      expect(screen.getByText(/Payment is processed by Razorpay/i)).toBeInTheDocument();
       expect(screen.getByText('Payment Status: PENDING')).toBeInTheDocument();
     });
   });

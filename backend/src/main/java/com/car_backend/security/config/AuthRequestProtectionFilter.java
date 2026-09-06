@@ -58,7 +58,10 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
                  path.equalsIgnoreCase("/api/auth/login") ||
                  path.equalsIgnoreCase("/api/auth/refresh") ||
                  path.equalsIgnoreCase("/api/auth/logout") ||
-                 path.equalsIgnoreCase("/api/auth/logout-all"));
+                 path.equalsIgnoreCase("/api/auth/logout-all") ||
+                 path.equalsIgnoreCase("/api/auth/forgot-password") ||
+                 path.equalsIgnoreCase("/api/auth/reset-password") ||
+                 path.equalsIgnoreCase("/api/users/me/change-password"));
 
         if (isTargetAuthEndpoint) {
             // 1. Verify custom client header

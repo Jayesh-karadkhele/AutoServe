@@ -9,5 +9,6 @@ public enum AuditEventAction {
     STOCK_ADJUSTMENT,
     INVENTORY_CREATE,
     INVENTORY_UPDATE,
-    ADMIN_OVERRIDE
+    ADMIN_OVERRIDE,
+    INVOICE_PAID
 }

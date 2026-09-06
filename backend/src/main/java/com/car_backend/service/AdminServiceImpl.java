@@ -238,6 +238,16 @@ public class AdminServiceImpl implements AdminService {
             throw new IllegalArgumentException("Target user must be an active Manager");
         }
 
+        List<JobCard> activeJobs = jobCardRepository.findByMechanicIdAndJobCardStatusIn(
+                dto.getMechanicId(), List.of(JobCardStatus.CREATED, JobCardStatus.IN_PROGRESS));
+        if (!activeJobs.isEmpty()) {
+            String blockingJobRefs = activeJobs.stream()
+                    .map(j -> "JC-" + j.getId())
+                    .collect(Collectors.joining(", "));
+            throw new com.car_backend.exceptions.MechanicTransferConflictException(
+                    "Cannot reassign Mechanic " + mechanic.getUserName() + " with active assigned jobs: [" + blockingJobRefs + "]. Please complete or reassign active jobs first.");
+        }
+
         mechanic.setManager(targetManager);
         User saved = userRepository.save(mechanic);
 

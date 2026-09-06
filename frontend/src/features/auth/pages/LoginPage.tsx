@@ -90,17 +90,27 @@ export const LoginPage: React.FC = () => {
           required
         />
 
-        <PasswordField
-          id="login-password"
-          name="password"
-          label="Password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
-          autoComplete="current-password"
-          required
-        />
+        <div className="space-y-1">
+          <PasswordField
+            id="login-password"
+            name="password"
+            label="Password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+            autoComplete="current-password"
+            required
+          />
+          <div className="text-right">
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-cyan-700 hover:text-cyan-800 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
 
         <AuthSubmitButton isLoading={isLoading}>
           Sign in to AutoServe

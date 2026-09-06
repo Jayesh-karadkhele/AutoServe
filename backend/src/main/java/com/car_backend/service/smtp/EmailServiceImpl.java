@@ -293,4 +293,37 @@ public class EmailServiceImpl implements EmailService {
 			
 		}
 
+		@Override
+		public void sendPasswordResetEmail(String emailTo, String resetToken) {
+			try {
+				String subject = "AutoServe — Password Reset Verification Code";
+				String htmlBody = """
+						<div style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f8faf9; padding: 20px;">
+							<div style="max-width: 560px; margin: auto; background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0;">
+								<h2 style="color: #0f172a; margin-top: 0;">AutoServe Account Security</h2>
+								<p>Hello,</p>
+								<p>We received a request to reset the password for your AutoServe account.</p>
+								<p>Use the following secure reset token or URL fragment to complete your password reset:</p>
+								<div style="background: #f1f5f9; padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 16px; font-weight: bold; text-align: center; color: #0284c7; letter-spacing: 1px; margin: 16px 0;">
+									%s
+								</div>
+								<p>This token is valid for <b>30 minutes</b>. If you did not request a password reset, please ignore this email.</p>
+								<hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+								<p style="font-size: 12px; color: #64748b;">AutoServe Automated Security Notice. Please do not reply to this email.</p>
+							</div>
+						</div>
+						""".formatted(resetToken);
+
+				MimeMessage message = mailSender.createMimeMessage();
+				MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+				helper.setFrom(from);
+				helper.setTo(emailTo);
+				helper.setSubject(subject);
+				helper.setText(htmlBody, true);
+				mailSender.send(message);
+			} catch (Exception e) {
+				System.err.println("Failed to send password reset email: " + e.getMessage());
+			}
+		}
+
 }

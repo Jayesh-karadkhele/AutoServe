@@ -15,5 +15,6 @@ public interface EmailService {
 	void sendCancelAppointmentEmail(Appointment appointment);
 
 	void sendAppointMentApprovedMail(Appointment appointment);
-	
+
+	void sendPasswordResetEmail(String toEmail, String resetToken);
 }

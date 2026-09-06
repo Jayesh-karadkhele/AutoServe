@@ -68,8 +68,7 @@ export const ReassignMechanicModal: React.FC<ReassignMechanicModalProps> = ({
         )}
 
         <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900">
-          <span className="font-bold">Transfer Warning:</span> Active job cards currently assigned to{' '}
-          <span className="font-semibold">{mechanic.fullName}</span> will remain under their original manager until work completion.
+          <span className="font-bold">Transfer Policy:</span> Mechanics with active assigned jobs cannot be reassigned until active job cards are completed or reassigned to another technician first.
         </div>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
