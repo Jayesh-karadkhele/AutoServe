@@ -101,6 +101,22 @@ const ManagerActivityPage = React.lazy(() =>
 const ManagerProfilePage = React.lazy(() =>
   import('@/features/manager/pages/ManagerProfilePage').then((m) => ({ default: m.ManagerProfilePage }))
 );
+// Lazy-load Mechanic Experience pages
+const MechanicDashboardPage = React.lazy(() =>
+  import('@/features/mechanic/pages/MechanicDashboardPage').then((m) => ({ default: m.MechanicDashboardPage }))
+);
+const MechanicJobListPage = React.lazy(() =>
+  import('@/features/mechanic/pages/MechanicJobListPage').then((m) => ({ default: m.MechanicJobListPage }))
+);
+const MechanicJobDetailPage = React.lazy(() =>
+  import('@/features/mechanic/pages/MechanicJobDetailPage').then((m) => ({ default: m.MechanicJobDetailPage }))
+);
+const MechanicCompletedJobsPage = React.lazy(() =>
+  import('@/features/mechanic/pages/MechanicCompletedJobsPage').then((m) => ({ default: m.MechanicCompletedJobsPage }))
+);
+const MechanicProfilePage = React.lazy(() =>
+  import('@/features/mechanic/pages/MechanicProfilePage').then((m) => ({ default: m.MechanicProfilePage }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -263,8 +279,28 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: '/mechanic',
+        element: <MechanicDashboardPage />,
+      },
+      {
         path: '/mechanic/dashboard',
-        element: <RoleEntryPage roleTitle="Mechanic" />,
+        element: <Navigate to="/mechanic" replace />,
+      },
+      {
+        path: '/mechanic/jobs',
+        element: <MechanicJobListPage />,
+      },
+      {
+        path: '/mechanic/jobs/:jobCardId',
+        element: <MechanicJobDetailPage />,
+      },
+      {
+        path: '/mechanic/completed',
+        element: <MechanicCompletedJobsPage />,
+      },
+      {
+        path: '/mechanic/profile',
+        element: <MechanicProfilePage />,
       },
     ],
   },

@@ -364,6 +364,9 @@ public class JobCardServiceImpl implements JobCardService {
 		evidence.setJobCard(jobCard);
 		evidence.setPhotoUrl(dto.getPhotoUrl());
 		evidence.setDescription(dto.getDescription());
+		evidence.setEvidenceType(dto.getEvidenceType() != null ? dto.getEvidenceType() : com.car_backend.entities.EvidenceType.DURING_REPAIR);
+		evidence.setMediaType(dto.getMediaType() != null ? dto.getMediaType() : "image/jpeg");
+		evidence.setOriginalFilename(dto.getOriginalFilename());
 		evidence.setUploadedAt(LocalDateTime.now());
 
 		jobCard.getEvidences().add(evidence);
@@ -616,8 +619,17 @@ public class JobCardServiceImpl implements JobCardService {
 	}
 
 	private JobCardEvidenceDto mapEvidenceToDto(JobCardEvidence evidence) {
-		return JobCardEvidenceDto.builder().id(evidence.getId()).photoUrl(evidence.getPhotoUrl())
-				.description(evidence.getDescription()).uploadedAt(evidence.getUploadedAt()).build();
+		return JobCardEvidenceDto.builder()
+				.id(evidence.getId())
+				.photoUrl(evidence.getPhotoUrl())
+				.description(evidence.getDescription())
+				.uploadedAt(evidence.getUploadedAt())
+				.evidenceType(evidence.getEvidenceType())
+				.mediaType(evidence.getMediaType())
+				.originalFilename(evidence.getOriginalFilename())
+				.uploaderId(evidence.getUploader() != null ? evidence.getUploader().getId() : null)
+				.uploaderName(evidence.getUploader() != null ? evidence.getUploader().getUserName() : null)
+				.build();
 	}
 
 	@Override
