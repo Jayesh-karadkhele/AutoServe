@@ -62,14 +62,17 @@ export const AddVehiclePage: React.FC = () => {
       const normalizedRegistration = formData.registrationNumber.trim().toUpperCase();
       await createVehicle({
         registrationNumber: normalizedRegistration,
+        licensePlate: normalizedRegistration,
         make: formData.make.trim(),
+        brand: formData.make.trim(),
         model: formData.model.trim(),
         year: formData.year ? parseInt(formData.year, 10) : undefined,
+        manufacturingYear: formData.year ? parseInt(formData.year, 10) : undefined,
         fuelType: formData.fuelType,
         vehicleType: formData.vehicleType,
-        color: formData.color.trim() || undefined,
+        color: formData.color.trim() || 'WHITE',
         vin: formData.vin.trim() || undefined,
-      });
+      } as any);
 
       navigate('/customer/vehicles');
     } catch (err: any) {

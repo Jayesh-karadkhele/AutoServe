@@ -25,5 +25,24 @@ public class VehicleResponseDto {
 	private String customerName;
 	private String customerEmail;
 	private String customerMobile;
-	
+
+	@com.fasterxml.jackson.annotation.JsonProperty("id")
+	public Long getId() {
+		return VehicleId;
+	}
+
+	@com.fasterxml.jackson.annotation.JsonProperty("registrationNumber")
+	public String getRegistrationNumber() {
+		return licensePlate;
+	}
+
+	@com.fasterxml.jackson.annotation.JsonProperty("make")
+	public String getMake() {
+		return brand;
+	}
+
+	@com.fasterxml.jackson.annotation.JsonProperty("year")
+	public Integer getYear() {
+		return manufacturingYear;
+	}
 }

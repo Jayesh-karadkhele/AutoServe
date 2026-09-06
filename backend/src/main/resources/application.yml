@@ -14,8 +14,8 @@ spring:
     open-in-view: false
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/autoserve_dev?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true}
-    username: ${DB_USERNAME:autoserve_app}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
   mail:
     host: ${MAIL_HOST:localhost}
@@ -43,7 +43,7 @@ springdoc:
 
 # Custom Application Integration Properties (Configured via Environment Variables)
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:AutoServeDefaultSuperSecretJWTKeyWhichIs32BytesLongMinimumForHmacSha256!}
   expiration: ${JWT_EXPIRATION:86400000}
 
 razorpay:
