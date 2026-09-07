@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     created_on DATETIME NOT NULL,
     updated_on DATETIME NOT NULL,
-    CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX idx_notification_user_read (user_id, is_read),
     INDEX idx_notification_created (created_on)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS chat (
     sender_id BIGINT NOT NULL,
     created_on DATETIME NOT NULL,
     updated_on DATETIME NOT NULL,
-    CONSTRAINT fk_chat_job_card FOREIGN KEY (job_card_id) REFERENCES job_cards(id) ON DELETE CASCADE,
-    CONSTRAINT fk_chat_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_chat_job_card FOREIGN KEY (job_card_id) REFERENCES job_card(job_card_id) ON DELETE CASCADE,
+    CONSTRAINT fk_chat_sender FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX idx_chat_job_created (job_card_id, created_on)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS roadside_assistance (
     resolution_notes TEXT,
     created_on DATETIME NOT NULL,
     updated_on DATETIME NOT NULL,
-    CONSTRAINT fk_rsa_customer FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rsa_customer FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_rsa_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id) ON DELETE CASCADE,
-    CONSTRAINT fk_rsa_handler FOREIGN KEY (assigned_handler_id) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_rsa_handler FOREIGN KEY (assigned_handler_id) REFERENCES users(user_id) ON DELETE SET NULL,
     INDEX idx_rsa_customer (customer_id),
     INDEX idx_rsa_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -62,8 +62,8 @@ CREATE TABLE IF NOT EXISTS service_ratings (
     comment TEXT,
     created_on DATETIME NOT NULL,
     updated_on DATETIME NOT NULL,
-    CONSTRAINT fk_rating_job_card FOREIGN KEY (job_card_id) REFERENCES job_cards(id) ON DELETE CASCADE,
-    CONSTRAINT fk_rating_customer FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_rating_mechanic FOREIGN KEY (mechanic_id) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_rating_job_card FOREIGN KEY (job_card_id) REFERENCES job_card(job_card_id) ON DELETE CASCADE,
+    CONSTRAINT fk_rating_customer FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_rating_mechanic FOREIGN KEY (mechanic_id) REFERENCES users(user_id) ON DELETE SET NULL,
     CONSTRAINT chk_rating_range CHECK (rating BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

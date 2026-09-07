@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/:path*", "destination": "https://97a5878cc7236b.lhr.life/api/:path*" },
+    { "source": "/actuator/:path*", "destination": "https://97a5878cc7236b.lhr.life/actuator/:path*" },
+    { "source": "/ws/:path*", "destination": "https://97a5878cc7236b.lhr.life/ws/:path*" },
+    { "source": "/:path*", "destination": "/index.html" }
   ]
 }
