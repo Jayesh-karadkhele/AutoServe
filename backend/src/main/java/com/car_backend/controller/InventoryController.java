@@ -45,25 +45,25 @@ public class InventoryController {
 
     @PreAuthorize("hasAnyRole('MANAGER','MECHANIC','ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<InventoryResponseDto> getItemById(@PathVariable Long id) {
+    public ResponseEntity<InventoryResponseDto> getItemById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(inventoryService.getItemById(id));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER','MECHANIC','ADMIN')")
     @GetMapping("/sku/{skuCode}")
-    public ResponseEntity<InventoryResponseDto> getItemBySkuCode(@PathVariable String skuCode) {
+    public ResponseEntity<InventoryResponseDto> getItemBySkuCode(@PathVariable("skuCode") String skuCode) {
         return ResponseEntity.ok(inventoryService.getItemBySkuCode(skuCode));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<InventoryResponseDto> updateItem(@PathVariable Long id, @Valid @RequestBody UpdateInventoryDto dto) {
+    public ResponseEntity<InventoryResponseDto> updateItem(@PathVariable("id") Long id, @Valid @RequestBody UpdateInventoryDto dto) {
         return ResponseEntity.ok(inventoryService.updateItem(id, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteItem(@PathVariable("id") Long id) {
         inventoryService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
@@ -90,7 +90,7 @@ public class InventoryController {
 
     @PreAuthorize("hasAnyRole('MANAGER','MECHANIC','ADMIN')")
     @GetMapping("/search")
-    public ResponseEntity<List<InventoryResponseDto>> searchItem(@RequestParam String keyword) {
+    public ResponseEntity<List<InventoryResponseDto>> searchItem(@RequestParam("keyword") String keyword) {
         return ResponseEntity.ok(inventoryService.searchItems(keyword));
     }
 }

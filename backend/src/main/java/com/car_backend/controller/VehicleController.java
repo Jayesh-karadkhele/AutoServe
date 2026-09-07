@@ -23,6 +23,8 @@ import com.car_backend.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.parameters.P;
+
 @RestController
 @RequestMapping("/api/vehicles")
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class VehicleController {
 
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     @PostMapping
-    public ResponseEntity<VehicleResponseDto> createVehicle(@RequestBody @Valid CreateVehicleDto dto) {
+    public ResponseEntity<VehicleResponseDto> createVehicle(@P("dto") @RequestBody @Valid CreateVehicleDto dto) {
         if (currentUserService.getRole() == Role.CUSTOMER) {
             dto.setCustomerId(currentUserService.getUserId());
         }
@@ -55,31 +57,31 @@ public class VehicleController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsVehicle(#vehicleId)")
     @PutMapping("/{vehicleId}")
-    public ResponseEntity<VehicleResponseDto> updateVehicle(@PathVariable Long vehicleId, @RequestBody @Valid VehicleUpdateDto dto) {
+    public ResponseEntity<VehicleResponseDto> updateVehicle(@P("vehicleId") @PathVariable("vehicleId") Long vehicleId, @RequestBody @Valid VehicleUpdateDto dto) {
         return ResponseEntity.ok(vehicleService.updateVehicle(vehicleId, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessVehicle(#vehicleId)")
     @GetMapping("/{vehicleId}")
-    public ResponseEntity<VehicleResponseDto> getVehicleById(@PathVariable Long vehicleId) {
+    public ResponseEntity<VehicleResponseDto> getVehicleById(@P("vehicleId") @PathVariable("vehicleId") Long vehicleId) {
         return ResponseEntity.ok(vehicleService.getVehicleById(vehicleId));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER','MECHANIC','ADMIN')")
     @GetMapping("/license_plate/{licensePlate}")
-    public ResponseEntity<VehicleResponseDto> getVehicleByLicensePlate(@PathVariable String licensePlate) {
+    public ResponseEntity<VehicleResponseDto> getVehicleByLicensePlate(@P("licensePlate") @PathVariable("licensePlate") String licensePlate) {
         return ResponseEntity.ok(vehicleService.getVehicleByRegistration(licensePlate));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#customerId)")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<VehicleResponseDto>> getCustomerVehicles(@PathVariable Long customerId) {
+    public ResponseEntity<List<VehicleResponseDto>> getCustomerVehicles(@P("customerId") @PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(vehicleService.getCustomerVehicles(customerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsVehicle(#vehicleId)")
     @DeleteMapping("/{vehicleId}")
-    public ResponseEntity<VehicleResponseDto> deleteVehicle(@PathVariable Long vehicleId) {
+    public ResponseEntity<VehicleResponseDto> deleteVehicle(@P("vehicleId") @PathVariable("vehicleId") Long vehicleId) {
         return ResponseEntity.ok(vehicleService.deleteVehicle(vehicleId));
     }
 }

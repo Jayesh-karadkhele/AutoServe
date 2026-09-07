@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.car_backend.entities.PasswordResetToken;
@@ -19,5 +20,5 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
 
     @Modifying
     @Query("UPDATE PasswordResetToken p SET p.invalidatedAt = CURRENT_TIMESTAMP WHERE p.user.id = :userId AND p.consumedAt IS NULL AND p.invalidatedAt IS NULL")
-    void invalidateActiveTokensForUser(Long userId);
+    void invalidateActiveTokensForUser(@Param("userId") Long userId);
 }

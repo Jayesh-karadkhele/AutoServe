@@ -48,6 +48,15 @@ public class VehicleAuthorizationTests {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private com.car_backend.repository.AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private com.car_backend.repository.JobCardRepository jobCardRepository;
+
+    @Autowired
+    private com.car_backend.repository.InvoiceRepository invoiceRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private User admin;
@@ -62,7 +71,11 @@ public class VehicleAuthorizationTests {
 
     @BeforeEach
     void setUp() {
+        invoiceRepository.deleteAll();
+        jobCardRepository.deleteAll();
+        appointmentRepository.deleteAll();
         vehicleRepository.deleteAll();
+        userRepository.findAll().forEach(u -> { u.setManager(null); userRepository.save(u); });
         userRepository.deleteAll();
 
         admin = SecurityTestUtils.createUser(userRepository, passwordEncoder, "Admin User", "admin@autoserve.com", "AdminPass123!", Role.ADMIN, "9999999999", null, true);

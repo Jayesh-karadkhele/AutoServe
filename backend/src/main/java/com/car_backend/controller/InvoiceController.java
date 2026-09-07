@@ -27,6 +27,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.core.parameters.P;
+
 @RestController
 @RequestMapping("/api/invoices")
 @RequiredArgsConstructor
@@ -54,26 +56,26 @@ public class InvoiceController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#jobCardId)")
     @PostMapping("/generate/job_card/{jobCardId}")
-    public ResponseEntity<InvoiceResponseDto> generateInvoice(@PathVariable Long jobCardId) {
+    public ResponseEntity<InvoiceResponseDto> generateInvoice(@P("jobCardId") @PathVariable("jobCardId") Long jobCardId) {
         log.info("Generating invoice for job card: {}", jobCardId);
         return ResponseEntity.ok(invoiceService.generateInvoice(jobCardId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessInvoice(#id)")
     @GetMapping("/{id}")
-    public ResponseEntity<InvoiceResponseDto> getInvoiceById(@PathVariable Long id) {
+    public ResponseEntity<InvoiceResponseDto> getInvoiceById(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(invoiceService.getInvoice(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/number/{invoiceNumber}")
-    public ResponseEntity<InvoiceResponseDto> getInvoiceByNumber(@PathVariable String invoiceNumber) {
+    public ResponseEntity<InvoiceResponseDto> getInvoiceByNumber(@P("invoiceNumber") @PathVariable("invoiceNumber") String invoiceNumber) {
         return ResponseEntity.ok(invoiceService.getInvoiceByNumber(invoiceNumber));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessJobCard(#jobCardId)")
     @GetMapping("/job_card/{jobCardId}")
-    public ResponseEntity<InvoiceResponseDto> getInvoiceByJobCard(@PathVariable Long jobCardId) {
+    public ResponseEntity<InvoiceResponseDto> getInvoiceByJobCard(@P("jobCardId") @PathVariable("jobCardId") Long jobCardId) {
         return ResponseEntity.ok(invoiceService.getInvoiceByJobCard(jobCardId));
     }
 
@@ -85,13 +87,13 @@ public class InvoiceController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#customerId)")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<InvoiceResponseDto>> getInvoicesByCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<List<InvoiceResponseDto>> getInvoicesByCustomerId(@P("customerId") @PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(invoiceService.getInvoicesByCustomerId(customerId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<InvoiceResponseDto>> getInvoiceByStatus(@PathVariable PaymentStatus status) {
+    public ResponseEntity<List<InvoiceResponseDto>> getInvoiceByStatus(@P("status") @PathVariable("status") PaymentStatus status) {
         return ResponseEntity.ok(invoiceService.getInvoicesByStatus(status));
     }
 
@@ -99,13 +101,13 @@ public class InvoiceController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsInvoice(#id)")
     @PostMapping("/{id}/create_payment_order")
-    public ResponseEntity<CreatePaymentOrderResponseDto> createPaymentOrder(@PathVariable Long id) {
+    public ResponseEntity<CreatePaymentOrderResponseDto> createPaymentOrder(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(invoiceService.createPaymentDto(id));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsInvoice(#id)")
     @PostMapping("/{id}/verify_payment")
-    public ResponseEntity<PaymentVerificationResponseDto> verifyPayment(@PathVariable Long id, @Valid @RequestBody VerifyPaymentRequestDto request) {
+    public ResponseEntity<PaymentVerificationResponseDto> verifyPayment(@P("id") @PathVariable("id") Long id, @Valid @RequestBody VerifyPaymentRequestDto request) {
         PaymentVerificationResponseDto response = invoiceService.verifyPayment(id, request);
         if (Boolean.TRUE.equals(response.getVerified())) {
             return ResponseEntity.ok(response);
@@ -115,13 +117,13 @@ public class InvoiceController {
     }
 
     @PostMapping("/{id}/simulate_payment")
-    public ResponseEntity<?> simulatePayment(@PathVariable Long id) {
+    public ResponseEntity<?> simulatePayment(@P("id") @PathVariable("id") Long id) {
         throw new com.car_backend.exceptions.ResourceNotFoundException("Payment simulation endpoint is unavailable");
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessInvoice(#id)")
     @GetMapping("/{id}/download")
-    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long id) {
+    public ResponseEntity<byte[]> downloadInvoice(@P("id") @PathVariable("id") Long id) {
         byte[] pdf = invoiceService.getInvoicePdf(id);
 
         HttpHeaders headers = new HttpHeaders();

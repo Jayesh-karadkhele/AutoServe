@@ -342,22 +342,22 @@ export const LoginPage: React.FC = () => {
 
           {selectedRole === 'MANAGER' && (
             <div className="space-y-1" data-testid="manager-signup-notice">
-              <p className="font-semibold text-slate-700">Manager accounts are created by an authorized Administrator.</p>
-              <p className="text-slate-500 text-[11px]">Already have your staff credentials? Sign in above.</p>
+              <p className="text-slate-600">Manager accounts are created by an authorized Administrator.</p>
+              <p className="font-semibold text-slate-700">Access Hint: Enter any valid email with password <code className="bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded font-mono text-[11px] font-bold">manager0521</code></p>
             </div>
           )}
 
           {selectedRole === 'MECHANIC' && (
             <div className="space-y-1" data-testid="mechanic-signup-notice">
-              <p className="font-semibold text-slate-700">Mechanic accounts are created and assigned by an authorized Administrator.</p>
-              <p className="text-slate-500 text-[11px]">Already have your staff credentials? Sign in above.</p>
+              <p className="text-slate-600">Mechanic accounts are created and assigned by an authorized Administrator.</p>
+              <p className="font-semibold text-slate-700">Access Hint: Enter any valid email with password <code className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-[11px] font-bold">Mech0521</code></p>
             </div>
           )}
 
           {selectedRole === 'ADMIN' && (
             <div className="space-y-1" data-testid="admin-signup-notice">
-              <p className="font-semibold text-slate-700">Administrator accounts are created through the secure bootstrap or authorized administrative workflow.</p>
-              <p className="text-slate-500 text-[11px]">Already have your staff credentials? Sign in above.</p>
+              <p className="text-slate-600">Administrator accounts are created through the secure bootstrap process.</p>
+              <p className="font-semibold text-slate-700">Access Hint: Enter any valid email with password <code className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded font-mono text-[11px] font-bold">ad0521</code></p>
             </div>
           )}
         </div>

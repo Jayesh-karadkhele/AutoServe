@@ -34,6 +34,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.core.parameters.P;
+
 @RestController
 @RequestMapping("/api/job_cards")
 @RequiredArgsConstructor
@@ -68,14 +70,14 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or (hasRole('MANAGER') and @accessControlService.managesAppointment(#dto.appointmentId))")
     @PostMapping
-    public ResponseEntity<JobCardResponseDto> createJobCard(@Valid @RequestBody CreateJobCardDto dto) {
+    public ResponseEntity<JobCardResponseDto> createJobCard(@P("dto") @Valid @RequestBody CreateJobCardDto dto) {
         log.info("Creating job card for appointment {}", dto.getAppointmentId());
         return ResponseEntity.ok(jobCardService.createJobCard(dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessJobCard(#id)")
     @GetMapping("/{id}")
-    public ResponseEntity<JobCardResponseDto> getJobCardById(@PathVariable Long id) {
+    public ResponseEntity<JobCardResponseDto> getJobCardById(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(jobCardService.getJobCardById(id));
     }
 
@@ -87,7 +89,7 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessAppointment(#appointmentId)")
     @GetMapping("/appointment/{appointmentId}")
-    public ResponseEntity<JobCardResponseDto> getJobCardByAppointmentId(@PathVariable Long appointmentId) {
+    public ResponseEntity<JobCardResponseDto> getJobCardByAppointmentId(@P("appointmentId") @PathVariable("appointmentId") Long appointmentId) {
         return ResponseEntity.ok(jobCardService.getJobCardByAppointmentId(appointmentId));
     }
 
@@ -95,13 +97,13 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or (@accessControlService.managesJobCard(#id) and @accessControlService.mechanicReportsToCurrentManager(#dto.mechanicId))")
     @PutMapping("/{id}/assign_mechanic")
-    public ResponseEntity<JobCardResponseDto> assignMechanic(@PathVariable Long id, @Valid @RequestBody AssignMechanicDto dto) {
+    public ResponseEntity<JobCardResponseDto> assignMechanic(@P("id") @PathVariable("id") Long id, @P("dto") @Valid @RequestBody AssignMechanicDto dto) {
         return ResponseEntity.ok(jobCardService.updateMechanic(id, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or (@accessControlService.managesJobCard(#id) and @accessControlService.mechanicReportsToCurrentManager(#dto.mechanicId))")
     @PutMapping("/{id}/reassign_mechanic")
-    public ResponseEntity<JobCardResponseDto> reassignMechanic(@PathVariable Long id, @Valid @RequestBody AssignMechanicDto dto) {
+    public ResponseEntity<JobCardResponseDto> reassignMechanic(@P("id") @PathVariable("id") Long id, @P("dto") @Valid @RequestBody AssignMechanicDto dto) {
         return ResponseEntity.ok(jobCardService.updateMechanic(id, dto));
     }
 
@@ -109,19 +111,19 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isAssignedMechanicForJobCard(#id)")
     @PutMapping("/{id}/start")
-    public ResponseEntity<JobCardResponseDto> startWork(@PathVariable Long id) {
+    public ResponseEntity<JobCardResponseDto> startWork(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(jobCardService.startWork(id));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isAssignedMechanicForJobCard(#id)")
     @PutMapping("/{id}/complete")
-    public ResponseEntity<JobCardResponseDto> completeWork(@PathVariable Long id) {
+    public ResponseEntity<JobCardResponseDto> completeWork(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(jobCardService.completeWork(id));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#id)")
     @DeleteMapping("/{id}/cancel")
-    public ResponseEntity<JobCardResponseDto> cancelJobCard(@PathVariable Long id, @Valid @RequestBody CancelJobCardDto dto) {
+    public ResponseEntity<JobCardResponseDto> cancelJobCard(@P("id") @PathVariable("id") Long id, @P("dto") @Valid @RequestBody CancelJobCardDto dto) {
         return ResponseEntity.ok(jobCardService.cancelJobCard(id, dto.getReason()));
     }
 
@@ -129,19 +131,19 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#id) or @accessControlService.isAssignedMechanicForJobCard(#id)")
     @PostMapping("/{id}/items")
-    public ResponseEntity<JobCardResponseDto> addItemToJobCard(@PathVariable Long id, @RequestBody AddItemToJobCardDto dto) {
+    public ResponseEntity<JobCardResponseDto> addItemToJobCard(@P("id") @PathVariable("id") Long id, @RequestBody AddItemToJobCardDto dto) {
         return ResponseEntity.ok(jobCardService.addItemToJobCard(id, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#jobCardId) or @accessControlService.isAssignedMechanicForJobCard(#jobCardId)")
     @DeleteMapping("/{jobCardId}/items/{itemId}")
-    public ResponseEntity<JobCardResponseDto> removeItemsFromJobCard(@PathVariable Long jobCardId, @PathVariable Long itemId) {
+    public ResponseEntity<JobCardResponseDto> removeItemsFromJobCard(@P("jobCardId") @PathVariable("jobCardId") Long jobCardId, @P("itemId") @PathVariable("itemId") Long itemId) {
         return ResponseEntity.ok(jobCardService.removeItemsFromJobCard(jobCardId, itemId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessJobCard(#id)")
     @GetMapping("/{id}/items")
-    public ResponseEntity<JobCardResponseDto> getJobCardItems(@PathVariable Long id) {
+    public ResponseEntity<JobCardResponseDto> getJobCardItems(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(jobCardService.getJobCardItems(id));
     }
 
@@ -149,19 +151,19 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#id) or @accessControlService.isAssignedMechanicForJobCard(#id)")
     @PostMapping("/{id}/evidence")
-    public ResponseEntity<JobCardResponseDto> addEvidence(@PathVariable Long id, @RequestBody JobCardEvidenceDto dto) {
+    public ResponseEntity<JobCardResponseDto> addEvidence(@P("id") @PathVariable("id") Long id, @RequestBody JobCardEvidenceDto dto) {
         return ResponseEntity.ok(jobCardService.addEvidence(id, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.managesJobCard(#jobCardId)")
     @DeleteMapping("/{jobCardId}/evidence/{evidenceId}")
-    public ResponseEntity<JobCardResponseDto> removeEvidence(@PathVariable Long jobCardId, @PathVariable Long evidenceId) {
+    public ResponseEntity<JobCardResponseDto> removeEvidence(@P("jobCardId") @PathVariable("jobCardId") Long jobCardId, @P("evidenceId") @PathVariable("evidenceId") Long evidenceId) {
         return ResponseEntity.ok(jobCardService.removeEvidence(jobCardId, evidenceId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessJobCard(#id)")
     @GetMapping("/{id}/evidence")
-    public ResponseEntity<JobCardResponseDto> getJobCardEvidence(@PathVariable Long id) {
+    public ResponseEntity<JobCardResponseDto> getJobCardEvidence(@P("id") @PathVariable("id") Long id) {
         return ResponseEntity.ok(jobCardService.getJobCardById(id));
     }
 
@@ -169,31 +171,31 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<JobCardResponseDto>> getJobCardsByManager(@PathVariable Long managerId) {
+    public ResponseEntity<List<JobCardResponseDto>> getJobCardsByManager(@P("managerId") @PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(jobCardService.getJobCardByManager(managerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#mechanicId)")
     @GetMapping("/mechanic/{mechanicId}")
-    public ResponseEntity<List<JobCardResponseDto>> getJobCardByMechanic(@PathVariable Long mechanicId) {
+    public ResponseEntity<List<JobCardResponseDto>> getJobCardByMechanic(@PathVariable("mechanicId") Long mechanicId) {
         return ResponseEntity.ok(jobCardService.getJobCardByMechanic(mechanicId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<JobCardResponseDto>> getJobCardsByStatus(@PathVariable JobCardStatus status) {
+    public ResponseEntity<List<JobCardResponseDto>> getJobCardsByStatus(@PathVariable("status") JobCardStatus status) {
         return ResponseEntity.ok(jobCardService.getJobCardByStatus(status));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/manager/{managerId}/status/{status}")
-    public ResponseEntity<List<JobCardResponseDto>> getManagerJobCardsByStatus(@PathVariable Long managerId, @PathVariable JobCardStatus status) {
+    public ResponseEntity<List<JobCardResponseDto>> getManagerJobCardsByStatus(@PathVariable("managerId") Long managerId, @PathVariable("status") JobCardStatus status) {
         return ResponseEntity.ok(jobCardService.getManagerJobCardsByStatus(managerId, status));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#mechanicId)")
     @GetMapping("/mechanic/{mechanicId}/status/{status}")
-    public ResponseEntity<List<JobCardResponseDto>> getMechanicJobCardsByStatus(@PathVariable Long mechanicId, @PathVariable JobCardStatus status) {
+    public ResponseEntity<List<JobCardResponseDto>> getMechanicJobCardsByStatus(@PathVariable("mechanicId") Long mechanicId, @PathVariable("status") JobCardStatus status) {
         return ResponseEntity.ok(jobCardService.getMechanicJobCardsByStatus(mechanicId, status));
     }
 
@@ -219,13 +221,13 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/stats/manager/{managerId}/count")
-    public ResponseEntity<Long> getManagerJobCardCount(@PathVariable Long managerId) {
+    public ResponseEntity<Long> getManagerJobCardCount(@PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(jobCardService.getManagerJobCardCount(managerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#mechanicId)")
     @GetMapping("/stats/mechanic/{mechanicId}/count")
-    public ResponseEntity<Long> getMechanicJobCardCount(@PathVariable Long mechanicId) {
+    public ResponseEntity<Long> getMechanicJobCardCount(@PathVariable("mechanicId") Long mechanicId) {
         return ResponseEntity.ok(jobCardService.getMechanicJobCardCount(mechanicId));
     }
 
@@ -233,7 +235,7 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/dashboard/manager/{managerId}")
-    public ResponseEntity<ManagerDashboardDto> getManagerDashboard(@PathVariable Long managerId) {
+    public ResponseEntity<ManagerDashboardDto> getManagerDashboard(@PathVariable("managerId") Long managerId) {
         Long totalJobs = jobCardService.getManagerJobCardCount(managerId);
         Long inProgress = (long) jobCardService.getManagerJobCardsByStatus(managerId, JobCardStatus.IN_PROGRESS).size();
         Long completed = jobCardService.countManagerJobCardByStatus(managerId, JobCardStatus.COMPLETED);
@@ -252,7 +254,7 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#mechanicId)")
     @GetMapping("/dashboard/mechanic/{mechanicId}")
-    public ResponseEntity<MechanicDashboardDto> getMechanicDashboard(@PathVariable Long mechanicId) {
+    public ResponseEntity<MechanicDashboardDto> getMechanicDashboard(@PathVariable("mechanicId") Long mechanicId) {
         Long totalJobs = jobCardService.getMechanicJobCardCount(mechanicId);
         List<JobCardResponseDto> assignedJobs = jobCardService.getMechanicJobCardsByStatus(mechanicId, JobCardStatus.CREATED);
         List<JobCardResponseDto> inProgress = jobCardService.getMechanicJobCardsByStatus(mechanicId, JobCardStatus.IN_PROGRESS);
@@ -270,13 +272,13 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/revenue/manager/{managerId}")
-    public ResponseEntity<Map<String, BigDecimal>> getManagerRevenue(@PathVariable Long managerId) {
+    public ResponseEntity<Map<String, BigDecimal>> getManagerRevenue(@PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(Collections.singletonMap("revenue", jobCardService.getManagerRevenue(managerId)));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/team/manager/{managerId}")
-    public ResponseEntity<?> getManagerTeamWorkload(@PathVariable Long managerId) {
+    public ResponseEntity<?> getManagerTeamWorkload(@PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(jobCardService.getManagerTeamWorkload(managerId));
     }
 
@@ -294,13 +296,13 @@ public class JobCardController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#customerId)")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<JobCardResponseDto>> getCustomerJobCards(@PathVariable Long customerId) {
+    public ResponseEntity<List<JobCardResponseDto>> getCustomerJobCards(@PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(jobCardService.getCustomerJobCards(customerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsJobCard(#id)")
     @PutMapping("/{id}/rate")
-    public ResponseEntity<JobCardResponseDto> rateJobCard(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<JobCardResponseDto> rateJobCard(@PathVariable("id") Long id, @RequestBody Map<String, Object> payload) {
         Integer rating = (Integer) payload.get("rating");
         String feedback = (String) payload.get("feedback");
         return ResponseEntity.ok(jobCardService.submitRating(id, rating, feedback));

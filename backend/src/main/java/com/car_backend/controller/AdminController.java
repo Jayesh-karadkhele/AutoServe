@@ -55,7 +55,7 @@ public class AdminController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<UserSummaryDto> getUserDetails(@PathVariable Long userId) {
+    public ResponseEntity<UserSummaryDto> getUserDetails(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(adminService.getUserDetails(userId));
     }
 
@@ -66,8 +66,8 @@ public class AdminController {
 
     @PutMapping("/users/{userId}/toggle-active")
     public ResponseEntity<UserSummaryDto> toggleUserActiveStatus(
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "Admin manual action") String reason) {
+            @PathVariable("userId") Long userId,
+            @RequestParam(name = "reason", defaultValue = "Admin manual action") String reason) {
         return ResponseEntity.ok(adminService.toggleUserActiveStatus(userId, reason));
     }
 
@@ -77,7 +77,7 @@ public class AdminController {
     }
 
     @GetMapping("/managers/{managerId}/team")
-    public ResponseEntity<ManagerTeamDto> getManagerTeam(@PathVariable Long managerId) {
+    public ResponseEntity<ManagerTeamDto> getManagerTeam(@PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(adminService.getManagerTeam(managerId));
     }
 

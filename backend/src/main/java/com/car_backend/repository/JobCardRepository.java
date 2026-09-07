@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.data.repository.query.Param;
+
 import com.car_backend.entities.Appointment;
 import com.car_backend.entities.JobCard;
 import com.car_backend.entities.JobCardStatus;
@@ -46,18 +48,18 @@ public interface JobCardRepository extends JpaRepository<JobCard, Long> {
 	Long countByMechanicId(Long mechanicId);
 
 	@Query("SELECT SUM(i.snapshotPrice * i.quantity) FROM JobCard j JOIN j.items i WHERE j.manager.id = :managerId AND j.jobCardStatus = 'COMPLETED'")
-	BigDecimal calculateRevenueByManagerId(Long managerId);
+	BigDecimal calculateRevenueByManagerId(@Param("managerId") Long managerId);
 
 	@Query("SELECT j FROM JobCard j JOIN j.appointment a JOIN a.vehicleDetails v JOIN v.customer c "
 			+
 			"WHERE (v.licensePlate LIKE %:keyword% OR c.userName LIKE %:keyword%) AND j.manager.id = :managerId")
-	List<JobCard> searchHistory(String keyword, Long managerId);
+	List<JobCard> searchHistory(@Param("keyword") String keyword, @Param("managerId") Long managerId);
 
 	@Query("SELECT SUM(i.snapshotPrice * i.quantity) FROM JobCard j JOIN j.items i WHERE j.jobCardStatus = 'COMPLETED'")
 	BigDecimal calculateTotalRevenue();
 
 	@Query("SELECT j FROM JobCard j WHERE j.appointment.vehicleDetails.customer.id = :customerId")
-	List<JobCard> findByCustomerId(Long customerId);
+	List<JobCard> findByCustomerId(@Param("customerId") Long customerId);
 
 	boolean existsByIdAndAppointment_VehicleDetails_Customer_Id(Long id, Long customerId);
 

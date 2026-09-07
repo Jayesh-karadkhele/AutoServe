@@ -18,7 +18,7 @@ public class SecurityTestUtils {
         u.setMobile(mobile);
         u.setManager(manager);
         u.setActive(active);
-        return userRepository.save(u);
+        return userRepository.saveAndFlush(u);
     }
 
     public static String createToken(JwtUtil jwtUtil, User user) {

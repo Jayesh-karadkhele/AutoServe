@@ -35,7 +35,7 @@ public class PaymentController {
 
     @PostMapping("/api/invoices/{invoiceId}/payment-order")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<PaymentOrderResponseDto> createPaymentOrder(@PathVariable Long invoiceId) {
+    public ResponseEntity<PaymentOrderResponseDto> createPaymentOrder(@PathVariable("invoiceId") Long invoiceId) {
         User currentUser = getCurrentUser();
         PaymentOrderResponseDto response = paymentService.createPaymentOrder(invoiceId, currentUser);
         return ResponseEntity.ok(response);
@@ -44,7 +44,7 @@ public class PaymentController {
     @PostMapping("/api/invoices/{invoiceId}/verify-payment")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<PaymentAttemptDto> verifyPayment(
-            @PathVariable Long invoiceId,
+            @PathVariable("invoiceId") Long invoiceId,
             @Valid @RequestBody VerifyPaymentRequestDto dto) {
         User currentUser = getCurrentUser();
         PaymentAttemptDto result = paymentService.verifyCheckoutSignature(invoiceId, dto, currentUser);
@@ -54,7 +54,7 @@ public class PaymentController {
     @PostMapping("/api/invoices/{invoiceId}/capture-payment")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     public ResponseEntity<PaymentAttemptDto> capturePayment(
-            @PathVariable Long invoiceId,
+            @PathVariable("invoiceId") Long invoiceId,
             @RequestParam String providerOrderId,
             @RequestParam(required = false) String providerPaymentId) {
         User currentUser = getCurrentUser();
@@ -72,7 +72,7 @@ public class PaymentController {
 
     @GetMapping("/api/invoices/{invoiceId}/payment-history")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER', 'ADMIN')")
-    public ResponseEntity<List<PaymentAttemptDto>> getInvoicePaymentHistory(@PathVariable Long invoiceId) {
+    public ResponseEntity<List<PaymentAttemptDto>> getInvoicePaymentHistory(@PathVariable("invoiceId") Long invoiceId) {
         User currentUser = getCurrentUser();
         List<PaymentAttemptDto> history = paymentService.getPaymentHistoryForInvoice(invoiceId, currentUser);
         return ResponseEntity.ok(history);

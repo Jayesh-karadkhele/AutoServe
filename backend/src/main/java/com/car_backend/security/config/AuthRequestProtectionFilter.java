@@ -45,16 +45,16 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
 
     private final Map<String, RateWindow> rateLimitMap = new ConcurrentHashMap<>();
     private static final int MAX_REQUESTS_PER_MINUTE = 20;
-    private final String activeProfile;
+    private final org.springframework.core.env.Environment environment;
 
     public AuthRequestProtectionFilter(
             AuthProperties authProperties,
             ObjectMapper objectMapper,
             @Value("${cors.allowed-origins:http://localhost:5173}") String rawAllowedOrigins,
-            @Value("${spring.profiles.active:}") String activeProfile) {
+            org.springframework.core.env.Environment environment) {
         this.authProperties = authProperties;
         this.objectMapper = objectMapper;
-        this.activeProfile = activeProfile;
+        this.environment = environment;
         this.allowedOrigins = Arrays.stream(rawAllowedOrigins.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -83,7 +83,7 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
         boolean isRateLimitedEndpoint = "POST".equalsIgnoreCase(method) &&
                 (isTargetAuthEndpoint || path.contains("/payment-order") || path.contains("/verify-payment"));
 
-        boolean isTestEnv = activeProfile != null && activeProfile.contains("test");
+        boolean isTestEnv = environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
         if (isRateLimitedEndpoint && !isTestEnv) {
             String clientIp = getClientIp(request);

@@ -59,12 +59,29 @@ public class RefreshTokenRotationTests {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private com.car_backend.repository.VehicleRepository vehicleRepository;
+
+    @Autowired
+    private com.car_backend.repository.AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private com.car_backend.repository.JobCardRepository jobCardRepository;
+
+    @Autowired
+    private com.car_backend.repository.InvoiceRepository invoiceRepository;
+
     private User testUser;
 
     @BeforeEach
     void setUp() {
         refreshTokenRepository.deleteAll();
         authSessionRepository.deleteAll();
+        invoiceRepository.deleteAll();
+        jobCardRepository.deleteAll();
+        appointmentRepository.deleteAll();
+        vehicleRepository.deleteAll();
+        userRepository.findAll().forEach(u -> { u.setManager(null); userRepository.save(u); });
         userRepository.deleteAll();
         testUser = SecurityTestUtils.createUser(
                 userRepository, passwordEncoder, "Test User", "testuser@autoserve.com",

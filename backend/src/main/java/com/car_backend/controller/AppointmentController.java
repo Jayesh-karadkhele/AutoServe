@@ -32,6 +32,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.core.parameters.P;
+
 @RestController
 @RequestMapping("/api/appointments")
 @RequiredArgsConstructor
@@ -58,7 +60,7 @@ public class AppointmentController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @accessControlService.ownsVehicle(#dto.vehicleId))")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AppointmentResponseDto> createAppointment(
-            @RequestPart("appointment") @Valid CreateAppointmentDto dto,
+            @P("dto") @RequestPart("appointment") @Valid CreateAppointmentDto dto,
             @RequestPart(value = "image", required = false) MultipartFile image) {
         log.info("Received request to create appointment for vehicle {}", dto.getVehicleId());
         return ResponseEntity.ok(appointmentService.createAppointment(dto, image));
@@ -67,7 +69,7 @@ public class AppointmentController {
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsAppointment(#appointmentId)")
     @PutMapping("/{appointmentId}")
     public ResponseEntity<AppointmentResponseDto> updateAppointment(
-            @PathVariable("appointmentId") Long appointmentId,
+            @P("appointmentId") @PathVariable("appointmentId") Long appointmentId,
             @Valid @RequestBody UpdateAppointmentDto dto) {
         log.info("Received update appointment request for ID {}", appointmentId);
         return ResponseEntity.ok(appointmentService.updateAppointment(appointmentId, dto));
@@ -75,20 +77,20 @@ public class AppointmentController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.ownsAppointment(#appointmentId)")
     @DeleteMapping("/{appointmentId}/cancel")
-    public ResponseEntity<Void> cancelAppointment(@PathVariable("appointmentId") Long appointmentId) {
+    public ResponseEntity<Void> cancelAppointment(@P("appointmentId") @PathVariable("appointmentId") Long appointmentId) {
         appointmentService.cancelAppointment(appointmentId);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#customerId)")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsByCustomer(@PathVariable("customerId") Long customerId) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsByCustomer(@P("customerId") @PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByCustomerId(customerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessVehicle(#vehicleId)")
     @GetMapping("/vehicle/{vehicleId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByVehicle(@PathVariable("vehicleId") Long vehicleId) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByVehicle(@P("vehicleId") @PathVariable("vehicleId") Long vehicleId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByVehicleId(vehicleId));
     }
 
@@ -101,7 +103,7 @@ public class AppointmentController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canAccessAppointment(#appointmentId)")
     @GetMapping("/{appointmentId}")
-    public ResponseEntity<AppointmentResponseDto> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) {
+    public ResponseEntity<AppointmentResponseDto> getAppointmentById(@P("appointmentId") @PathVariable("appointmentId") Long appointmentId) {
         return ResponseEntity.ok(appointmentService.getAppointmentById(appointmentId));
     }
 
@@ -120,20 +122,20 @@ public class AppointmentController {
 
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByStatus(@PathVariable("status") Status status) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByStatus(@P("status") @PathVariable("status") Status status) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{appointmentId}/approve")
-    public ResponseEntity<AppointmentResponseDto> approveAppointment(@PathVariable("appointmentId") Long appointmentId) {
+    public ResponseEntity<AppointmentResponseDto> approveAppointment(@P("appointmentId") @PathVariable("appointmentId") Long appointmentId) {
         return ResponseEntity.ok(appointmentService.approveAppointment(appointmentId));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{appointmentId}/reject")
     public ResponseEntity<AppointmentResponseDto> rejectAppointment(
-            @PathVariable("appointmentId") Long appointmentId,
+            @P("appointmentId") @PathVariable("appointmentId") Long appointmentId,
             @Valid @RequestBody ApproveRejectDto dto) {
         return ResponseEntity.ok(appointmentService.rejectAppointment(appointmentId, dto.getRejectionReason()));
     }
@@ -159,7 +161,7 @@ public class AppointmentController {
 
     @PreAuthorize("hasAnyRole('MANAGER','MECHANIC','ADMIN')")
     @GetMapping("/rsa/{status}")
-    public ResponseEntity<List<AppointmentResponseDto>> getRsaAppointmentsByStatus(@PathVariable("status") Status status) {
+    public ResponseEntity<List<AppointmentResponseDto>> getRsaAppointmentsByStatus(@P("status") @PathVariable("status") Status status) {
         return ResponseEntity.ok(appointmentService.getRsaAppointmentsByStatus(status));
     }
 
@@ -172,8 +174,8 @@ public class AppointmentController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{appointmentId}/assign-manager/{managerId}")
     public ResponseEntity<AppointmentResponseDto> assignManager(
-            @PathVariable("appointmentId") Long appointmentId,
-            @PathVariable("managerId") Long managerId) {
+            @P("appointmentId") @PathVariable("appointmentId") Long appointmentId,
+            @P("managerId") @PathVariable("managerId") Long managerId) {
         log.info("Request to assign manager {} to appointment {}", managerId, appointmentId);
         return ResponseEntity.ok(appointmentService.assignManager(appointmentId, managerId));
     }
@@ -181,22 +183,22 @@ public class AppointmentController {
     @PreAuthorize("hasRole('ADMIN') or (@accessControlService.managesAppointment(#appointmentId) and @accessControlService.mechanicReportsToCurrentManager(#mechanicId))")
     @PutMapping("/{appointmentId}/assign-mechanic/{mechanicId}")
     public ResponseEntity<AppointmentResponseDto> assignMechanic(
-            @PathVariable("appointmentId") Long appointmentId,
-            @PathVariable("mechanicId") Long mechanicId) {
+            @P("appointmentId") @PathVariable("appointmentId") Long appointmentId,
+            @P("mechanicId") @PathVariable("mechanicId") Long mechanicId) {
         log.info("Request to assign mechanic {} to appointment {}", mechanicId, appointmentId);
         return ResponseEntity.ok(appointmentService.assignMechanic(appointmentId, mechanicId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#mechanicId)")
     @GetMapping("/mechanic/{mechanicId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByMechanic(@PathVariable("mechanicId") Long mechanicId) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByMechanic(@P("mechanicId") @PathVariable("mechanicId") Long mechanicId) {
         log.info("Request for appointments of mechanic {}", mechanicId);
         return ResponseEntity.ok(appointmentService.getAppointmentsByMechanicId(mechanicId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByManager(@PathVariable("managerId") Long managerId) {
+    public ResponseEntity<List<AppointmentResponseDto>> getAppointmentsByManager(@P("managerId") @PathVariable("managerId") Long managerId) {
         log.info("Request for appointments of manager {}", managerId);
         return ResponseEntity.ok(appointmentService.getAppointmentsByManagerId(managerId));
     }

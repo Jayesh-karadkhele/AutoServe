@@ -3,6 +3,7 @@ package com.car_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,19 +73,19 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canViewUser(#userId)")
     @GetMapping("/getUserById/{userId}")
-    public ResponseEntity<?> findById(@PathVariable Long userId) {
+    public ResponseEntity<?> findById(@P("userId") @PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody UpdateUserDto dto) {
+    public ResponseEntity<?> updateUser(@P("userId") @PathVariable("userId") Long userId, @RequestBody UpdateUserDto dto) {
         return ResponseEntity.ok(userService.updateUser(userId, dto));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<?> deleteUser(@P("userId") @PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok().body("User deactivated successfully");
     }
@@ -103,7 +104,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canViewUser(#customerId)")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<?> getCustomer(@PathVariable Long customerId) {
+    public ResponseEntity<?> getCustomer(@P("customerId") @PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(userService.getCustomerById(customerId));
     }
 
@@ -115,13 +116,13 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canViewUser(#managerId)")
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<?> getManager(@PathVariable Long managerId) {
+    public ResponseEntity<?> getManager(@P("managerId") @PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(userService.getManager(managerId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.isSelf(#managerId)")
     @GetMapping("/managers/{managerId}/mechanics")
-    public ResponseEntity<?> getMechanicsUnderManager(@PathVariable Long managerId) {
+    public ResponseEntity<?> getMechanicsUnderManager(@P("managerId") @PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(userService.getMechanicsUnderManager(managerId));
     }
 
@@ -133,13 +134,13 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or @accessControlService.canViewUser(#mechanicId)")
     @GetMapping("/mechanic/{mechanicId}")
-    public ResponseEntity<?> getMechanic(@PathVariable Long mechanicId) {
+    public ResponseEntity<?> getMechanic(@P("mechanicId") @PathVariable("mechanicId") Long mechanicId) {
         return ResponseEntity.ok(userService.getMechanic(mechanicId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/mechanics/{mechanicId}/assign_manager/{managerId}")
-    public ResponseEntity<?> assignManager(@PathVariable Long mechanicId, @PathVariable Long managerId) {
+    public ResponseEntity<?> assignManager(@P("mechanicId") @PathVariable("mechanicId") Long mechanicId, @P("managerId") @PathVariable("managerId") Long managerId) {
         return ResponseEntity.ok(userService.assignManagerToMechanic(mechanicId, managerId));
     }
 }

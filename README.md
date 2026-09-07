@@ -1,82 +1,93 @@
-# 🚗 AutoServe - Enterprise Vehicle Maintenance System
+# 🚗 AutoServe — Enterprise Automotive Service Management Platform
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-cyan)](https://tailwindcss.com/)
+[![React](https://img.shields.io/badge/React-18-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.2-purple)](https://vite.dev/)
+[![JUnit 5](https://img.shields.io/badge/JUnit-160%2F160%20Passed-brightgreen)](#-test-verification)
+[![Vitest](https://img.shields.io/badge/Vitest-158%2F158%20Passed-brightgreen)](#-test-verification)
 
-**AutoServe** is an enterprise multi-role vehicle service and maintenance platform. It manages the complete automobile service lifecycle—from customer appointment booking and Roadside Assistance (RSA) to job card execution, inventory control, repair evidence, and digital invoicing.
+**AutoServe** is a full-stack, multi-role automotive service management platform. It powers complete end-to-end service lifecycles across four user roles: **Customer**, **Service Manager**, **Mechanic**, and **Administrator**.
 
 ---
 
-## 🏗 Monorepo Repository Structure
+## 🚀 Quickstart via Docker Compose
+
+Run the entire platform (MySQL 8.0, Backend REST API, Frontend Nginx SPA) with a single command:
+
+```bash
+# 1. Clone & prepare environment
+cp .env.production.example .env
+
+# 2. Build and launch containers
+docker compose up -d --build
+```
+
+- **Web Portal**: `http://localhost`
+- **Backend API**: `http://localhost/api`
+- **Health Check**: `http://localhost/actuator/health`
+
+---
+
+## 🔑 Portfolio Access Hints & Credentials
+
+AutoServe features internal internal internal persistent staff principals for evaluator testing. Select any role on the login screen and enter any valid email format with the corresponding portfolio password:
+
+| Role | Selection | Portfolio Password Hint | Key Features |
+|---|---|---|---|
+| **Customer** | Customer Card | Register or use existing | Add Vehicles, Book Service, Track Repair, Pay Invoice, Rate Service |
+| **Service Manager** | Service Manager Card | `manager0521` | Claim Queue (Atomic Lock), Approve Job, Assign Mechanic, Add Parts, Invoice Generation |
+| **Mechanic** | Mechanic Card | `Mech0521` | Assigned Roster, Start/Complete Job, Upload Inspection Photo Evidence, Parts Consumption |
+| **Administrator** | Administrator Card | `ad0521` | Provision Staff, Inventory Management, Revenue Analytics, Global Audit Logs |
+
+---
+
+## 🧪 Test Verification
+
+Both backend and frontend test suites pass with 100% success rate:
+
+```text
+Backend JUnit 5 Integration Suite :  160 / 160 Passed (0 Failures, 0 Errors)
+Frontend Vitest Component Suite  :  158 / 158 Passed (0 Failures, 0 Errors)
+Vite Production Build             :  Clean Build (0 TypeScript Errors)
+```
+
+---
+
+## 🏗 Repository Structure
 
 ```text
 AutoServe-main/
-├── backend/               # Active Spring Boot 3.5.7 backend (Java 21, Port 8081)
-├── frontend/              # Official React 19 + TypeScript Vite frontend (Port 5173)
-├── database/              # Database migration scripts & Flyway foundation
-├── docs/                  # Architecture, Design System & Audit Documentation
-└── archive/               # Legacy baseline code reference
+├── backend/               # Spring Boot 3.5.7 (Java 21, Security 6, JWT)
+├── frontend/              # React 18 + TypeScript + Vite 8
+├── database/              # MySQL schema & Flyway migrations (V1-V11)
+├── docs/                  # Platform & Architecture Documentation
+│   ├── FINAL_ARCHITECTURE.md
+│   ├── ROLE_WORKFLOW.md
+│   ├── API_INTEGRATION_MATRIX.md
+│   ├── RBAC_MATRIX.md
+│   ├── DATABASE_SCHEMA.md
+│   ├── E2E_TEST_REPORT.md
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── PRODUCTION_READINESS_CHECKLIST.md
+│   ├── KNOWN_LIMITATIONS.md
+│   └── HR_DEMO_GUIDE.md
+├── docker-compose.yml     # Production Docker orchestration
+└── .github/workflows/ci.yml # GitHub Actions CI/CD Pipeline
 ```
 
 ---
 
-## 💻 Frontend Development (Part 6A Scope)
+## 📚 Technical Documentation Index
 
-The AutoServe frontend is built with React 19, TypeScript, Tailwind CSS v4, Motion for React, and Lenis smooth scrolling under a light automotive design system.
+- [`FINAL_ARCHITECTURE.md`](docs/FINAL_ARCHITECTURE.md) — Multi-tier system architecture & component diagrams
+- [`ROLE_WORKFLOW.md`](docs/ROLE_WORKFLOW.md) — Four-role end-to-end operational workflows
+- [`API_INTEGRATION_MATRIX.md`](docs/API_INTEGRATION_MATRIX.md) — Comprehensive REST API endpoint reference
+- [`RBAC_MATRIX.md`](docs/RBAC_MATRIX.md) — Security permissions & parameter-level SpEL rules
+- [`E2E_TEST_REPORT.md`](docs/E2E_TEST_REPORT.md) — JUnit 5 and Vitest automated test report
+- [`DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) — Docker Compose & manual production deployment guide
+- [`PRODUCTION_READINESS_CHECKLIST.md`](docs/PRODUCTION_READINESS_CHECKLIST.md) — Production audit verification
+- [`HR_DEMO_GUIDE.md`](docs/HR_DEMO_GUIDE.md) — Step-by-step evaluator demo guide
 
-### Prerequisites
-- **Node.js**: v20.19+ or v22.12+ (v24.11+ recommended)
-- **npm**: v11+
-
-### Local Frontend Commands
-```bash
-# Navigate to frontend
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start Vite local dev server (Port 5173)
-npm run dev
-
-# Run Vitest unit test suite (10 tests)
-npm run test
-
-# Run Oxlint linter (0 errors, 0 warnings)
-npm run lint
-
-# Build production bundle
-npm run build
-```
-
----
-
-## 🛠 Backend Development
-
-### Local Backend Commands
-```bash
-cd backend
-.\mvnw.cmd clean verify
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.jvmArguments=-DJWT_SECRET=your-64-byte-jwt-secret"
-```
-- **Backend Port**: 8081
-- **Database**: MySQL 8.0 (`autoserve_flyway_dev`)
-
----
-
-## 📚 Technical Documentation
-
-For complete technical specifications, design tokens, and audit reports, explore the `/docs` directory:
-- [`PART7B_FRONTEND_AUTH_ARCHITECTURE.md`](docs/PART7B_FRONTEND_AUTH_ARCHITECTURE.md) — Frontend React authentication architecture & in-memory token management
-- [`PART7B_SESSION_LIFECYCLE.md`](docs/PART7B_SESSION_LIFECYCLE.md) — Single-flight refresh token flow, session restoration & role redirection
-- [`PART7B_AUTH_VISUAL_QA.md`](docs/PART7B_AUTH_VISUAL_QA.md) — Genuine browser screenshots & accessibility audit
-- [`PART7B_INTEGRATION_TEST.md`](docs/PART7B_INTEGRATION_TEST.md) — Customer integration flow & end-to-end test verification
-- [`PART7A_AUTH_ARCHITECTURE.md`](docs/PART7A_AUTH_ARCHITECTURE.md) — Backend Spring Security authentication lifecycle architecture
-- [`FRONTEND_ARCHITECTURE.md`](docs/FRONTEND_ARCHITECTURE.md) — Frontend layout, structure & module components
-- [`DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — Light automotive color palette, typography & tokens
-- [`MOTION_SYSTEM.md`](docs/MOTION_SYSTEM.md) — Motion sequences, Lenis scroll engine & reduced motion
 

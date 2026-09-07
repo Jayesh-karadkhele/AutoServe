@@ -43,6 +43,18 @@ public class UserAuthorizationTests {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private com.car_backend.repository.VehicleRepository vehicleRepository;
+
+    @Autowired
+    private com.car_backend.repository.AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private com.car_backend.repository.JobCardRepository jobCardRepository;
+
+    @Autowired
+    private com.car_backend.repository.InvoiceRepository invoiceRepository;
+
     private User admin;
     private User manager;
     private User mechanic;
@@ -56,6 +68,11 @@ public class UserAuthorizationTests {
 
     @BeforeEach
     void setUp() {
+        invoiceRepository.deleteAll();
+        jobCardRepository.deleteAll();
+        appointmentRepository.deleteAll();
+        vehicleRepository.deleteAll();
+        userRepository.findAll().forEach(u -> { u.setManager(null); userRepository.save(u); });
         userRepository.deleteAll();
         admin = SecurityTestUtils.createUser(userRepository, passwordEncoder, "Admin User", "admin@autoserve.com", "AdminPass123!", Role.ADMIN, "9999999999", null, true);
         manager = SecurityTestUtils.createUser(userRepository, passwordEncoder, "Manager User", "manager@autoserve.com", "ManagerPass123!", Role.MANAGER, "8888888888", null, true);
