@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "npm --prefix frontend install",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://97a5878cc7236b.lhr.life/api/:path*" },
+    { "source": "/actuator/:path*", "destination": "https://97a5878cc7236b.lhr.life/actuator/:path*" },
+    { "source": "/ws/:path*", "destination": "https://97a5878cc7236b.lhr.life/ws/:path*" },
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
+}
