@@ -54,8 +54,9 @@ cors:
   allowed-origins: "http://localhost:5173"
 
 razorpay:
-  key-id: "rzp_test_mockKey"
-  key-secret: "mockRazorpaySecret"
+  key:
+    id: "rzp_test_mockKey"
+    secret: "rzp_secret_AutoServeSecret456"
 
 cloudinary:
   cloud-name: "test-cloud"

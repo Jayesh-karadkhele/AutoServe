@@ -32,7 +32,7 @@ AutoServe Part 8A introduces the complete Customer Service Dashboard and live ba
 ## Data Fetching & Security Rules
 1. **Ownership Enforcement**: No browser-supplied customer IDs are passed to backend endpoints. All self-service data fetching uses `/me` routes (`/api/vehicles/me`, `/api/appointments/me`, `/api/job_cards/me`, `/api/invoices/me`) resolving `customerId` server-side via `SecurityContext`.
 2. **Zero Persistent Token Storage**: Access tokens remain strictly in-memory inside `AuthContext`. Refresh tokens are held in secure HttpOnly cookies.
-3. **Payment Safeguards**: Online payment gateways remain disabled until server-side Razorpay/Stripe verification is configured. Invoices display clear payment instructions for on-site settlement, avoiding simulated payment mutations.
+3. **Payment Safeguards**: Online payment gateways require server-side Razorpay signature verification and webhooks. Invoices display clear payment instructions and official Razorpay checkout integration, avoiding simulated payment mutations.
 4. **Roadside Assistance**: Clearly designated with a `Planned capability` badge to prevent misleading user expectations prior to live dispatch service activation.
 
 ## Accessibility (a11y)
