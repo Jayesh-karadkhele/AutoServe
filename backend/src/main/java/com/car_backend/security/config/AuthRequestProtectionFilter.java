@@ -131,7 +131,9 @@ public class AuthRequestProtectionFilter extends OncePerRequestFilter {
             String origin = request.getHeader("Origin");
             if (origin != null && !origin.trim().isEmpty()) {
                 String normalizedOrigin = origin.trim();
-                boolean isOriginAllowed = allowedOrigins.contains(normalizedOrigin);
+                boolean isOriginAllowed = allowedOrigins.contains("*") || 
+                                          allowedOrigins.contains(normalizedOrigin) || 
+                                          normalizedOrigin.endsWith(".vercel.app");
                 if (!isOriginAllowed) {
                     log.warn("Rejected auth request to {} due to disallowed Origin: {}", path, normalizedOrigin);
                     sendForbiddenError(response, path, "Disallowed Origin");

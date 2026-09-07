@@ -96,13 +96,8 @@ public class SecurityConfig {
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
 
-        if (origins.contains("*")) {
-            config.setAllowedOriginPatterns(List.of("*"));
-            config.setAllowCredentials(false);
-        } else {
-            config.setAllowedOrigins(origins);
-            config.setAllowCredentials(true);
-        }
+        config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://*.vercel.app"));
+        config.setAllowCredentials(true);
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-AutoServe-Client"));
