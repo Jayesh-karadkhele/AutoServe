@@ -6,7 +6,7 @@ test.describe('AutoServe Golden Workflow E2E Tests', () => {
     await expect(page).toHaveTitle(/AutoServe/i);
     
     // Check key landing sections
-    await expect(page.locator('text=AutoServe')).toBeVisible();
+    await expect(page.locator('text=AutoServe').first()).toBeVisible();
     
     // Navigate to Login
     const loginLink = page.locator('a[href="/login"], button:has-text("Login")').first();

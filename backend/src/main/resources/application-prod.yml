@@ -5,6 +5,13 @@ server:
     include-message: never
 
 spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 4
+      minimum-idle: 0
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 20000
   jpa:
     hibernate:
       ddl-auto: validate
