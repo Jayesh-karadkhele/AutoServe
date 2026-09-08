@@ -4,5 +4,9 @@
       "path": "/api/cron/cleanup",
       "schedule": "0 3 * * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/actuator/health", "destination": "/api/health.js" },
+    { "source": "/actuator/:path*", "destination": "/api/health.js" }
   ]
 }

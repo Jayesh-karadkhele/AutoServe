@@ -24,13 +24,4 @@ public class CarBackendApplication {
 		return mapper;	
 
 	}
-	
-	@Bean
-	org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy flywayMigrationStrategy() {
-		return flyway -> {
-			flyway.repair();
-			flyway.migrate();
-		};
-	}
-
 }

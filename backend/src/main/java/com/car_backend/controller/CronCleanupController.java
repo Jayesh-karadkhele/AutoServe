@@ -45,13 +45,17 @@ public class CronCleanupController {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7).trim();
-            if (cronSecret.equals(token)) {
+            if (java.security.MessageDigest.isEqual(
+                    cronSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                    token.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
                 authorized = true;
             }
         }
 
-        if (!authorized && cronSecretHeader != null) {
-            if (cronSecret.equals(cronSecretHeader.trim())) {
+        if (!authorized && cronSecretHeader != null && !cronSecretHeader.trim().isEmpty()) {
+            if (java.security.MessageDigest.isEqual(
+                    cronSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                    cronSecretHeader.trim().getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
                 authorized = true;
             }
         }
